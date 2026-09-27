@@ -60,13 +60,13 @@ export default function About() {
 
       <figure className={`${styles.portrait} glass`}>
         <figcaption className={styles.portraitHead}>
-          <span>Portrait</span>
-          <span className="fig-art">Fig. 02 — Art</span>
+          <span>{about.portrait.label}</span>
+          <span className="fig-art">{about.portrait.fig}</span>
         </figcaption>
         <ArtSlot
           label="[ portrait / still of you ]"
-          src={about.portrait || undefined}
-          alt="Portrait of Uefa"
+          src={about.portrait.src || undefined}
+          alt={about.portrait.alt}
           sizes="(max-width: 900px) 100vw, 40vw"
           className={styles.portraitBody}
         />

@@ -96,7 +96,7 @@ export default function Contact() {
 
       <div className={styles.end}>
         <p className={styles.colophon}>
-          End of {site.volume}: designed, drawn and coded by hand.
+          End of {site.volume}: designed and coded by hand; imagery generated with AI.
           <br />
           Set in Orange Avenue and Geist Mono. <span>When art &amp; web collide.</span>
         </p>

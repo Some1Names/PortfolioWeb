@@ -13,8 +13,11 @@ export const manifesto = {
     "A game hidden inside an event site, a manga reader, this issue: each one started as a picture and ended as a page.",
     "This is where the two meet.",
   ],
-  fig: "Fig. A — Art / ink, paper, hand",
-  artSrc: "", // put a drawing in public/art/ and set e.g. "/art/manifesto.webp"
+  // the image beside the manifesto: one of your drawings in public/art/, or a stand-in until then.
+  // Keep "AI" in the caption while it's a generated image.
+  fig: "Fig. A — Fresco × chrome · AI",
+  artSrc: "/art/manifesto.webp",
+  artAlt: "AI-generated image: a classical painted figure in draped robes, with liquid chrome pouring off her shoulder",
 };
 
 export const site = {
@@ -71,7 +74,14 @@ export const site = {
 export const about = {
   statement: "I build web things that feel like something.",
   highlight: "feel",
-  portrait: "", // put a photo or self-portrait in public/ and set e.g. "/portrait.webp"
+  // the About frame: a photo or self-portrait of you, or a stand-in until then.
+  // For a real portrait use label "Portrait", fig "Fig. 02 — Art" and alt "Portrait of Uefa".
+  portrait: {
+    src: "/art/about.webp",
+    label: "Still life",
+    fig: "Fig. 02 — Chrome orchid · AI",
+    alt: "AI-generated image: an orchid made of polished chrome, dripping, on black",
+  },
   body: [
     "I'm an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.",
     "Coursework keeps me grounded in the fundamentals (algorithms, computer architecture, programming language theory), and drawing keeps me honest about design.",
@@ -86,8 +96,13 @@ export const about = {
 
 // Hero video: export your clip as an image sequence into public/frames/
 // named frame_0001.webp, frame_0002.webp, ... and set frameCount.
-// Leave it at 0 to show the placeholder frame.
+// Leave it at 0 to show the still cover image instead.
 export const heroFrames = {
   frameCount: 0,
   path: (i: number) => `/frames/frame_${String(i).padStart(4, "0")}.webp`,
+  cover: {
+    src: "/art/hero-cover.webp",
+    fig: "Fig. 00 — Cover · AI",
+    alt: "AI-generated image: a marble hand and a liquid-chrome hand reaching for each other, fingertips almost touching",
+  },
 };

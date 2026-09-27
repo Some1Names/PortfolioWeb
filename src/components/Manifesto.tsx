@@ -52,7 +52,7 @@ export default function Manifesto() {
         <ArtSlot
           fig={manifesto.fig}
           src={manifesto.artSrc || undefined}
-          alt="Drawing by Uefa"
+          alt={manifesto.artAlt}
           sizes="(max-width: 900px) 100vw, 360px"
           className={styles.slot}
         />

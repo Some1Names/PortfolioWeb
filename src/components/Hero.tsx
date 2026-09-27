@@ -176,7 +176,14 @@ export default function Hero() {
         {heroFrames.frameCount > 0 ? (
           <canvas ref={canvas} className={styles.canvas} aria-label="Animated portrait of Uefa" />
         ) : (
-          <ArtSlot fig="Fig. 00 — Cover" label="[ animated you ]" className={styles.framePlaceholder} />
+          <ArtSlot
+            fig={heroFrames.cover.fig}
+            label="[ animated you ]"
+            src={heroFrames.cover.src || undefined}
+            alt={heroFrames.cover.alt}
+            sizes="300px"
+            className={styles.framePlaceholder}
+          />
         )}
       </div>
 
