@@ -8,6 +8,7 @@ import Tag from "./hud/Tag";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
+import Crosshairs from "./hud/Crosshairs";
 import styles from "./About.module.css";
 
 export default function About() {
@@ -57,6 +58,7 @@ export default function About() {
 
   return (
     <section id="about" ref={root} className={styles.about}>
+      <Crosshairs />
       <div className={styles.beam} aria-hidden="true" />
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />

@@ -97,16 +97,18 @@
   flex: none;
   width: 194px;
 }
+/* segmented like a loading bar: 8px blocks, 2px gaps (12 blocks on the 120px track) */
 .track {
   width: 120px;
   height: 4px;
-  background: #2a2833;
+  background: repeating-linear-gradient(90deg, #2a2833 0 8px, transparent 8px 10px);
 }
 .fill {
   height: 100%;
   background: var(--seam-x);
   transform-origin: left center;
   transform: scaleX(0);
+  mask-image: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 10px);
 }
 .xpValue {
   color: var(--text);

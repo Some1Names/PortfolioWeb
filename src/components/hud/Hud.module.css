@@ -194,3 +194,56 @@
     animation: none;
   }
 }
+
+/* ---------- crosshairs: "+" marks at a section's corners ---------- */
+.cross {
+  position: absolute;
+  inset: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+.cross i {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+}
+.cross i::before,
+.cross i::after {
+  content: "";
+  position: absolute;
+  background: var(--line-3);
+}
+.cross i::before {
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+.cross i::after {
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+.cross i:nth-child(1) {
+  left: 0;
+  top: 0;
+}
+.cross i:nth-child(2) {
+  right: 0;
+  top: 0;
+}
+.cross i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+}
+.cross i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+}
+/* phones: the page folio sits where the bottom-right mark would */
+@media (max-width: 900px) {
+  .cross {
+    display: none;
+  }
+}

@@ -5,6 +5,7 @@ import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { timeline, tagSide } from "@/data/timeline";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
+import Crosshairs from "./hud/Crosshairs";
 import styles from "./Timeline.module.css";
 
 const SIDE_CLASS = { art: styles.tagArt, web: styles.tagWeb, collide: styles.tagNow };
@@ -49,6 +50,7 @@ export default function Timeline() {
 
   return (
     <section id="timeline" ref={root} className={styles.timeline}>
+      <Crosshairs />
       <header className="section-head">
         <div>
           <ModuleLabel n="03" text="Timeline · Quest log" />

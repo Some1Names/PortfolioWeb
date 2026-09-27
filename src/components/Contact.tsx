@@ -7,6 +7,8 @@ import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Silk from "./reactbits/Silk";
+import Crosshairs from "./hud/Crosshairs";
+import CutPanel from "./hud/CutPanel";
 import styles from "./Contact.module.css";
 
 export default function Contact() {
@@ -48,6 +50,7 @@ export default function Contact() {
 
   return (
     <section id="contact" ref={root} className={styles.contact}>
+      <Crosshairs />
       <Silk className={styles.silk} color="#4a3a7a" speed={3} scale={1} noiseIntensity={1.4} rotation={0.35} />
       <div className={styles.shade} aria-hidden="true" />
       <div className={`outline-num ${styles.bigNum}`} aria-hidden="true">
@@ -112,6 +115,11 @@ export default function Contact() {
         <span>Built with Next.js + Lenis</span>
         <a href="#top">Back to top ↑</a>
       </footer>
+      <div className={styles.endBand} aria-hidden="true">
+        <CutPanel corners="tr-bl" notch={10} className={styles.endLabel}>
+          End of {site.volume} &gt;&gt;&gt;
+        </CutPanel>
+      </div>
     </section>
   );
 }
