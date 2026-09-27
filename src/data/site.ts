@@ -89,9 +89,12 @@ export const about = {
   statement: "I build web things that feel like something.",
   highlight: "feel",
   // the image beside About: a photo of you, or a stand-in until then (floats free, no card).
-  // Keep "AI" in fig while it's generated. A black background blends away (screen blend).
+  // Keep "AI" in fig while it's generated. mode "screen": a picture on pure black, the black
+  // blends away. mode "alpha": a cut-out (transparent background) that stands on the signature
+  // line against the page's left edge, its cut bottom edge fading out.
   portrait: {
     src: "/art/about.webp",
+    mode: "screen" as "screen" | "alpha",
     fig: "Fig. 02 — Still life · AI",
     alt: "AI-generated image: an orchid made of polished chrome, dripping, on black",
   },

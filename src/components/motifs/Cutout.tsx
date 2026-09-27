@@ -7,22 +7,32 @@ const MODE = { fade: styles.cutoutFade, screen: styles.cutoutScreen, alpha: styl
 // background (objects shot on pure black) and "alpha" is for cut-outs with a transparent background.
 // "screen" only blends with what's behind it inside the nearest stacking context: if a parent
 // has a transform/opacity/filter (e.g. a GSAP entrance), set mix-blend-mode: screen on that parent.
+// `position` is the picture's object-position inside the box (centred by default).
 export default function Cutout({
   src,
   alt,
   mode = "fade",
   sizes = "50vw",
+  position,
   className = "",
 }: {
   src: string;
   alt: string;
   mode?: keyof typeof MODE;
   sizes?: string;
+  position?: string;
   className?: string;
 }) {
   return (
     <span className={`${styles.cutout} ${MODE[mode]} ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} className={styles.cutoutImg} />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        className={styles.cutoutImg}
+        style={position ? { objectPosition: position } : undefined}
+      />
     </span>
   );
 }

@@ -33,8 +33,8 @@ export default function About() {
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: root.current, start: "top 70%" } },
       );
-      // the orchid drifts slowly, like it's floating
-      gsap.to(`.${styles.orchid}`, { y: -8, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1 });
+      // the picture drifts slowly, like it's floating
+      gsap.to(`.${styles.art}`, { y: -8, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.from(`.${styles.seam}`, {
         scaleX: 0,
         scaleY: 0,
@@ -55,6 +55,7 @@ export default function About() {
   );
 
   const words = about.statement.split(" ");
+  const art = about.portrait;
 
   return (
     <section id="about" ref={root} className={styles.about}>
@@ -63,15 +64,18 @@ export default function About() {
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />
 
-      <figure className={styles.still}>
+      <figure className={`${styles.still} ${art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}>
         <Cutout
-          src={about.portrait.src}
-          alt={about.portrait.alt}
-          mode="screen"
+          src={art.src}
+          alt={art.alt}
+          mode={art.mode}
           sizes="(max-width: 900px) 100vw, 45vw"
-          className={styles.orchid}
+          // a cut-out stands in the bottom-left corner, against the page edge
+          position={art.mode === "alpha" ? "0% 100%" : undefined}
+          className={styles.art}
         />
-        <Tag label={about.portrait.fig} x={70} y={88} to={{ x: 52, y: 62 }} side="collide" phone={{ x: 0, y: 2 }} />
+        {/* starts left of centre so the label (~225px) stays clear of the text column down to 901px */}
+        <Tag label={art.fig} x={48} y={88} to={{ x: 40, y: 60 }} side="collide" phone={{ x: 0, y: 2 }} />
         <figcaption className={styles.stillFoot}>
           <span className={styles.sig}>Uefa</span>
           <span>ACS · KMUTT · Thailand</span>
