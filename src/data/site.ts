@@ -132,9 +132,9 @@ export const cover: {
   portrait: { src: "", alt: "Portrait of Uefa" },
   tags: [
     { label: "ACS · KMUTT", x: 106, y: 12, to: { x: 60, y: 12 }, side: "web", phone: { x: 58, y: 4 } },
-    { label: "Manga artist", x: -4, y: 20, to: { x: 38, y: 24 }, side: "art", phone: { x: 12, y: 26 } },
+    { label: "Manga artist", x: -4, y: 16, to: { x: 38, y: 24 }, side: "art", phone: { x: 12, y: 26 } },
     { label: "Motion / WebGL", x: 106, y: 30, to: { x: 66, y: 34 }, side: "collide", wide: true },
-    { label: "Next.js · TS", x: -2, y: 34, to: { x: 30, y: 40 }, side: "web", wide: true },
+    { label: "Next.js · TS", x: -2, y: 25, to: { x: 30, y: 40 }, side: "web", wide: true },
   ],
   insets: [
     {

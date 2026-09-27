@@ -26,7 +26,8 @@
   --mono: var(--font-geist-mono), ui-monospace, monospace;
   --sans: "Instrument Sans", system-ui, sans-serif;
 
-  --gutter: 40px;
+  /* page side padding: 40px at 901px wide, growing to 64px from ~1420px (24px on phones) */
+  --gutter: clamp(40px, 4.5vw, 64px);
 }
 
 * {
@@ -241,7 +242,7 @@ a:hover {
 
 @media (max-width: 900px) {
   :root {
-    --gutter: 16px;
+    --gutter: 24px;
   }
 }
 

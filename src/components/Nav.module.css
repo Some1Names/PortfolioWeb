@@ -169,8 +169,8 @@
   color: var(--collide);
 }
 
-/* seven links + logo + XP bar need tighter links from 1320px down */
-@media (max-width: 1320px) {
+/* seven links + logo + XP bar need tighter links from 1360px down */
+@media (max-width: 1360px) {
   .link {
     padding: 0 14px;
   }
