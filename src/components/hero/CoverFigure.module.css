@@ -12,13 +12,9 @@
   pointer-events: none;
 }
 .portrait,
-.chrome,
 .tags {
   position: absolute;
   inset: 0;
-}
-.chrome {
-  z-index: 2;
 }
 .tags {
   z-index: 3;
@@ -57,36 +53,10 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-/* chrome thorns rise from the head over the top of the name, like horns, mirrored left/right.
-   Kept slim so the letters still read between them. */
-.chromeLeft,
-.chromeRight {
-  position: absolute;
-  top: -18%;
-  width: 30%;
-  height: auto;
-}
-.chromeLeft {
-  left: 6%;
-  transform: rotate(-14deg);
-}
-.chromeRight {
-  right: 6%;
-  transform: rotate(14deg);
-}
-
-/* phones: a smaller figure standing just above the bar, one chrome thorn */
+/* phones: a smaller figure standing just above the bar */
 @media (max-width: 900px) {
   .figure {
     bottom: 64px;
     height: 64%;
-  }
-  .chromeRight {
-    display: none;
-  }
-  .chromeLeft {
-    top: -16%;
-    left: 8%;
-    width: 36%;
   }
 }

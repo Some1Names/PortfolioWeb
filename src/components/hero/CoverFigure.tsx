@@ -7,10 +7,10 @@ import styles from "./CoverFigure.module.css";
 
 // The centre of the cover: the portrait cut out (or a placeholder outline until the photo
 // arrives, or the hero video when given as children), standing in front of the name, with
-// brackets, glitch pixels, chrome ornaments and tags pointing at it.
+// brackets, glitch pixels and tags pointing at it.
 // data-layer attributes are the hooks Hero's GSAP timelines animate.
 export default function CoverFigure({ children }: { children?: React.ReactNode }) {
-  const { portrait, chrome, tags } = cover;
+  const { portrait, tags } = cover;
   return (
     <div className={styles.figure}>
       <div className={styles.portrait} data-layer="portrait">
@@ -37,10 +37,6 @@ export default function CoverFigure({ children }: { children?: React.ReactNode }
           ))}
         <Brackets />
         <Glitch />
-      </div>
-      <div className={styles.chrome} data-layer="chrome" aria-hidden="true">
-        <Image src={chrome[0]} alt="" width={600} height={800} className={styles.chromeLeft} />
-        <Image src={chrome[1]} alt="" width={600} height={800} className={styles.chromeRight} />
       </div>
       <div className={styles.tags} data-layer="tags">
         {tags.map((t) => (

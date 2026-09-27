@@ -125,13 +125,11 @@ export const heroFrames = {
 // Tags point at the portrait box (see TagSpec). Insets and "wide" tags show at 1400px+.
 export const cover: {
   portrait: { src: string; alt: string };
-  chrome: [string, string];
   tags: TagSpec[];
   insets: { src: string; fig: string; alt: string }[];
   coords: string;
 } = {
   portrait: { src: "", alt: "Portrait of Uefa" },
-  chrome: ["/art/chrome-left.webp", "/art/chrome-right.webp"],
   tags: [
     { label: "ACS · KMUTT", x: 106, y: 12, to: { x: 60, y: 12 }, side: "web", phone: { x: 58, y: 4 } },
     { label: "Manga artist", x: -4, y: 20, to: { x: 38, y: 24 }, side: "art", phone: { x: 12, y: 26 } },
