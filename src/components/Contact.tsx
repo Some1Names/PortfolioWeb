@@ -8,6 +8,7 @@ import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Silk from "./reactbits/Silk";
 import Crosshairs from "./hud/Crosshairs";
+import EndBand from "./motifs/EndBand";
 import styles from "./Contact.module.css";
 
 export default function Contact() {
@@ -114,7 +115,7 @@ export default function Contact() {
         <span>Built with Next.js + Lenis</span>
         <a href="#top">Back to top ↑</a>
       </footer>
-      <div className={styles.endBand} aria-hidden="true" />
+      <EndBand className={styles.endPlace} />
     </section>
   );
 }

@@ -149,3 +149,15 @@
 .cutoutAlpha {
   --hook: cutout-alpha;
 }
+
+/* ---------- end band: hazard stripes closing a page ---------- */
+.endBand {
+  position: relative;
+  height: 40px;
+  background: repeating-linear-gradient(-45deg, var(--collide) 0 14px, #0a0a0c 14px 28px);
+}
+@media (max-width: 900px) {
+  .endBand {
+    height: 32px;
+  }
+}

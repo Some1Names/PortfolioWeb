@@ -248,17 +248,13 @@
   }
 }
 
-/* hazard-stripe band at the very end of the issue, full width */
-.endBand {
-  position: relative;
+/* the end band (motifs/EndBand) runs full width at the very end of the issue */
+.endPlace {
   margin: 0 calc(var(--gutter) * -1) -40px;
-  height: 40px;
-  background: repeating-linear-gradient(-45deg, var(--collide) 0 14px, #0a0a0c 14px 28px);
 }
 @media (max-width: 900px) {
-  .endBand {
+  .endPlace {
     order: 12;
-    height: 32px;
     margin-bottom: -24px; /* matches .contact's phone bottom padding */
   }
 }
