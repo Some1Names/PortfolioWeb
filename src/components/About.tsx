@@ -103,6 +103,10 @@ export default function About() {
             </div>
           ))}
         </dl>
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full load on purpose: Lenis and the hero pin set up on load (see Nav) */}
+        <a href="/inspiration" className={styles.inspire}>
+          What inspires me →
+        </a>
       </div>
       <Folio page={4} />
     </section>

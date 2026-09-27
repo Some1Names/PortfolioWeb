@@ -146,6 +146,21 @@
 .fact dd {
   margin: 0;
 }
+/* to the /inspiration supplement */
+.inspire {
+  align-self: flex-start;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--collide);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+.inspire:hover {
+  color: var(--collide);
+}
 
 @media (max-width: 900px) {
   .about {
@@ -183,6 +198,9 @@
   .sub,
   .facts {
     order: 4;
+  }
+  .inspire {
+    order: 5;
   }
   .fact {
     flex-direction: column;

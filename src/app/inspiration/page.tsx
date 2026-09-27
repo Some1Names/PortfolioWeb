@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Nav from "@/components/Nav";
 import Inspiration from "@/components/inspiration/Inspiration";
 
 export const metadata: Metadata = {
@@ -9,8 +10,11 @@ export const metadata: Metadata = {
 // The /inspiration supplement: favourite films, anime and music (content: src/data/inspiration.ts)
 export default function InspirationPage() {
   return (
-    <main>
-      <Inspiration />
-    </main>
+    <>
+      <Nav page="inspiration" />
+      <main>
+        <Inspiration />
+      </main>
+    </>
   );
 }

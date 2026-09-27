@@ -45,11 +45,11 @@
 .link:last-child {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
-.link[aria-current="true"] {
+.link[aria-current] {
   color: var(--text-strong);
 }
 /* sits inside the left padding so the labels never shift when the current section changes */
-.link[aria-current="true"]::before {
+.link[aria-current]::before {
   content: "";
   position: absolute;
   left: 8px;
@@ -58,6 +58,10 @@
   height: 6px;
   margin-top: -3px;
   background: var(--collide);
+}
+/* the supplement's "+", in place of a section number */
+.plus {
+  color: var(--collide);
 }
 
 /* XP gauge: fixed on its own, above the nav. While the nav is shown it sits in the nav's
@@ -155,24 +159,24 @@
   color: var(--muted);
 }
 /* bar + colour, so the current section is not marked by colour alone */
-.sheet a[aria-current="true"] {
+.sheet a[aria-current] {
   box-shadow: inset 3px 0 0 var(--collide);
 }
-.sheet a[aria-current="true"] span {
+.sheet a[aria-current] span {
   color: var(--collide);
 }
 
-/* six links + logo + XP bar need tighter links below 1240px */
-@media (max-width: 1240px) {
+/* seven links + logo + XP bar need tighter links from 1320px down */
+@media (max-width: 1320px) {
   .link {
     padding: 0 14px;
   }
-  .link[aria-current="true"]::before {
+  .link[aria-current]::before {
     left: 4px;
   }
 }
-/* 901–1100px: the links fill the nav, so the gauge only shows once the nav has slid away */
-@media (max-width: 1100px) {
+/* 901–1240px: the links fill the nav, so the gauge only shows once the nav has slid away */
+@media (max-width: 1240px) {
   .xpSpace {
     display: none;
   }
@@ -183,6 +187,18 @@
   .xpAlone {
     opacity: 1;
     visibility: visible;
+  }
+}
+/* 901–1100px: tighter still, so all seven fit */
+@media (max-width: 1100px) {
+  .links {
+    letter-spacing: 1px;
+  }
+  .link {
+    padding: 0 10px;
+  }
+  .link[aria-current]::before {
+    left: 2px;
   }
 }
 @media (max-width: 900px) {
