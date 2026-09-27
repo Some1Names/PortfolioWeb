@@ -91,7 +91,6 @@ export default function Nav({ page = "home" }: { page?: "home" | "inspiration" }
             </a>
           ))}
           {/* the supplement: its own page, marked "+" instead of a section number */}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full load on purpose (see above) */}
           <a href="/inspiration" className={styles.link} aria-current={onInspiration}>
             <span className={styles.plus}>+</span> Inspiration
           </a>
@@ -114,7 +113,6 @@ export default function Nav({ page = "home" }: { page?: "home" | "inspiration" }
                 {it.label}
               </a>
             ))}
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full load on purpose (see above) */}
             <a href="/inspiration" onClick={() => setOpen(false)} aria-current={onInspiration}>
               <span>+</span>
               Inspiration
