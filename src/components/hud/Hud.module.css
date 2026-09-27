@@ -92,3 +92,27 @@
     transform: none;
   }
 }
+
+/* ---------- cut panel: two angled corners, 1px edge ---------- */
+.cut {
+  --notch: 14px;
+  position: relative;
+  isolation: isolate;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px) saturate(120%);
+  clip-path: polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch));
+}
+.cut::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: rgba(16, 15, 21, 0.86);
+  clip-path: polygon(calc(var(--notch) - 0.5px) 0, 100% 0, 100% calc(100% - var(--notch) + 0.5px), calc(100% - var(--notch) + 0.5px) 100%, 0 100%, 0 calc(var(--notch) - 0.5px));
+}
+.cutAlt {
+  clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, var(--notch) 100%, 0 calc(100% - var(--notch)));
+}
+.cutAlt::before {
+  clip-path: polygon(0 0, calc(100% - var(--notch) + 0.5px) 0, 100% calc(var(--notch) - 0.5px), 100% 100%, calc(var(--notch) - 0.5px) 100%, 0 calc(100% - var(--notch) + 0.5px));
+}

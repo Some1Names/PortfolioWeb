@@ -134,51 +134,16 @@
   letter-spacing: 2px;
 }
 
-.frame {
-  position: absolute;
-  left: 50%;
-  top: 130px;
-  width: 300px;
-  height: 400px;
-  margin-left: -150px;
-  backdrop-filter: blur(12px) saturate(120%);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-.cornerTL,
-.cornerTR,
-.cornerBL,
-.cornerBR {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 0 solid var(--text);
-  transition: border-color 0.3s;
-}
-.frame:hover .cornerTL,
-.frame:hover .cornerTR,
-.frame:hover .cornerBL,
-.frame:hover .cornerBR {
-  border-color: var(--collide);
-}
-.cornerTL { left: -1px; top: -1px; border-left-width: 2px; border-top-width: 2px; }
-.cornerTR { right: -1px; top: -1px; border-right-width: 2px; border-top-width: 2px; }
-.cornerBL { left: -1px; bottom: -1px; border-left-width: 2px; border-bottom-width: 2px; }
-.cornerBR { right: -1px; bottom: -1px; border-right-width: 2px; border-bottom-width: 2px; }
 .canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
-.frame .framePlaceholder {
-  position: absolute;
-  inset: 0;
-  min-height: 0;
-}
-
 .left {
   position: absolute;
+  z-index: 4;
   left: var(--gutter);
-  top: 120px;
+  bottom: 96px;
   width: 340px;
   display: flex;
   flex-direction: column;
@@ -209,12 +174,6 @@
   font-size: 17px;
   line-height: 1.55;
 }
-.code {
-  font-size: 11px;
-}
-.codeLine {
-  display: inline;
-}
 .barcode {
   display: flex;
   flex-direction: column;
@@ -236,8 +195,9 @@
 
 .right {
   position: absolute;
+  z-index: 4;
   right: var(--gutter);
-  top: 120px;
+  bottom: 96px;
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -265,40 +225,8 @@
 .status dd {
   margin: 0;
 }
-/* cover line: "When art & web collide." in both voices */
-.cover {
-  margin: 0;
-  font-family: var(--display);
-  font-size: 40px;
-  line-height: 1.05;
-  color: var(--text-strong);
-}
-.coverArt {
-  color: var(--art);
-}
-.coverAmp {
-  font-family: var(--mono);
-  font-size: 0.5em;
-  vertical-align: middle;
-  color: var(--collide);
-}
-.coverWeb {
-  font-family: var(--mono);
-  font-size: 0.8em;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-  color: var(--web);
-}
-.cover i {
-  border-bottom: 2px solid var(--collide);
-}
 .hero .folio {
-  bottom: 88px;
-}
-.issue {
-  align-self: flex-end;
-  font-size: 140px;
-  text-align: right;
+  bottom: 80px;
 }
 
 /* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
@@ -308,7 +236,8 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 115px;
+  top: 110px;
+  z-index: 2;
   height: calc(var(--name-size) * 1.15);
   margin: 0;
   font-family: var(--display);
@@ -333,6 +262,7 @@
 
 .bar {
   position: absolute;
+  z-index: 5;
   left: 0;
   right: 0;
   bottom: 0;
@@ -372,14 +302,58 @@
   color: var(--muted);
 }
 
-/* ---------- smaller screens ---------- */
-@media (max-width: 1200px) {
-  .code,
-  .issue {
+/* printed-halftone dots over the web half */
+.halftone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(232, 230, 238, 0.55) 1px, transparent 1.4px);
+  background-size: 6px 6px;
+  opacity: 0.06;
+  mask-image: linear-gradient(to left, #000, transparent 60%);
+}
+/* coordinates + live clock under the status block */
+.readout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* small clipped-corner shots above the side columns */
+.inset {
+  position: absolute;
+  z-index: 4;
+  width: 180px;
+  height: 136px;
+  margin: 0;
+}
+.insetLeft {
+  left: var(--gutter);
+  top: 330px;
+}
+.insetRight {
+  right: var(--gutter);
+  top: 350px;
+}
+.insetImg {
+  object-fit: cover;
+}
+.insetFig {
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
+}
+@media (max-width: 1399px) {
+  .inset {
     display: none;
   }
 }
 
+/* ---------- smaller screens ---------- */
 @media (max-width: 900px) {
   .hero {
     height: 100svh;
@@ -392,19 +366,10 @@
   }
   .caption,
   .right,
-  .code,
   .barcode,
   .circle,
-  .cover,
-  .hero .folio,
-  .framePlaceholder figcaption {
+  .hero .folio {
     display: none;
-  }
-  .frame {
-    top: 80px;
-    width: 200px;
-    height: 260px;
-    margin-left: -100px;
   }
   .name {
     --name-size: clamp(120px, 40vw, 180px);

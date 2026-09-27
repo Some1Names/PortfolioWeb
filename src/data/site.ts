@@ -109,13 +109,43 @@ export const about = {
 
 // Hero video: export your clip as an image sequence into public/frames/
 // named frame_0001.webp, frame_0002.webp, ... and set frameCount.
-// Leave it at 0 to show the still cover image instead.
+// It then plays inside the portrait box on scroll, in place of the portrait. Leave it at 0 to
+// show the portrait.
 export const heroFrames = {
   frameCount: 0,
   path: (i: number) => `/frames/frame_${String(i).padStart(4, "0")}.webp`,
-  cover: {
-    src: "/art/hero-cover.webp",
-    fig: "Fig. 00 — Cover · AI",
-    alt: "AI-generated image: a marble hand and a liquid-chrome hand reaching for each other, fingertips almost touching",
-  },
+};
+
+// ---------- cover (hero) ----------
+// The centre of the cover: you, cut out, standing in front of the name. Put a transparent
+// PNG/WebP of yourself in public/art/ and set portrait.src; "" shows a placeholder outline.
+// Tags point at the portrait box (see TagSpec). Insets and "wide" tags show at 1400px+.
+export const cover: {
+  portrait: { src: string; alt: string };
+  chrome: [string, string];
+  tags: TagSpec[];
+  insets: { src: string; fig: string; alt: string }[];
+  coords: string;
+} = {
+  portrait: { src: "", alt: "Portrait of Uefa" },
+  chrome: ["/art/chrome-left.webp", "/art/chrome-right.webp"],
+  tags: [
+    { label: "ACS · KMUTT", x: 106, y: 12, to: { x: 60, y: 12 }, side: "web", phone: { x: 58, y: 4 } },
+    { label: "Manga artist", x: -4, y: 20, to: { x: 38, y: 24 }, side: "art", phone: { x: 0, y: 26 } },
+    { label: "Motion / WebGL", x: 106, y: 30, to: { x: 66, y: 34 }, side: "collide", wide: true },
+    { label: "Next.js · TS", x: -6, y: 40, to: { x: 30, y: 46 }, side: "web", wide: true },
+  ],
+  insets: [
+    {
+      src: "/art/hero-cover.webp",
+      fig: "Fig. 00 · AI",
+      alt: "AI-generated image: a marble hand and a liquid-chrome hand reaching for each other",
+    },
+    {
+      src: "/art/liquid.webp",
+      fig: "Fig. 00b · AI",
+      alt: "AI-generated image: iridescent liquid chrome flowing on black",
+    },
+  ],
+  coords: "X_13.65 N / Y_100.49 E",
 };
