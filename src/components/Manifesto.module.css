@@ -32,6 +32,8 @@
 }
 /* sized to stay on one line in half the screen ("When art" is ~4.9× its font size wide) */
 .bigArt {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-family: var(--display);
   font-size: clamp(64px, 8.4vw, 170px);
@@ -43,10 +45,17 @@
   color: var(--art);
 }
 /* height follows the screen so the whole spread fits one viewport */
-.slot {
-  height: clamp(200px, calc(100vh - 540px), 450px);
-  max-width: 100%;
+/* the painting has no frame: its edges fade into the page, and it tucks under the headline */
+.figure {
+  position: relative;
+  margin: -40px 0 0;
+  height: clamp(230px, calc(100vh - 500px), 520px);
   aspect-ratio: 4 / 5;
+  max-width: 100%;
+}
+.painting {
+  position: absolute;
+  inset: 0;
 }
 .bigWeb {
   margin: 0;
@@ -116,7 +125,8 @@
   .seam {
     margin: 0 var(--gutter);
   }
-  .slot {
+  .figure {
+    margin: 0;
     width: 100%;
     height: auto;
   }

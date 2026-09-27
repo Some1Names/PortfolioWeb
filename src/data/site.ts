@@ -1,6 +1,20 @@
 // Everything personal lives in src/data. Edit these files, not the components.
 
 // Which half of "art meets web" something belongs to: colours it pink, blue or violet
+// A HUD tag: a label with a pointer to a spot in its parent box. x/y is where the pointer leaves
+// the label and `to` is the spot it points at, both in % of the parent (values outside 0-100 put
+// the label beside the box). `phone` is where the label sits on phones (its top-left corner, no
+// pointer); tags without it are hidden on phones. `wide` tags only show on screens 1400px+.
+export type TagSpec = {
+  label: string;
+  x: number;
+  y: number;
+  to: { x: number; y: number };
+  side?: Side;
+  phone?: { x: number; y: number };
+  wide?: boolean;
+};
+
 export type Side = "art" | "web" | "collide";
 
 // The site's thesis, used on the cover and the 00 — Manifesto spread

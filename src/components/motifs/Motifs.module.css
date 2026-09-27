@@ -130,3 +130,22 @@
     right: -6px;
   }
 }
+
+/* ---------- cutout: a picture without a frame ---------- */
+.cutout {
+  position: relative;
+  display: block;
+}
+.cutoutImg {
+  object-fit: contain;
+}
+.cutoutFade .cutoutImg {
+  object-fit: cover;
+  mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+}
+.cutoutScreen {
+  mix-blend-mode: screen;
+}
+.cutoutAlpha {
+  --hook: cutout-alpha;
+}
