@@ -1,0 +1,162 @@
+.timeline {
+  position: relative;
+  padding: 140px var(--gutter) 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  background: var(--bg-solid);
+  border-top: 1px solid var(--line);
+}
+.stamp {
+  margin-bottom: 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.list {
+  position: relative;
+}
+.ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* rail sits in the 2nd grid column: 200px + half of 48px */
+.rail {
+  position: absolute;
+  left: 224px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line-2);
+}
+.railFill {
+  width: 100%;
+  height: 100%;
+  background: var(--seam);
+  transform-origin: top center;
+}
+
+/* GSAP hook for the row fade-in; needs a declaration or styles.fade is undefined */
+.fade {
+  --hook: fade;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 200px 48px minmax(0, 1fr) 420px 140px;
+  align-items: center;
+  min-height: 104px;
+  border-bottom: 1px solid var(--line);
+}
+.year {
+  font-family: var(--display);
+  font-size: 52px;
+  line-height: 1;
+  color: var(--muted);
+  transition: color 0.4s;
+}
+.node {
+  display: flex;
+  justify-content: center;
+}
+.node i {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--text);
+  background: var(--bg-solid);
+  transition: background 0.4s, transform 0.4s;
+}
+.title {
+  padding-left: 16px;
+  font-size: 22px;
+}
+.note {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+.tag {
+  justify-self: end;
+  padding: 5px 8px;
+  border: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--lav);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.tagArt {
+  color: var(--art);
+  border-color: rgba(255, 106, 213, 0.45);
+}
+.tagWeb {
+  color: var(--web);
+  border-color: rgba(92, 138, 255, 0.45);
+}
+.tagNow {
+  color: var(--collide);
+  border-color: var(--collide);
+}
+
+.active .node i {
+  background: var(--collide);
+  border-color: var(--collide);
+  transform: rotate(45deg);
+}
+.active .year {
+  color: var(--text);
+}
+
+@media (max-width: 1100px) {
+  .row {
+    grid-template-columns: 140px 48px minmax(0, 1fr) 300px;
+  }
+  .rail {
+    left: 164px;
+  }
+  .tag {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .timeline {
+    padding: 72px var(--gutter) 56px;
+    gap: 24px;
+  }
+  .stamp {
+    margin-bottom: 10px;
+  }
+  .row {
+    grid-template-columns: 76px 24px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    padding: 14px 0 16px;
+    min-height: 0;
+  }
+  .rail {
+    left: 88px;
+  }
+  .year {
+    font-size: 28px;
+    grid-row: span 2;
+  }
+  .node {
+    grid-row: span 2;
+    padding-top: 8px;
+  }
+  .title {
+    padding-left: 10px;
+    font-size: 17px;
+  }
+  .note {
+    grid-column: 3;
+    padding-left: 10px;
+    font-size: 13px;
+  }
+}

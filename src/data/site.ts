@@ -1,0 +1,93 @@
+// Everything personal lives in src/data. Edit these files, not the components.
+
+// Which half of "art meets web" something belongs to: colours it pink, blue or violet
+export type Side = "art" | "web" | "collide";
+
+// The site's thesis, used on the cover and the 00 — Manifesto spread
+export const thesis = { lead: "When", art: "art", web: "web", end: "collide." };
+
+// DRAFT copy for the manifesto spread: rewrite these in your own words.
+export const manifesto = {
+  lines: [
+    "I draw before I code. The sketch decides how a page should feel; the code decides how it behaves.",
+    "A game hidden inside an event site, a manga reader, this issue: each one started as a picture and ended as a page.",
+    "This is where the two meet.",
+  ],
+  fig: "Fig. A — Art / ink, paper, hand",
+  artSrc: "", // put a drawing in public/art/ and set e.g. "/art/manifesto.webp"
+};
+
+export const site = {
+  name: "Uefa",
+  volume: "Vol. 01",
+  year: 2026,
+  tagline:
+    "Applied Computer Science (ACS) student at KMUTT. I build web applications in Next.js and TypeScript, with a focus on motion and visual systems.",
+  program: "Applied Computer Science · KMUTT",
+  status: [
+    { label: "Status", value: "Open to internships" },
+    { label: "Focus", value: "Web / Motion" },
+    { label: "Stack", value: "Next.js · TS" },
+    { label: "Year", value: "2026" },
+  ],
+  emails: [
+    { label: "Work email", address: "uefapeerawit@gmail.com" },
+    { label: "Personal email", address: "himarukoishiwa@gmail.com" },
+  ],
+  links: [
+    { label: "GitHub", handle: "@Some1Names", href: "https://github.com/Some1Names" },
+    { label: "Instagram", handle: "@yafuuyufaa", href: "https://instagram.com/yafuuyufaa" },
+    { label: "Twitch", handle: "/yafuuyufaa", href: "https://twitch.tv/yafuuyufaa" },
+  ],
+  // shown as logos (see src/data/logos.ts): art tools get pink dots, web tools blue dots
+  marquee: [
+    { label: "Next.js", side: "web" },
+    { label: "Clip Studio Paint", side: "art" },
+    { label: "TypeScript", side: "web" },
+    { label: "React", side: "web" },
+    { label: "Tailwind CSS", side: "web" },
+    { label: "Pixel art", side: "art" },
+    { label: "GSAP", side: "web" },
+    { label: "Three.js", side: "web" },
+    { label: "React Bits", side: "web" },
+    { label: "Motion", side: "web" },
+    { label: "Photoshop", side: "art" },
+    { label: "Prisma", side: "web" },
+    { label: "PostgreSQL", side: "web" },
+    { label: "Zod", side: "web" },
+    { label: "Illustrator", side: "art" },
+    { label: "Figma", side: "art" },
+    { label: "React Hook Form", side: "web" },
+    { label: "Zustand", side: "web" },
+    { label: "Lenis", side: "web" },
+    { label: "Premiere Pro", side: "art" },
+    { label: "Better Auth", side: "web" },
+    { label: "AWS S3", side: "web" },
+    { label: "Resend", side: "web" },
+    { label: "Vitest", side: "web" },
+  ] satisfies { label: string; side: Exclude<Side, "collide"> }[],
+};
+
+export const about = {
+  statement: "I build web things that feel like something.",
+  highlight: "feel",
+  portrait: "", // put a photo or self-portrait in public/ and set e.g. "/portrait.webp"
+  body: [
+    "I'm an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.",
+    "Coursework keeps me grounded in the fundamentals (algorithms, computer architecture, programming language theory), and drawing keeps me honest about design.",
+  ],
+  facts: [
+    { label: "Studying", value: "Applied Computer Science (ACS), KMUTT" },
+    { label: "Building", value: "Web apps in Next.js + TypeScript" },
+    { label: "Into", value: "Game dev, UI/UX, creative coding, pixel art" },
+    { label: "Find me", value: "Twitch / yafuuyufaa" },
+  ],
+};
+
+// Hero video: export your clip as an image sequence into public/frames/
+// named frame_0001.webp, frame_0002.webp, ... and set frameCount.
+// Leave it at 0 to show the placeholder frame.
+export const heroFrames = {
+  frameCount: 0,
+  path: (i: number) => `/frames/frame_${String(i).padStart(4, "0")}.webp`,
+};

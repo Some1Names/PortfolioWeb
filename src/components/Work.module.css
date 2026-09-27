@@ -1,0 +1,409 @@
+.work {
+  position: relative;
+  padding: 140px var(--gutter) 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  background: var(--bg-solid);
+}
+.sheet {
+  position: absolute;
+  right: var(--gutter);
+  top: 60px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.headAside {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+.headAside p {
+  margin: 0;
+  max-width: 360px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: right;
+}
+/* hook for the GSAP entrance: elements that slide up when a row scrolls in.
+   Needs a declaration, or the empty rule is dropped and styles.reveal is undefined. */
+.reveal {
+  --reveal: 1;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 7fr 2px 5fr;
+  min-height: 560px;
+  background: var(--card);
+}
+
+.media {
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+}
+.media .slot {
+  position: absolute;
+  inset: 0;
+  border: 0;
+}
+.seam {
+  transform-origin: top left;
+}
+.mediaInner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(150deg, #1a1824 0%, #231f33 55%, #2e2944 100%);
+}
+.row:nth-child(2) .mediaInner {
+  background: #15141a;
+}
+.row:nth-child(3) .mediaInner {
+  background: #131217;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(185, 178, 207, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 178, 207, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.floor {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -40px;
+  height: 380px;
+  background-image: linear-gradient(rgba(185, 178, 207, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 178, 207, 0.16) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, #000 20%, transparent 90%);
+  -webkit-mask-image: linear-gradient(to top, #000 20%, transparent 90%);
+}
+.barA,
+.barB {
+  position: absolute;
+  right: 0;
+  height: 40px;
+}
+.barA {
+  top: 56px;
+  width: 240px;
+  background: #2e2944;
+}
+.barB {
+  top: 96px;
+  width: 150px;
+  background: var(--accent);
+  opacity: 0.55;
+}
+.pixels {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  display: grid;
+  grid-template-columns: repeat(8, 10px);
+}
+.pixels i {
+  width: 10px;
+  height: 10px;
+}
+.doc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 220px;
+  height: 290px;
+  border: 1px solid var(--line-2);
+}
+.docBack {
+  transform: translate(-60%, -50%) rotate(-5deg);
+  background: #1a1922;
+}
+.docFront {
+  transform: translate(-40%, -48%) rotate(3deg);
+  background: #1e1c27;
+  border-color: #4a4660;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.docFront span {
+  height: 5px;
+  width: 90%;
+  background: var(--line-2);
+}
+.docFront i {
+  margin-top: auto;
+  align-self: flex-end;
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+}
+
+.body {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.num {
+  font-size: 64px;
+}
+.status,
+.statusDashed {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.statusDashed {
+  color: var(--lav);
+  padding: 4px 8px;
+  border: 1px dashed var(--muted);
+}
+.title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1;
+}
+.desc {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--soft);
+}
+.stack {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.stack span:first-child {
+  color: var(--muted);
+}
+.stack span:last-child {
+  color: var(--web);
+}
+.party {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.partyLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.member {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* GitHub-linked row: the whole row is the link */
+.memberLink {
+  margin: -4px -8px;
+  padding: 4px 8px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.memberLink:hover {
+  background: rgba(92, 138, 255, 0.08);
+  color: inherit;
+}
+.memberLink:hover .memberName {
+  color: var(--web);
+}
+.avatarImg {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  object-fit: cover;
+  filter: grayscale(0.3);
+}
+.avatarImgMe {
+  outline: 1px solid var(--collide);
+  outline-offset: 2px;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2e2b38;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.avatarMe {
+  background: var(--accent);
+}
+.avatarOpen {
+  background: transparent;
+  border: 1px dashed var(--line-3);
+  color: var(--muted);
+  font-size: 14px;
+}
+.memberName {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+.memberName small {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.partyLabel em {
+  font-style: normal;
+  color: var(--web);
+}
+.muted {
+  color: var(--muted);
+}
+.role {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: right;
+}
+.rolePart {
+  white-space: nowrap;
+}
+.actions {
+  margin-top: auto;
+  display: flex;
+}
+.actions a {
+  flex: 1;
+}
+
+.writeup {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  min-height: 180px;
+  padding: 32px 40px;
+  background: var(--card);
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.writeup:hover {
+  background: #16161b;
+  color: inherit;
+}
+.writeupText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.writeupTitle {
+  font-family: var(--display);
+  font-size: 38px;
+  line-height: 1.08;
+}
+.writeupCode {
+  width: 300px;
+  flex-shrink: 0;
+  font-size: 10px;
+}
+.writeupArrow {
+  font-family: var(--mono);
+  font-size: 20px;
+}
+
+@media (max-width: 900px) {
+  .work {
+    padding: 72px var(--gutter) 56px;
+    gap: 28px;
+  }
+  .sheet,
+  .headAside p {
+    display: none;
+  }
+  /* doubled class beats the global .section-head row layout */
+  .head.head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .headAside {
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .media {
+    min-height: 240px;
+  }
+  .body {
+    padding: 20px;
+    gap: 14px;
+  }
+  .title {
+    font-size: 36px;
+  }
+  .num {
+    font-size: 44px;
+  }
+  .writeup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px;
+  }
+  .writeupCode,
+  .writeupArrow {
+    display: none;
+  }
+  .writeupTitle {
+    font-size: 28px;
+  }
+}

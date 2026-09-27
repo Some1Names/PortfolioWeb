@@ -1,0 +1,769 @@
+.skills {
+  position: relative;
+  /* clip, not hidden: hidden makes this a scroll container and breaks the sticky mobile card */
+  overflow: clip;
+  padding: 140px var(--gutter) 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  background: radial-gradient(ellipse at 60% 55%, #1c1829 0%, #0f0e13 55%, var(--bg) 85%);
+  border-top: 1px solid var(--line);
+}
+.glow {
+  position: absolute;
+  left: 36%;
+  top: 520px;
+  width: 720px;
+  height: 560px;
+  border-radius: 50%;
+  background: var(--accent);
+  filter: blur(170px);
+  opacity: 0.3;
+}
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(185, 178, 207, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 178, 207, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.head {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+.head h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(88px, 13vw, 200px);
+  line-height: 1.1;
+  letter-spacing: -2px;
+}
+.legend {
+  margin-bottom: 24px;
+  display: flex;
+  gap: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.legendOpen,
+.legendLocked {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--line-3);
+  background: var(--card);
+}
+.legendLocked {
+  border-style: dashed;
+  background: transparent;
+}
+.hint {
+  color: var(--lav);
+}
+.sideArt {
+  --side: var(--art);
+}
+.sideWeb {
+  --side: var(--web);
+}
+.sideCollide {
+  --side: var(--collide);
+}
+.legendSide {
+  width: 12px;
+  height: 3px;
+  background: var(--side);
+}
+
+.stats {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.stats div {
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--mono);
+  text-transform: uppercase;
+}
+.stats div:last-child {
+  border-right: 0;
+}
+.stats span {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+}
+.stats strong {
+  font-size: 14px;
+  font-weight: 400;
+}
+.player {
+  font-family: var(--display);
+  font-size: 26px !important;
+  text-transform: none;
+}
+
+/* ---------- board: tree + details panel ---------- */
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  background: rgba(10, 10, 12, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+}
+
+/* ---------- desktop tree ---------- */
+/* When a branch has more than 4 skills the tree is drawn wider than its frame and the frame
+   scrolls sideways. Text scales with the frame (cqi), so it shrinks in step with the nodes and
+   stays the size it has on a 4-column tree. */
+.treeWrap {
+  position: relative;
+  min-width: 0;
+}
+.treeScroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  container-type: inline-size;
+}
+/* the site's violet scrollbar (globals.css), a little slimmer under the tree */
+.treeScroll::-webkit-scrollbar {
+  height: 10px;
+}
+.tree {
+  position: relative;
+  width: 100%;
+}
+/* more to the right: fade the edge, with a button to scroll there */
+.treeMore::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80px;
+  background: linear-gradient(to right, transparent, rgba(10, 10, 12, 0.85));
+  pointer-events: none;
+}
+.treeScrollBtn {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid var(--line-3);
+  background: rgba(18, 18, 22, 0.9);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.treeScrollBtn:hover {
+  border-color: var(--collide);
+  color: var(--text-strong);
+}
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+}
+.line {
+  stroke: var(--line-3);
+  stroke-width: 1;
+}
+.dashed {
+  stroke: var(--line-3);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.synergy {
+  stroke: var(--collide);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+.synLabel,
+.pathLabel,
+.branchLabel {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.synLabel {
+  color: var(--collide);
+}
+.pathLabel {
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+.branchLabel {
+  color: var(--side, var(--soft));
+}
+
+.root {
+  position: absolute;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.root strong {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(24px, 3.2cqi, 34px);
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.node {
+  position: absolute;
+  /* padding shrinks with the canvas too, so two-line names + a two-line "used in" still fit at ~1200px */
+  padding: clamp(8px, 1.15cqi, 12px) clamp(10px, 1.35cqi, 14px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-align: left;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.node:hover {
+  border-color: var(--side, var(--lav));
+  transform: translateY(-2px);
+}
+.nodeActive {
+  border-color: var(--collide);
+  background: #1a1824;
+  box-shadow: 0 0 0 1px var(--collide), 0 0 40px rgba(154, 107, 255, 0.35);
+}
+.skillName {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: clamp(12px, 1.54cqi, 16px);
+  line-height: 1.2;
+}
+/* logos stay neutral and take the branch colour on hover / when selected */
+.nodeLogo {
+  font-size: 1.25em;
+  color: var(--soft);
+  transition: color 0.2s;
+}
+.node:hover .nodeLogo,
+.nodeActive .nodeLogo {
+  color: var(--side, var(--lav));
+}
+.used {
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.3;
+  color: var(--lav);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.stub {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--side, var(--line-3));
+  background: rgba(10, 10, 12, 0.4);
+  color: var(--side, var(--muted));
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* ---------- details panel ---------- */
+.panel {
+  position: relative;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+/* Beside the tree, the tree sets the board's height: the panel fills it but never stretches it,
+   so picking a skill with a longer write-up doesn't shift the page. Tighter spacing where it's narrow. */
+@media (min-width: 1200px) {
+  .panel {
+    height: 0;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .panel {
+    padding: 20px 24px;
+    gap: 14px;
+  }
+}
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 32px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--collide);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+/* close only makes sense for the mobile card; on desktop the panel is permanent */
+.panelHead button {
+  display: none;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  cursor: pointer;
+}
+.panelBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: panelIn 0.35s ease-out;
+}
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.panelTitle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.05;
+}
+.panelLogo {
+  font-size: 34px;
+  color: var(--side, var(--lav));
+}
+.panelText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--soft);
+}
+.panelWhy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.panelLinks {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+.panelWhy span,
+.panelLinks span,
+.panelNext span {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.panelLinks a {
+  justify-content: flex-start;
+  min-height: 40px;
+  font-size: 11px;
+}
+.panelNext {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--line-2);
+}
+.panelNext strong {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---------- loadout: libraries as item slots (achievements reuse the same frame) ---------- */
+.loadout,
+.achievements {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+}
+.loadoutHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: rgba(10, 10, 12, 0.6);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.loadoutHead span:first-child {
+  color: var(--text);
+}
+.loadoutGroup {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  background: rgba(10, 10, 12, 0.45);
+}
+.groupLabel {
+  padding: 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--side, var(--soft));
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.slots {
+  margin: 0;
+  padding: 12px;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  transition: border-color 0.2s;
+}
+.slot:hover {
+  border-color: var(--side, var(--lav));
+}
+.slotLogo {
+  font-size: 28px;
+  margin-bottom: 4px;
+  color: #cfcbda;
+  transition: color 0.2s;
+}
+.slot:hover .slotLogo {
+  color: var(--side, var(--lav));
+}
+.slotName {
+  font-size: 14px;
+}
+.slotUsed {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---------- achievements: a certificate thumbnail + what it is ---------- */
+.achList {
+  padding: 12px;
+}
+.ach {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+  padding: 12px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ach:hover {
+  border-color: var(--side, var(--lav));
+  box-shadow: 0 0 40px rgba(154, 107, 255, 0.22);
+}
+.achThumb {
+  position: relative;
+  aspect-ratio: 1755 / 1241;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  background: #fff;
+}
+.achThumb img {
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.ach:hover .achThumb img {
+  transform: scale(1.03);
+}
+.achText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.achKicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--side, var(--lav));
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.achTitle {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1;
+}
+.achIssuer {
+  font-size: 14px;
+  color: var(--soft);
+}
+.achCta {
+  margin-top: 6px;
+}
+.ach:hover .achCta {
+  border-color: var(--lav);
+  color: var(--text-strong);
+}
+
+/* ---------- mobile list ---------- */
+.mobile {
+  display: none;
+}
+
+@media (max-width: 1199px) {
+  .board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .panel {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .panelNext {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .stats div:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .skills {
+    padding: 72px var(--gutter) 56px;
+    gap: 20px;
+  }
+  .legend {
+    display: none;
+  }
+  /* the board dissolves: tree hides, panel becomes a sticky card after the list */
+  .board {
+    display: contents;
+  }
+  .treeWrap {
+    display: none;
+  }
+  .mobile {
+    order: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .panel {
+    order: 2;
+    position: sticky;
+    bottom: 12px;
+    padding: 18px 20px;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(18, 18, 22, 0.85);
+    backdrop-filter: blur(24px) saturate(120%);
+  }
+  .panelClosed {
+    display: none;
+  }
+  .panelHead button {
+    display: block;
+  }
+  .panelTitle {
+    font-size: 30px;
+  }
+  .panelLinks {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .panelLinks span {
+    flex-basis: 100%;
+  }
+  .panelNext {
+    display: none;
+  }
+  .mBranch {
+    background: rgba(10, 10, 12, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+  }
+  .mHead {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--side, var(--lav));
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .mList {
+    position: relative;
+    padding: 8px 14px;
+  }
+  .mList::before {
+    content: "";
+    position: absolute;
+    left: 19px;
+    top: 24px;
+    bottom: 24px;
+    width: 1px;
+    background: var(--line-3);
+  }
+  .mNode {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .mNode i {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+    border: 1px solid var(--text);
+    background: var(--card);
+  }
+  .mNode[aria-pressed="true"] i {
+    background: var(--collide);
+    border-color: var(--collide);
+  }
+  .mNode > span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .mLogo {
+    font-size: 18px;
+    color: var(--soft);
+  }
+  .mNode small {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--lav);
+    text-transform: uppercase;
+  }
+  .mLocked {
+    color: var(--muted);
+    cursor: default;
+  }
+  .mLocked i {
+    border: 1px dashed var(--line-3);
+    background: transparent;
+  }
+  .mLocked small {
+    color: var(--muted);
+  }
+  .stats div {
+    padding: 12px;
+  }
+  /* after the list and the sticky card, so the card never sits on top of it */
+  .loadout,
+  .achievements {
+    order: 3;
+  }
+  .achList {
+    padding: 10px;
+  }
+  .ach {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .loadoutHead {
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+  }
+  .loadoutGroup {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .groupLabel {
+    padding: 10px 14px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .slots {
+    padding: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

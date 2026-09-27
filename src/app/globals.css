@@ -1,0 +1,255 @@
+:root {
+  --bg: #0a0a0c;
+  --bg-solid: #0e0e11;
+  --bg-strip: #131317;
+  --card: #121216;
+  --line: #26252c;
+  --line-2: #3a3748;
+  --line-3: #5a5668;
+  --text: #e8e6ee;
+  --text-strong: #f2f0f7;
+  --soft: #a7a3b3;
+  --muted: #8c8898;
+  --dim: #6f6b7b;
+  --lav: #b9b2cf;
+  --accent: #6e5aa8;
+
+  /* art / web / collide signals: accents only, never large fills */
+  --art: #ff6ad5;
+  --web: #5c8aff;
+  --collide: #9a6bff;
+  --seam: linear-gradient(var(--art), var(--collide) 50%, var(--web));
+  --seam-x: linear-gradient(90deg, var(--art), var(--collide) 50%, var(--web));
+
+  --display: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  --outline: var(--font-outline), var(--font-display), Georgia, serif;
+  --mono: var(--font-geist-mono), ui-monospace, monospace;
+  --sans: "Instrument Sans", system-ui, sans-serif;
+
+  --gutter: 40px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+a {
+  color: inherit;
+}
+a:hover {
+  color: var(--lav);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--text-strong);
+}
+
+/* ---------- scrollbars: a square violet thumb, for the page and anything that scrolls ---------- */
+/* Chromium + Safari. (Chrome drops these if scrollbar-color / scrollbar-width are set, so the
+   standard properties are only used where these pseudo-elements don't exist: Firefox.) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* the transparent border insets the thumb from the edge */
+::-webkit-scrollbar-thumb {
+  background: var(--collide);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b596ff;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #c9b3ff;
+  background-clip: padding-box;
+}
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-color: var(--collide) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* ---------- shared pieces ---------- */
+
+.mono {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.display {
+  font-family: var(--display);
+  font-weight: 400;
+}
+
+.outline-num {
+  font-family: var(--outline);
+  line-height: 0.8;
+  color: var(--line-3);
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(24px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+}
+.section-head h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(88px, 13vw, 200px);
+  line-height: 1.1;
+  letter-spacing: -2px;
+}
+.section-label {
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  border: 1px solid var(--line-2);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.btn:hover {
+  border-color: var(--lav);
+  color: var(--text-strong);
+}
+.btn-solid {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+.btn-solid:hover {
+  background: var(--lav);
+  border-color: var(--lav);
+  color: var(--bg);
+}
+
+.code-deco {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--soft);
+  white-space: pre;
+  margin: 0;
+}
+.code-deco .c { color: var(--muted); }
+.code-deco .k { color: var(--lav); }
+.code-deco .f { color: #d8d4e4; }
+.code-deco .s { color: #c9c3dc; }
+.code-deco .n { color: #c9b8ff; }
+
+/* ---------- art / web motifs ---------- */
+
+/* art side: fine ink hatching */
+.hatch {
+  background-image: repeating-linear-gradient(135deg, rgba(255, 106, 213, 0.07) 0 1px, transparent 1px 8px);
+}
+/* web side: hairline grid */
+.web-grid {
+  background-image: linear-gradient(rgba(92, 138, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 138, 255, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.fig-art,
+.fig-web {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.fig-art {
+  color: var(--art);
+}
+.fig-web {
+  color: var(--web);
+}
+
+/* Swiss module label: "01 — Work" over a hairline */
+.module-label {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.module-label b {
+  font-weight: 400;
+  color: var(--collide);
+}
+
+:focus-visible {
+  outline: 2px solid var(--collide);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --gutter: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

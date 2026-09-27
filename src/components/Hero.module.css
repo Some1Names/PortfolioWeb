@@ -1,0 +1,445 @@
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 900px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 115%, #1e1a2e 0%, #111016 45%, var(--bg) 75%);
+}
+
+/* GSAP hooks (intro fade, scroll parallax). They need a declaration, or the
+   empty rules are dropped and styles.fadeIn etc. come through as undefined. */
+.fadeIn {
+  --hook: fade-in;
+}
+.driftSlow {
+  --hook: drift-slow;
+}
+.driftFast {
+  --hook: drift-fast;
+}
+
+/* ---------- background ---------- */
+.bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  background: #fff;
+}
+/* left half = art (ink hatching), right half = web (grid); both fade toward the seam */
+.artZone,
+.webZone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+}
+.artZone {
+  left: 0;
+  mask-image: linear-gradient(to right, #000 0%, transparent 75%);
+}
+.webZone {
+  right: 0;
+  mask-image: linear-gradient(to left, #000 0%, transparent 75%);
+}
+.floor {
+  position: absolute;
+  left: -35%;
+  right: -35%;
+  bottom: -40px;
+  height: 520px;
+  background-image: linear-gradient(rgba(185, 178, 207, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 178, 207, 0.2) 1px, transparent 1px);
+  background-size: 80px 80px;
+  transform: perspective(700px) rotateX(64deg);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+}
+.glow {
+  position: absolute;
+  left: 22%;
+  width: 56%;
+  bottom: -300px;
+  height: 700px;
+  border-radius: 50%;
+  background: var(--accent);
+  filter: blur(160px);
+  opacity: 0.35;
+}
+/* React Bits LightRays: light falls from above onto the name */
+.rays {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  mix-blend-mode: screen;
+}
+/* the seam (Seam component supplies width and gradient); inset so its registration
+   marks clear the fixed nav (64px) and the bottom link bar (72px) */
+.axis {
+  position: absolute;
+  left: 50%;
+  top: 76px;
+  height: calc(100% - 160px);
+  margin-left: -1px;
+  opacity: 0.55;
+}
+.horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 144px;
+  height: 1px;
+  background: var(--lav);
+  opacity: 0.2;
+}
+.circle {
+  position: absolute;
+  left: 50%;
+  top: 110px;
+  width: 640px;
+  height: 640px;
+  margin-left: -470px;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 230, 238, 0.35);
+}
+.orbit {
+  position: absolute;
+  left: 50%;
+  top: 330px;
+  width: 760px;
+  height: 760px;
+  margin-left: -380px;
+  border-radius: 50%;
+  border: 1px dashed rgba(185, 178, 207, 0.3);
+  transform: scaleY(0.24) rotate(-12deg);
+}
+
+/* ---------- foreground ---------- */
+.caption {
+  position: absolute;
+  top: 84px;
+  left: 50%;
+  width: 500px;
+  margin-left: -250px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 130px;
+  width: 300px;
+  height: 400px;
+  margin-left: -150px;
+  backdrop-filter: blur(12px) saturate(120%);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.cornerTL,
+.cornerTR,
+.cornerBL,
+.cornerBR {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 0 solid var(--text);
+  transition: border-color 0.3s;
+}
+.frame:hover .cornerTL,
+.frame:hover .cornerTR,
+.frame:hover .cornerBL,
+.frame:hover .cornerBR {
+  border-color: var(--collide);
+}
+.cornerTL { left: -1px; top: -1px; border-left-width: 2px; border-top-width: 2px; }
+.cornerTR { right: -1px; top: -1px; border-right-width: 2px; border-top-width: 2px; }
+.cornerBL { left: -1px; bottom: -1px; border-left-width: 2px; border-bottom-width: 2px; }
+.cornerBR { right: -1px; bottom: -1px; border-right-width: 2px; border-bottom-width: 2px; }
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.frame .framePlaceholder {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+}
+
+.left {
+  position: absolute;
+  left: var(--gutter);
+  top: 120px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+.panelHead,
+.panelFoot {
+  padding: 12px 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.panelHead {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.panelFoot {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.panelBody {
+  margin: 0;
+  padding: 20px;
+  font-size: 17px;
+  line-height: 1.55;
+}
+.code {
+  font-size: 11px;
+}
+.codeLine {
+  display: inline;
+}
+.barcode {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.barcode div {
+  width: 180px;
+  height: 38px;
+  opacity: 0.7;
+  background: repeating-linear-gradient(90deg, var(--text) 0 2px, transparent 2px 4px, var(--text) 4px 5px,
+      transparent 5px 9px, var(--text) 9px 12px, transparent 12px 14px);
+}
+.barcode span {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 3px;
+}
+
+.right {
+  position: absolute;
+  right: var(--gutter);
+  top: 120px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.status {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.status div {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.status div:last-child {
+  border-bottom: 0;
+}
+.status dt {
+  color: var(--muted);
+}
+.status dd {
+  margin: 0;
+}
+/* cover line: "When art & web collide." in both voices */
+.cover {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 40px;
+  line-height: 1.05;
+  color: var(--text-strong);
+}
+.coverArt {
+  color: var(--art);
+}
+.coverAmp {
+  font-family: var(--mono);
+  font-size: 0.5em;
+  vertical-align: middle;
+  color: var(--collide);
+}
+.coverWeb {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  color: var(--web);
+}
+.cover i {
+  border-bottom: 2px solid var(--collide);
+}
+.hero .folio {
+  bottom: 88px;
+}
+.issue {
+  align-self: flex-end;
+  font-size: 140px;
+  text-align: right;
+}
+
+/* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
+   than the type and sits lower to keep the word where it was */
+.name {
+  --name-size: clamp(150px, 25vw, 380px);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 115px;
+  height: calc(var(--name-size) * 1.15);
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  color: var(--text-strong);
+  will-change: transform, opacity, filter;
+}
+.nameArt {
+  position: absolute;
+  inset: 0;
+  display: block;
+  filter: drop-shadow(0 0 40px rgba(110, 90, 168, 0.45));
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  display: flex;
+  border-width: 1px 0 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.barCta {
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  background: var(--text);
+  color: var(--bg);
+  text-decoration: none;
+}
+.barCta:hover {
+  background: var(--lav);
+  color: var(--bg);
+}
+.barLink {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+.barLink:last-child {
+  border-right: 0;
+}
+.arrow {
+  color: var(--muted);
+}
+
+/* ---------- smaller screens ---------- */
+@media (max-width: 1200px) {
+  .code,
+  .issue {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    height: 100svh;
+    min-height: 760px;
+  }
+  /* nav is 56px and the bar 64px on phones */
+  .axis {
+    top: 68px;
+    height: calc(100% - 144px);
+  }
+  .caption,
+  .right,
+  .code,
+  .barcode,
+  .circle,
+  .cover,
+  .hero .folio,
+  .framePlaceholder figcaption {
+    display: none;
+  }
+  .frame {
+    top: 80px;
+    width: 200px;
+    height: 260px;
+    margin-left: -100px;
+  }
+  .name {
+    --name-size: clamp(120px, 40vw, 180px);
+    bottom: auto;
+    top: 311px;
+  }
+  .left {
+    left: 0;
+    right: 0;
+    width: auto;
+    top: auto;
+    bottom: 64px;
+  }
+  .panel {
+    border-width: 1px 0 0 0;
+  }
+  .panelHead {
+    display: none;
+  }
+  .panelBody {
+    padding: 18px var(--gutter);
+    font-size: 15px;
+  }
+  .panelFoot {
+    padding: 12px var(--gutter);
+  }
+  .bar {
+    height: 64px;
+  }
+  .barCta {
+    flex: 1;
+    justify-content: space-between;
+    padding: 0 var(--gutter);
+  }
+  .barLink {
+    display: none;
+  }
+}

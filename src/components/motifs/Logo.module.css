@@ -1,0 +1,27 @@
+/* size a logo with font-size (it is a 1em square); colour follows the text colour */
+.logo {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
+/* monogram badge for tools with no official mark: same height as the other logos,
+   as wide as its letters need */
+.mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 1em;
+  padding: 0 0.16em;
+  border: 1.5px solid currentColor;
+}
+.monoText {
+  font-family: var(--mono);
+  font-size: 0.42em;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+}

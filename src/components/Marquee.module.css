@@ -1,0 +1,50 @@
+.strip {
+  height: 72px;
+  overflow: hidden;
+  background: var(--bg-strip);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+}
+.track {
+  display: flex;
+  width: max-content;
+}
+.group {
+  display: flex;
+}
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  padding-right: 40px;
+  color: #cfcbda;
+}
+/* brand marks: the Logo component is a 1em square */
+.logo {
+  font-size: 32px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+}
+.art .dot {
+  background: var(--art);
+}
+.web .dot {
+  background: var(--web);
+}
+
+@media (max-width: 900px) {
+  .strip {
+    height: 52px;
+  }
+  .item {
+    gap: 24px;
+    padding-right: 24px;
+  }
+  .logo {
+    font-size: 22px;
+  }
+}

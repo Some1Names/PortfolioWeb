@@ -1,0 +1,132 @@
+/* ---------- seam: where art meets web ---------- */
+/* zero specificity so a consumer class can make it absolute */
+:where(.seam) {
+  position: relative;
+}
+.seam {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.y,
+.auto {
+  width: 2px;
+  background: var(--seam);
+}
+.x {
+  height: 2px;
+  background: var(--seam-x);
+}
+/* registration marks: small crosshairs at both ends */
+.mark {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border: 1px solid var(--collide);
+  border-radius: 50%;
+}
+.mark::before,
+.mark::after {
+  content: "";
+  position: absolute;
+  background: var(--collide);
+}
+.mark::before {
+  left: 5px;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+}
+.mark::after {
+  top: 5px;
+  left: -4px;
+  right: -4px;
+  height: 1px;
+}
+.y .mark,
+.auto .mark {
+  left: -5.5px;
+}
+.y .mark:first-child,
+.auto .mark:first-child {
+  top: -6px;
+}
+.y .mark:last-child,
+.auto .mark:last-child {
+  bottom: -6px;
+}
+.x .mark {
+  top: -5.5px;
+}
+.x .mark:first-child {
+  left: -6px;
+}
+.x .mark:last-child {
+  right: -6px;
+}
+
+/* ---------- art slot ---------- */
+.slot {
+  position: relative;
+  margin: 0;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.slotEmpty {
+  border: 1px dashed rgba(255, 106, 213, 0.4);
+}
+.slotImg {
+  object-fit: cover;
+}
+.slotTag {
+  position: relative;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 106, 213, 0.45);
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--art);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.slotFig {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  padding: 3px 6px;
+  background: rgba(10, 10, 12, 0.72);
+}
+
+/* ---------- folio ---------- */
+.folio {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .auto {
+    width: auto;
+    height: 2px;
+    background: var(--seam-x);
+  }
+  .auto .mark,
+  .auto .mark:first-child {
+    top: -5.5px;
+    left: -6px;
+  }
+  .auto .mark:last-child {
+    top: -5.5px;
+    bottom: auto;
+    left: auto;
+    right: -6px;
+  }
+}

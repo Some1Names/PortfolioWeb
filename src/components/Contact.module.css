@@ -1,0 +1,249 @@
+.contact {
+  position: relative;
+  /* own stacking context, so the silk (z-index -1) sits above the section background but below content */
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100vh;
+  padding: 140px var(--gutter) 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  background: var(--bg-solid);
+  border-top: 1px solid var(--line);
+}
+/* React Bits Silk, darkened toward the bottom so the links and footer stay readable */
+.silk,
+.shade {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: -1;
+}
+.shade {
+  background: linear-gradient(180deg, rgba(14, 14, 17, 0.3) 0%, rgba(14, 14, 17, 0.6) 55%, rgba(14, 14, 17, 0.92) 100%);
+}
+.bigNum {
+  position: absolute;
+  right: var(--gutter);
+  top: 260px;
+  font-size: 260px;
+  color: #2e2b38;
+  pointer-events: none;
+}
+
+.toast {
+  position: absolute;
+  right: var(--gutter);
+  top: 96px;
+  width: 340px;
+  display: flex;
+  z-index: 2;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.toastIcon {
+  width: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 18px;
+}
+.toastText {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.toastText span,
+.toastText em {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+.toastText strong {
+  font-weight: 400;
+  font-size: 16px;
+}
+.toastText em {
+  color: var(--lav);
+}
+
+.headline {
+  position: relative;
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(56px, 14vw, 210px);
+  line-height: 0.95;
+  letter-spacing: -2px;
+}
+.mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.06em 0 0.14em;
+  margin: -0.06em 0 -0.14em;
+}
+.line {
+  display: block;
+}
+.soft {
+  color: var(--lav);
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.emails {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.email {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 32px;
+  background: var(--card);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.email:hover {
+  background: #1a1824;
+}
+.emailValue {
+  font-size: clamp(22px, 2.4vw, 32px);
+}
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-family: var(--mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.links a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 28px;
+  background: var(--card);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.links a:hover {
+  background: #1a1824;
+}
+.handle {
+  color: var(--muted);
+}
+
+.end {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+.colophon {
+  margin: 0;
+  max-width: 460px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.colophon span {
+  color: var(--collide);
+}
+.seam {
+  transform-origin: left center;
+}
+.contact .folio {
+  top: 28px;
+  bottom: auto;
+}
+.barcode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.barcode div {
+  width: 220px;
+  height: 44px;
+  opacity: 0.6;
+  background: repeating-linear-gradient(90deg, var(--text) 0 2px, transparent 2px 4px, var(--text) 4px 5px,
+      transparent 5px 9px, var(--text) 9px 12px, transparent 12px 14px);
+}
+.barcode span {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 3px;
+}
+
+.footer {
+  position: relative;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+@media (max-width: 900px) {
+  .contact {
+    min-height: 0;
+    padding: 72px var(--gutter) 24px;
+    gap: 28px;
+  }
+  .bigNum,
+  .barcode {
+    display: none;
+  }
+  .toast {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    order: 10;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .email,
+  .links a {
+    padding: 18px 16px;
+  }
+  .footer {
+    flex-direction: column;
+    order: 11;
+  }
+  .end {
+    order: 9;
+  }
+}

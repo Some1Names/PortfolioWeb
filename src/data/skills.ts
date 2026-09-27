@@ -1,0 +1,192 @@
+import type { Side } from "./site";
+
+export type Skill = {
+  name: string;
+  usedIn: string; // where you actually used it: shown on the node
+  why: string; // why / what you used it for: shown in the card when the node is clicked
+};
+
+export type Branch = {
+  name: string;
+  side: Side; // art (pink), web (blue) or collide (violet): colours the branch
+  skills: Skill[]; // left to right = learning order; past 4, the desktop tree scrolls sideways
+  nextQuest: string; // suggestion shown on the locked node
+};
+
+export const branches: Branch[] = [
+  {
+    name: "Frontend",
+    side: "web",
+    skills: [
+      {
+        name: "HTML & CSS",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "The base of every page: semantic markup and layouts. Tailwind on both projects, hand-written CSS Modules on this site.",
+      },
+      {
+        name: "TypeScript",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "Strict mode everywhere. Typed domain models plus Zod schemas catch bad data at the API instead of in the UI.",
+      },
+      {
+        name: "React",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "Component-first UI. Each PirahusNext minigame keeps its logic in its own hook or reducer; the manga reader is one client component.",
+      },
+      {
+        name: "Next.js",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "App Router on both projects and this site. Pages and API routes live in one codebase, so a feature ships as one change.",
+      },
+    ],
+    nextQuest: "Suggest: testing",
+  },
+  {
+    name: "Motion & 3D",
+    side: "collide",
+    skills: [
+      {
+        name: "GSAP",
+        usedIn: "Pirahus",
+        why: "Timeline-based motion: the PirahusNext loader and home page, and every entrance on this site. Sequencing CSS can't do.",
+      },
+      {
+        name: "ScrollTrigger",
+        usedIn: "Pirahus",
+        why: "Scroll-driven scenes: the pinned zoom-out hero on PirahusNext and the pinned hero here, scrubbed to the scrollbar.",
+      },
+      {
+        name: "Three.js / R3F",
+        usedIn: "Pirahus",
+        why: "Real-time backgrounds on PirahusNext (Dither, Silk, PixelBlast), dropped in as React components with React Three Fiber.",
+      },
+      {
+        name: "WebGL shaders",
+        usedIn: "Pirahus",
+        why: "Give each page its own mood: a different shader background per page on PirahusNext, and Light Rays and Silk on this site.",
+      },
+    ],
+    nextQuest: "Suggest: GLSL",
+  },
+  {
+    name: "Data",
+    side: "web",
+    skills: [
+      {
+        name: "PostgreSQL",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "Relational data on both: mentors, mentees and hints on PirahusNext; manga, arcs, chapters and translations on YafuuGallery.",
+      },
+      {
+        name: "Prisma",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "Type-safe queries and versioned migrations: users, manga, chapters, comments, bookmarks and reading progress.",
+      },
+      {
+        name: "Zustand",
+        usedIn: "Pirahus",
+        why: "One small store for the signed-in user, so login, the shop, the menu and the minigames share it without prop drilling.",
+      },
+      {
+        name: "Vercel",
+        usedIn: "Pirahus · YafuuGallery",
+        why: "Hosting for both projects: PirahusNext and YafuuGallery are live on Vercel.",
+      },
+    ],
+    nextQuest: "Suggest: auth",
+  },
+  {
+    name: "Design",
+    side: "art",
+    skills: [
+      {
+        name: "Clip Studio Paint",
+        usedIn: "Manga art",
+        why: "My main drawing app: sketching, inking and colouring my manga art.",
+      },
+      { name: "Photoshop", usedIn: "Graphics · photos", why: "Graphic design and photo editing." },
+      { name: "Illustrator", usedIn: "Logos", why: "Creating logos, as vectors so they stay sharp at any size." },
+      { name: "Premiere Pro", usedIn: "Video", why: "Video editing." },
+      {
+        name: "Figma",
+        usedIn: "UI · wireframes",
+        why: "UI design and wireframes: laying out the screens of my web projects before building them.",
+      },
+    ],
+    nextQuest: "Suggest: After Effects",
+  },
+];
+
+// Loadout: libraries you've shipped with, shown as item slots under the skill tree.
+// Logos come from src/data/logos.ts (by name). Taken from the package.json files of
+// YafuuGallery, PirahusNext and this site.
+export type LoadoutItem = { name: string; usedIn: string };
+export type LoadoutGroup = { name: string; side: Side; items: LoadoutItem[] };
+
+export const loadout: LoadoutGroup[] = [
+  {
+    name: "Frontend",
+    side: "web",
+    items: [
+      { name: "Tailwind CSS", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Motion", usedIn: "Pirahus" },
+      { name: "React Hook Form", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Zod", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Lucide", usedIn: "Pirahus · YafuuGallery" },
+    ],
+  },
+  {
+    name: "Motion & 3D",
+    side: "collide",
+    items: [
+      { name: "React Three Fiber", usedIn: "Pirahus" },
+      { name: "React Bits", usedIn: "Pirahus · this site" },
+      { name: "Lenis", usedIn: "YafuuGallery · this site" },
+      { name: "OGL", usedIn: "Pirahus · this site" },
+    ],
+  },
+  {
+    name: "Data & backend",
+    side: "web",
+    items: [
+      { name: "Better Auth", usedIn: "YafuuGallery" },
+      { name: "AWS S3", usedIn: "YafuuGallery" },
+      { name: "Resend", usedIn: "YafuuGallery" },
+      { name: "Axios", usedIn: "Pirahus · YafuuGallery" },
+      { name: "JWT", usedIn: "Pirahus" },
+    ],
+  },
+  {
+    name: "Tooling",
+    side: "web",
+    items: [
+      { name: "Vitest", usedIn: "YafuuGallery" },
+      { name: "next-intl", usedIn: "YafuuGallery" },
+    ],
+  },
+];
+
+// Achievements: certificates, shown as unlocked cards under the loadout.
+// The image lives in public/certificates/ (an image, not the PDF, so the file's metadata isn't published).
+export type Achievement = {
+  title: string;
+  program: string;
+  issuer: string;
+  date: string;
+  image: string;
+  side: Side;
+};
+
+export const achievements: Achievement[] = [
+  {
+    title: "KIRO Challenge",
+    program: "AWS Generative AI Foundation Program",
+    issuer: "The Enterprise Resources Training (ERT) · AWS",
+    date: "31 Aug 2026",
+    image: "/certificates/aws-genai-kiro-challenge-2026.jpg",
+    side: "collide",
+  },
+];
+
+// Draws a dashed "synergy" link between two nodes: [branchIndex, skillIndex]
+export const synergy = { from: [0, 2] as const, to: [1, 2] as const, label: "Synergy: R3F" };

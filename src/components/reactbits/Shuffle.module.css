@@ -1,0 +1,12 @@
+.shuffle {
+  display: inline-block;
+  white-space: normal;
+}
+/* hidden only between "JS is ready to animate" and the first shuffle */
+.waiting {
+  visibility: hidden;
+}
+.char {
+  display: inline-block;
+  line-height: 1;
+}
