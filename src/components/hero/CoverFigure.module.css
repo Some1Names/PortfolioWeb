@@ -73,3 +73,19 @@
   right: 6%;
   transform: rotate(14deg);
 }
+
+/* phones: a smaller figure standing just above the bar, one chrome thorn */
+@media (max-width: 900px) {
+  .figure {
+    bottom: 64px;
+    height: 64%;
+  }
+  .chromeRight {
+    display: none;
+  }
+  .chromeLeft {
+    top: -16%;
+    left: 8%;
+    width: 36%;
+  }
+}

@@ -370,8 +370,8 @@
   }
   .name {
     --name-size: clamp(120px, 40vw, 180px);
+    top: 72px;
     bottom: auto;
-    top: 311px;
   }
   .left {
     left: 0;
