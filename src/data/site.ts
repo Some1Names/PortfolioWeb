@@ -88,12 +88,11 @@ export const site = {
 export const about = {
   statement: "I build web things that feel like something.",
   highlight: "feel",
-  // the About frame: a photo or self-portrait of you, or a stand-in until then.
-  // For a real portrait use label "Portrait", fig "Fig. 02 — Art" and alt "Portrait of Uefa".
+  // the image beside About: a photo of you, or a stand-in until then (floats free, no card).
+  // Keep "AI" in fig while it's generated. A black background blends away (screen blend).
   portrait: {
     src: "/art/about.webp",
-    label: "Still life",
-    fig: "Fig. 02 — Chrome orchid · AI",
+    fig: "Fig. 02 — Still life · AI",
     alt: "AI-generated image: an orchid made of polished chrome, dripping, on black",
   },
   body: [

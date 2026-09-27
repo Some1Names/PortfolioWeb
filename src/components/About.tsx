@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { about } from "@/data/site";
-import ArtSlot from "./motifs/ArtSlot";
+import Cutout from "./motifs/Cutout";
+import Tag from "./hud/Tag";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
@@ -27,10 +28,12 @@ export default function About() {
         },
       );
       gsap.fromTo(
-        `.${styles.portrait}`,
-        { scale: 0.94, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: root.current, start: "top 70%" } },
+        `.${styles.still}`,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: root.current, start: "top 70%" } },
       );
+      // the orchid drifts slowly, like it's floating
+      gsap.to(`.${styles.orchid}`, { y: -8, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.from(`.${styles.seam}`, {
         scaleX: 0,
         scaleY: 0,
@@ -58,22 +61,19 @@ export default function About() {
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />
 
-      <figure className={`${styles.portrait} glass`}>
-        <figcaption className={styles.portraitHead}>
-          <span>{about.portrait.label}</span>
-          <span className="fig-art">{about.portrait.fig}</span>
-        </figcaption>
-        <ArtSlot
-          label="[ portrait / still of you ]"
-          src={about.portrait.src || undefined}
+      <figure className={styles.still}>
+        <Cutout
+          src={about.portrait.src}
           alt={about.portrait.alt}
-          sizes="(max-width: 900px) 100vw, 40vw"
-          className={styles.portraitBody}
+          mode="screen"
+          sizes="(max-width: 900px) 100vw, 45vw"
+          className={styles.orchid}
         />
-        <div className={styles.portraitFoot}>
+        <Tag label={about.portrait.fig} x={70} y={88} to={{ x: 52, y: 62 }} side="collide" phone={{ x: 0, y: 2 }} />
+        <figcaption className={styles.stillFoot}>
           <span className={styles.sig}>Uefa</span>
           <span>ACS · KMUTT · Thailand</span>
-        </div>
+        </figcaption>
       </figure>
 
       <Seam direction="auto" className={styles.seam} />
