@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef } from "react";
+import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { inspiration } from "@/data/inspiration";
 import ModuleLabel from "../motifs/ModuleLabel";
 import EndBand from "../motifs/EndBand";
@@ -7,8 +11,28 @@ import styles from "./Inspiration.module.css";
 
 // The supplement: a header, one section per group of favourites, and a footer with credits.
 export default function Inspiration() {
+  const root = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return;
+      // each group's cards rise in as the group scrolls into view
+      root.current?.querySelectorAll<HTMLElement>(`.${styles.cards}`).forEach((list) => {
+        gsap.from(list.children, {
+          y: 24,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          stagger: 0.06,
+          scrollTrigger: { trigger: list, start: "top 85%" },
+        });
+      });
+    },
+    { scope: root },
+  );
+
   return (
-    <div className={styles.page}>
+    <div ref={root} className={styles.page}>
       <header className={`${styles.head} web-grid`}>
         <Crosshairs />
         <span className={styles.kicker}>{inspiration.label}</span>

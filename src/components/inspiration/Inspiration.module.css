@@ -156,6 +156,52 @@
   color: var(--collide);
 }
 
+/* under the image: shows while a cover loads, or instead of one that failed */
+.textCover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  border: 1px solid var(--side);
+  font-family: var(--display);
+  font-size: 26px;
+  line-height: 1.05;
+  color: var(--text-strong);
+  overflow-wrap: anywhere;
+}
+
+/* hover and keyboard focus: the card lifts and brackets frame the cover
+   (the cut-corner clip hides a focus outline, so this is the focus indicator) */
+.card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card:hover,
+.card:focus-visible {
+  transform: translateY(-4px);
+}
+.cardBrackets {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card .cardBrackets i {
+  border-color: var(--side);
+}
+.card:hover .cardBrackets,
+.card:focus-visible .cardBrackets {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardBrackets {
+    transition: none;
+  }
+  .card:hover,
+  .card:focus-visible {
+    transform: none;
+  }
+}
+
 @media (max-width: 900px) {
   .head {
     padding: 112px var(--gutter) 48px;
