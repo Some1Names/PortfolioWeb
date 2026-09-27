@@ -323,21 +323,18 @@
   text-transform: uppercase;
   color: var(--muted);
 }
-/* small clipped-corner shots above the side columns */
+/* small clipped-corner shots, first in each side column (so they sit right above the panels) */
 .inset {
-  position: absolute;
-  z-index: 4;
+  position: relative;
   width: 180px;
   height: 136px;
   margin: 0;
 }
 .insetLeft {
-  left: var(--gutter);
-  top: 330px;
+  align-self: flex-start;
 }
 .insetRight {
-  right: var(--gutter);
-  top: 350px;
+  align-self: flex-end;
 }
 .insetImg {
   object-fit: cover;

@@ -9,6 +9,7 @@ import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import CutPanel from "./hud/CutPanel";
 import SysTime from "./hud/SysTime";
+import CoverFigure from "./hero/CoverFigure";
 import LightRays from "./reactbits/LightRays";
 import TechText from "./reactbits/TechText";
 import styles from "./Hero.module.css";
@@ -103,6 +104,22 @@ export default function Hero() {
     { scope: root },
   );
 
+  // small clipped-corner shot above a side column (wide screens); it rides with the column,
+  // so it stays clear of the tags at any screen height
+  const inset = (i: number) => {
+    const ins = cover.insets[i];
+    return ins ? (
+      <CutPanel
+        as="figure"
+        corners={i ? "tr-bl" : "tl-br"}
+        className={`${styles.inset} ${i ? styles.insetRight : styles.insetLeft} ${styles.fadeIn} ${styles.driftSlow}`}
+      >
+        <Image src={ins.src} alt={ins.alt} fill sizes="180px" className={styles.insetImg} />
+        <figcaption className={`fig-art ${styles.insetFig}`}>{ins.fig}</figcaption>
+      </CutPanel>
+    ) : null;
+  };
+
   return (
     <section id="top" ref={root} className={styles.hero}>
       {/* ---------- background layers ---------- */}
@@ -166,21 +183,16 @@ export default function Hero() {
         </span>
       </h1>
 
-      {/* ---------- insets: small clipped-corner shots (wide screens) ---------- */}
-      {cover.insets.map((ins, i) => (
-        <CutPanel
-          key={ins.src}
-          as="figure"
-          corners={i ? "tr-bl" : "tl-br"}
-          className={`${styles.inset} ${i ? styles.insetRight : styles.insetLeft} ${styles.fadeIn} ${styles.driftSlow}`}
-        >
-          <Image src={ins.src} alt={ins.alt} fill sizes="180px" className={styles.insetImg} />
-          <figcaption className={`fig-art ${styles.insetFig}`}>{ins.fig}</figcaption>
-        </CutPanel>
-      ))}
+      {/* ---------- the cover figure: you, cut out, in front of the name ---------- */}
+      <CoverFigure>
+        {heroFrames.frameCount > 0 ? (
+          <canvas ref={canvas} className={styles.canvas} aria-label="Animated portrait of Uefa" />
+        ) : undefined}
+      </CoverFigure>
 
       {/* ---------- left column: art side ---------- */}
       <div className={styles.left}>
+        {inset(0)}
         <CutPanel className={`${styles.panel} ${styles.fadeIn} ${styles.driftFast}`}>
           <div className={styles.panelHead}>Index / Portfolio {site.volume}</div>
           <p className={styles.panelBody}>{site.tagline}</p>
@@ -194,6 +206,7 @@ export default function Hero() {
 
       {/* ---------- right column: web side ---------- */}
       <div className={styles.right}>
+        {inset(1)}
         <CutPanel as="dl" corners="tr-bl" className={`${styles.status} ${styles.fadeIn} ${styles.driftFast}`}>
           {site.status.map((r) => (
             <div key={r.label}>
