@@ -8,7 +8,6 @@ import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Silk from "./reactbits/Silk";
 import Crosshairs from "./hud/Crosshairs";
-import CutPanel from "./hud/CutPanel";
 import styles from "./Contact.module.css";
 
 export default function Contact() {
@@ -115,11 +114,7 @@ export default function Contact() {
         <span>Built with Next.js + Lenis</span>
         <a href="#top">Back to top ↑</a>
       </footer>
-      <div className={styles.endBand} aria-hidden="true">
-        <CutPanel corners="tr-bl" notch={10} className={styles.endLabel}>
-          End of {site.volume} &gt;&gt;&gt;
-        </CutPanel>
-      </div>
+      <div className={styles.endBand} aria-hidden="true" />
     </section>
   );
 }
