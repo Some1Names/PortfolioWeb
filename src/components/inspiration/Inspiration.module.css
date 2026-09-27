@@ -23,7 +23,8 @@
   margin: 12px 0 20px;
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(72px, 12vw, 200px);
+  /* 15vw cap: one unbreakable word, so below ~412px the 72px floor would run off the screen */
+  font-size: min(clamp(72px, 12vw, 200px), 15vw);
   line-height: 0.9;
   color: var(--text-strong);
 }

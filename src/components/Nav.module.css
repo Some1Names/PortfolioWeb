@@ -135,6 +135,8 @@
   cursor: pointer;
 }
 
+/* scrolls on its own when the rows don't fit (short or landscape phones), so the last one,
+   + Inspiration, stays reachable */
 .sheet {
   position: absolute;
   top: 64px;
@@ -142,6 +144,9 @@
   right: 0;
   display: flex;
   flex-direction: column;
+  max-height: calc(100dvh - 64px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .sheet a {
   display: flex;
@@ -213,6 +218,7 @@
   }
   .sheet {
     top: 56px;
+    max-height: calc(100dvh - 56px);
   }
   .menuBtn {
     min-height: 56px;

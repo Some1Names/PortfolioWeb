@@ -101,7 +101,8 @@ export default function Nav({ page = "home" }: { page?: "home" | "inspiration" }
           {open ? "Close" : "Menu"}
         </button>
         {open && (
-          <div className={`${styles.sheet} glass`}>
+          // data-lenis-prevent: the sheet scrolls natively, not through Lenis
+          <div className={`${styles.sheet} glass`} data-lenis-prevent>
             {items.map((it) => (
               <a
                 key={it.href}
