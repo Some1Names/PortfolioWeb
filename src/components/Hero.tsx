@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { starField } from "@/lib/stars";
 import { site, heroFrames, cover } from "@/data/site";
@@ -107,7 +106,6 @@ export default function Hero() {
         intro?.eventCallback("onComplete", () => {
           tl.to(q(`.${styles.rays}`), { opacity: 0.3, ease: "none" }, 0)
             .to(q(`.${styles.name}`), { yPercent: -40, opacity: 0, filter: "blur(12px)", ease: "none" }, 0)
-            .to(q(`.${styles.driftSlow}`), { y: -24, ease: "none" }, 0)
             .to(q(`.${styles.driftFast}`), { y: -48, opacity: 0.35, ease: "none" }, 0)
             // cover depth: the tags move faster than you
             .to(q('[data-layer="portrait"]'), { yPercent: -8, ease: "none" }, 0)
@@ -121,22 +119,6 @@ export default function Hero() {
     },
     { scope: root },
   );
-
-  // small clipped-corner shot above a side column (wide screens); it rides with the column,
-  // so it stays clear of the tags at any screen height
-  const inset = (i: number) => {
-    const ins = cover.insets[i];
-    return ins ? (
-      <CutPanel
-        as="figure"
-        corners={i ? "tr-bl" : "tl-br"}
-        className={`${styles.inset} ${i ? styles.insetRight : styles.insetLeft} ${styles.fadeIn} ${styles.driftSlow}`}
-      >
-        <Image src={ins.src} alt={ins.alt} fill sizes="180px" className={styles.insetImg} />
-        <figcaption className={`fig-art ${styles.insetFig}`}>{ins.fig}</figcaption>
-      </CutPanel>
-    ) : null;
-  };
 
   return (
     <section id="top" ref={root} className={styles.hero}>
@@ -208,23 +190,27 @@ export default function Hero() {
         ) : undefined}
       </CoverFigure>
 
-      {/* ---------- left column: art side ---------- */}
+      {/* ---------- top corners, like a magazine cover's issue details ---------- */}
+      <div className={`${styles.barcode} ${styles.cornerLeft} ${styles.fadeIn}`} aria-hidden="true">
+        <div />
+        <span>UF—2026—V01—TH</span>
+      </div>
+      <CutPanel corners="tr-bl" notch={10} className={`${styles.readout} ${styles.cornerRight} ${styles.fadeIn}`}>
+        <span>{cover.coords}</span>
+        <span>
+          SYS_TIME <SysTime /> · UTC+7
+        </span>
+      </CutPanel>
+
+      {/* ---------- bottom corners: intro (art side) and status (web side) ---------- */}
       <div className={styles.left}>
-        {inset(0)}
         <CutPanel className={`${styles.panel} ${styles.fadeIn} ${styles.driftFast}`}>
           <div className={styles.panelHead}>Index / Portfolio {site.volume}</div>
           <p className={styles.panelBody}>{site.tagline}</p>
           <div className={styles.panelFoot}>{site.program}</div>
         </CutPanel>
-        <div className={`${styles.barcode} ${styles.fadeIn}`} aria-hidden="true">
-          <div />
-          <span>UF—2026—V01—TH</span>
-        </div>
       </div>
-
-      {/* ---------- right column: web side ---------- */}
       <div className={styles.right}>
-        {inset(1)}
         <CutPanel as="dl" corners="tr-bl" className={`${styles.status} ${styles.fadeIn} ${styles.driftFast}`}>
           {site.status.map((r) => (
             <div key={r.label}>
@@ -233,28 +219,9 @@ export default function Hero() {
             </div>
           ))}
         </CutPanel>
-        <CutPanel corners="tr-bl" notch={10} className={`${styles.readout} ${styles.fadeIn}`}>
-          <span>{cover.coords}</span>
-          <span>
-            SYS_TIME <SysTime /> · UTC+7
-          </span>
-        </CutPanel>
       </div>
 
       <Folio page={1} className={styles.folio} />
-
-      {/* ---------- bottom bar ---------- */}
-      <div className={`${styles.bar} glass`}>
-        <a href="#work" className={styles.barCta}>
-          See work ↓
-        </a>
-        {site.links.map((l) => (
-          <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className={styles.barLink}>
-            <span>{l.label}</span>
-            <span className={styles.arrow}>↗</span>
-          </a>
-        ))}
-      </div>
     </section>
   );
 }

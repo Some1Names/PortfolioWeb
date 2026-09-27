@@ -53,10 +53,11 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-/* phones: a smaller figure standing just above the bar */
+/* phones: a smaller figure standing on the bottom edge, its top where it sat when a 64px
+   link bar ran along the bottom */
 @media (max-width: 900px) {
   .figure {
-    bottom: 64px;
-    height: 64%;
+    bottom: 0;
+    height: calc(64% + 64px);
   }
 }
