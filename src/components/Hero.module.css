@@ -311,6 +311,15 @@
   opacity: 0.06;
   mask-image: linear-gradient(to left, #000, transparent 60%);
 }
+/* the columns' empty space lets the pointer through to the name (TechText letters can be dragged) */
+.left,
+.right {
+  pointer-events: none;
+}
+.left > *,
+.right > * {
+  pointer-events: auto;
+}
 /* coordinates + live clock under the status block */
 .readout {
   display: flex;

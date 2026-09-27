@@ -68,12 +68,19 @@ export default function Hero() {
             { opacity: 0, y: -30, rotate: (i: number) => (i ? 30 : -30), duration: 1, ease: "back.out(1.6)", stagger: 0.08 },
             0.7,
           )
-          .from(q('[data-layer="tags"] line'), { strokeDashoffset: 1, duration: 0.6, stagger: 0.1, ease: "power2.inOut" }, 1.1)
           .from(
             q('[data-layer="tags"] [data-part="label"], [data-layer="tags"] [data-part="reticle"]'),
             { opacity: 0, duration: 0.3, stagger: 0.06 },
             1.3,
           );
+        // tag lines draw out from the label to the spot they point at (end point grows from the start)
+        root.current?.querySelectorAll<SVGLineElement>('[data-layer="tags"] line').forEach((line, i) => {
+          intro?.from(
+            line,
+            { attr: { x2: line.getAttribute("x1") ?? 0, y2: line.getAttribute("y1") ?? 0 }, duration: 0.6, ease: "power2.inOut" },
+            1.1 + i * 0.1,
+          );
+        });
 
         // slow drift on the background ring
         gsap.to(q(`.${styles.orbit}`), { rotate: "+=360", duration: 120, repeat: -1, ease: "none" });

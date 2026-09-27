@@ -5,7 +5,8 @@
   z-index: 3;
   left: 50%;
   bottom: 0;
-  height: 78%;
+  /* 78% of the hero, but no wider than leaves room for the side tags (portrait tablets) */
+  height: min(78%, calc((50vw - 168px) * 2.381));
   aspect-ratio: 3 / 4;
   transform: translateX(-50%);
   pointer-events: none;

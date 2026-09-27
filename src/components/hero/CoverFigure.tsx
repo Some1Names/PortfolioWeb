@@ -20,8 +20,10 @@ export default function CoverFigure({ children }: { children?: React.ReactNode }
               src={portrait.src}
               alt={portrait.alt}
               fill
-              priority
-              sizes="(max-width: 900px) 80vw, 560px"
+              loading="eager"
+              fetchPriority="high"
+              // the box is 3:4 and ~78% of the hero's height (64% on phones), so size it by height
+              sizes="(max-width: 900px) max(365px, 48vh), max(527px, 59vh)"
               className={styles.photo}
             />
           ) : (

@@ -270,5 +270,6 @@
   .endBand {
     order: 12;
     height: 32px;
+    margin-bottom: -24px; /* matches .contact's phone bottom padding */
   }
 }

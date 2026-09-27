@@ -13,18 +13,16 @@ export default function Cutout({
   mode = "fade",
   sizes = "50vw",
   className = "",
-  priority,
 }: {
   src: string;
   alt: string;
   mode?: keyof typeof MODE;
   sizes?: string;
   className?: string;
-  priority?: boolean;
 }) {
   return (
     <span className={`${styles.cutout} ${MODE[mode]} ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className={styles.cutoutImg} />
+      <Image src={src} alt={alt} fill sizes={sizes} className={styles.cutoutImg} />
     </span>
   );
 }

@@ -101,14 +101,14 @@
 .track {
   width: 120px;
   height: 4px;
-  background: repeating-linear-gradient(90deg, #2a2833 0 8px, transparent 8px 10px);
+  background: #2a2833;
+  mask-image: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 10px);
 }
 .fill {
   height: 100%;
   background: var(--seam-x);
   transform-origin: left center;
   transform: scaleX(0);
-  mask-image: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 10px);
 }
 .xpValue {
   color: var(--text);
