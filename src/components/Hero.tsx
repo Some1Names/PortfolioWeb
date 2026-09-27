@@ -60,7 +60,20 @@ export default function Hero() {
           .from(q(`.${styles.rays}`), { opacity: 0, duration: 2.2, ease: "power2.out" })
           .from(q(`.${styles.axis}`), { scaleY: 0, transformOrigin: "50% 0%", duration: 1.6, ease: "power3.inOut" }, 0)
           .from(q(`.${styles.name}`), { yPercent: 30, opacity: 0, duration: 1.4 }, 0.2)
-          .from(q(`.${styles.fadeIn}`), { opacity: 0, y: 24, duration: 1, stagger: 0.08 }, 0.5);
+          .from(q(`.${styles.fadeIn}`), { opacity: 0, y: 24, duration: 1, stagger: 0.08 }, 0.5)
+          // the cover figure: you rise in, the chrome drops onto the name, the tag lines draw
+          .from(q('[data-layer="portrait"]'), { opacity: 0, y: 24, duration: 1.2 }, 0.35)
+          .from(
+            q('[data-layer="chrome"] img'),
+            { opacity: 0, y: -30, rotate: (i: number) => (i ? 30 : -30), duration: 1, ease: "back.out(1.6)", stagger: 0.08 },
+            0.7,
+          )
+          .from(q('[data-layer="tags"] line'), { strokeDashoffset: 1, duration: 0.6, stagger: 0.1, ease: "power2.inOut" }, 1.1)
+          .from(
+            q('[data-layer="tags"] [data-part="label"], [data-layer="tags"] [data-part="reticle"]'),
+            { opacity: 0, duration: 0.3, stagger: 0.06 },
+            1.3,
+          );
 
         // slow drift on the background ring
         gsap.to(q(`.${styles.orbit}`), { rotate: "+=360", duration: 120, repeat: -1, ease: "none" });
@@ -93,7 +106,11 @@ export default function Hero() {
           tl.to(q(`.${styles.rays}`), { opacity: 0.3, ease: "none" }, 0)
             .to(q(`.${styles.name}`), { yPercent: -40, opacity: 0, filter: "blur(12px)", ease: "none" }, 0)
             .to(q(`.${styles.driftSlow}`), { y: -24, ease: "none" }, 0)
-            .to(q(`.${styles.driftFast}`), { y: -48, opacity: 0.35, ease: "none" }, 0);
+            .to(q(`.${styles.driftFast}`), { y: -48, opacity: 0.35, ease: "none" }, 0)
+            // cover depth: chrome moves fastest, then the tags, then you
+            .to(q('[data-layer="portrait"]'), { yPercent: -8, ease: "none" }, 0)
+            .to(q('[data-layer="chrome"]'), { yPercent: -28, ease: "none" }, 0)
+            .to(q('[data-layer="tags"]'), { yPercent: -16, ease: "none" }, 0);
         });
       }
 
