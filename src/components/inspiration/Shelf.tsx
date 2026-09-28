@@ -18,7 +18,7 @@ const FILTERS: { id: ShelfFilter; label: string }[] = [
 // the case, and the row slides to keep it centred. Browse with the arrows, the ← → keys (with the
 // shelf focused), a click on a spine, or a swipe. The shelf is finite: the arrows stop at the ends.
 // Dressed as a VCR: on-screen text in the corners, rental stickers on the chosen case, a shelf
-// with the tapes reflected in it, and a giant 映画 ("film") behind.
+// with the tapes reflected in it.
 export default function Shelf({ items }: { items: Favourite[] }) {
   const [filter, setFilter] = useState<ShelfFilter>("all");
   const list = shelfItems(items, filter);
@@ -45,9 +45,6 @@ export default function Shelf({ items }: { items: Favourite[] }) {
       </div>
 
       <div className={styles.stage}>
-        <span className={styles.kanji} data-part="kanji" aria-hidden="true">
-          映画
-        </span>
         <div
           className={styles.row}
           tabIndex={0}
@@ -145,11 +142,29 @@ export default function Shelf({ items }: { items: Favourite[] }) {
         <button type="button" className={styles.arrow} onClick={() => go(-1)} disabled={at === 0} aria-label="Previous">
           ←
         </button>
-        <div key={current.title} className={styles.caption} aria-live="polite">
-          <p className={styles.title}>{current.title}</p>
-          <p className={styles.original}>{current.original ?? current.by}</p>
-          <p className={styles.year}>{current.kind === "anime" ? `${current.year} · ${current.by}` : current.year}</p>
-          {current.note && <p className={styles.note}>Staff pick: “{current.note}”</p>}
+        {/* every tape's caption, stacked in one spot with only the chosen one shown, so the block
+            is always as tall as the tallest and the page below doesn't move while browsing */}
+        <div className={styles.captions}>
+          {items.map((it) => {
+            const on = it === current;
+            return (
+              <div
+                key={it.title}
+                className={`${styles.caption} ${on ? styles.captionOn : ""}`}
+                data-part="caption"
+                data-on={on || undefined}
+                aria-hidden={!on || undefined}
+              >
+                <p className={styles.title}>{it.title}</p>
+                <p className={styles.original}>{it.original ?? it.by}</p>
+                <p className={styles.year}>{it.kind === "anime" ? `${it.year} · ${it.by}` : it.year}</p>
+                {it.note && <p className={styles.note}>Staff pick: “{it.note}”</p>}
+              </div>
+            );
+          })}
+          <p className={styles.srOnly} aria-live="polite">
+            {current.title}, {current.original ?? current.by}, {current.year}
+          </p>
         </div>
         <button
           type="button"

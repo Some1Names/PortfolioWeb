@@ -41,8 +41,8 @@
 }
 
 /* ---------- the row of tapes ---------- */
-/* the stage holds the row, the giant kanji behind it and the VCR text over it (outside the row's
-   edge fade, so the corners stay crisp) */
+/* the stage holds the row and the VCR text over it (outside the row's edge fade, so the corners
+   stay crisp) */
 .stage {
   position: relative;
   margin-top: 36px;
@@ -222,22 +222,6 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
 }
 
-/* a giant outlined 映画 ("film"), faint, behind the shelf */
-.kanji {
-  position: absolute;
-  left: 50%;
-  top: calc(var(--h) / 2);
-  transform: translate(-50%, -50%);
-  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-  font-size: min(38vw, 560px);
-  line-height: 1;
-  white-space: nowrap;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(154, 107, 255, 0.34);
-  pointer-events: none;
-  user-select: none;
-}
-
 /* ---------- a VCR's on-screen display, in the stage's corners ---------- */
 /* mono capitals with a pink / blue colour fringe, like text on a tape */
 .osd {
@@ -409,9 +393,26 @@
   opacity: 0.3;
   cursor: default;
 }
+/* all the captions share one grid cell; only the chosen one shows (and fades in) */
+.captions {
+  display: grid;
+}
 .caption {
+  grid-area: 1 / 1;
   text-align: center;
+  visibility: hidden;
+}
+.captionOn {
+  visibility: visible;
   animation: captionIn 0.5s var(--ease) both;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 @keyframes captionIn {
   from {
@@ -457,7 +458,7 @@
   .tape,
   .spine,
   .case,
-  .caption,
+  .captionOn,
   .rec,
   .on .front,
   .on .front::after {
@@ -494,9 +495,6 @@
     inset: 0 var(--gutter);
     font-size: 11px;
     letter-spacing: 1.5px;
-  }
-  .kanji {
-    font-size: 62vw;
   }
   .rewind {
     top: 8px;
