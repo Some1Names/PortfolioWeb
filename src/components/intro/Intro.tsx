@@ -71,38 +71,63 @@ export default function Intro() {
       finishIntro();
     };
 
-    const tl = gsap.timeline({ onComplete: off });
+    // once it's over, let go of everything: listeners, and the canvas's pixel buffer
+    const finish = () => {
+      detach();
+      c.width = 0;
+      c.height = 0;
+      off();
+    };
+
+    // created paused: a site opened in a background tab starts the intro when it's first shown,
+    // instead of running (or jumping to its end) while nobody is looking
+    const tl = gsap.timeline({ paused: true, onComplete: finish });
     tl.to(state, { t: DURATION, duration: DURATION, ease: "none", onUpdate: render }, 0)
       .set(m, { autoAlpha: 1 }, T.mark)
       .call(() => m.classList.add(styles.glitch), undefined, T.mark)
       .call(handOver, undefined, T.handover)
       .to(el, { autoAlpha: 0, duration: T.end - T.handover, ease: "power2.out" }, T.handover);
     if (process.env.NODE_ENV !== "production") (window as Window & { __introTL?: gsap.core.Timeline }).__introTL = tl;
+    let started = false;
+    const start = () => {
+      if (started || handed || document.visibilityState !== "visible") return;
+      started = true;
+      tl.play();
+    };
 
     const skip = () => {
       if (handed) return;
       tl.pause();
       handOver();
-      gsap.to(el, { autoAlpha: 0, duration: 0.4, ease: "power2.out", onComplete: off });
+      gsap.to(el, { autoAlpha: 0, duration: 0.4, ease: "power2.out", onComplete: finish });
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Tab") return; // Tab / Shift+Tab move focus to the Skip button
+      // Tab / Shift+Tab move focus to the Skip button; a modifier on its own, or a shortcut
+      // (Ctrl+R, Cmd+Tab…), isn't a skip
+      if (e.key === "Tab" || e.ctrlKey || e.metaKey || e.altKey || ["Shift", "Control", "Alt", "Meta"].includes(e.key)) return;
+      e.preventDefault(); // Space / arrows / PageDown would also scroll the page the moment it unlocks
       skip();
     };
     const onResize = () => {
       size();
       render();
     };
+    const detach = () => {
+      el.removeEventListener("click", skip);
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", start);
+    };
     size();
     render();
     el.addEventListener("click", skip);
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", start);
+    start();
     return () => {
       tl.kill();
-      el.removeEventListener("click", skip);
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("resize", onResize);
+      detach();
       if (!handed) release();
     };
   }, []);

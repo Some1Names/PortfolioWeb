@@ -74,6 +74,12 @@ a:hover {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
+/* keep the page scrollbar's 12px reserved even while scrolling is locked (the loading intro sets
+   overflow: hidden): otherwise the page widens under the intro, ScrollTrigger measures the wider
+   page, and it stays 12px too wide with a horizontal scrollbar once the scrollbar returns */
+html {
+  scrollbar-gutter: stable;
+}
 /* the transparent border insets the thumb from the edge */
 ::-webkit-scrollbar-thumb {
   background: var(--collide);

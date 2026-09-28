@@ -39,7 +39,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     let stopWaiting = () => {};
     if (introPlaying()) {
       lenis.stop();
-      stopWaiting = onIntroDone(() => lenis.start());
+      stopWaiting = onIntroDone(() => {
+        lenis.start();
+        // re-measure now the page scrollbar is back: while scrolling was locked, some browsers
+        // (phones especially) give the page its full width, and the hero pin kept that width
+        ScrollTrigger.refresh();
+      });
     }
     const remember = () => {
       try {
