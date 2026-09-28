@@ -27,9 +27,6 @@ export const manifesto = {
     "A game hidden inside an event site, a manga reader, this issue: each one started as a picture and ended as a page.",
     "This is where the two meet.",
   ],
-  // the drawing beside the manifesto lines: one of yours in public/art/ (e.g. "/art/my-drawing.webp",
-  // with alt describing it); "" shows an empty slot until then
-  image: { src: "", alt: "", fig: "Fig. A — Drawing" },
 };
 
 export const site = {

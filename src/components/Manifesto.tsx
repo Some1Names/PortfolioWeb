@@ -6,7 +6,6 @@ import { thesis, manifesto } from "@/data/site";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
-import ArtSlot from "./motifs/ArtSlot";
 import DecryptedText from "./reactbits/DecryptedText";
 import styles from "./Manifesto.module.css";
 
@@ -16,9 +15,9 @@ const pad = (n: number, w = 2) => String(n).padStart(w, "0");
 // "art" (pink serif) comes in from the left and "WEB" (blue mono) from the right; they meet in the
 // middle (a flash, a shockwave, the seam shooting up); "collide." breaks out of the impact and
 // the two words settle above it as an "art × WEB" lockup. A readout counts the distance down to
-// IMPACT. After the stage come the three manifesto lines (they decrypt as they arrive) and a slot
-// for a drawing. The CSS lays out the finished state, which is what reduced motion gets; the
-// timeline animates into it.
+// IMPACT. After the stage comes the manifesto as one paragraph, darkroom style: mono capitals in
+// the right half of the page, decrypting as it scrolls in, the closing sentence brighter. The CSS
+// lays out the finished state, which is what reduced motion gets; the timeline animates into it.
 export default function Manifesto() {
   const root = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -55,7 +54,8 @@ export default function Manifesto() {
         onUpdate: () => {
           const p = tl.progress();
           const hit = p >= 0.5;
-          if (distance.current) distance.current.textContent = `${pad(Math.round(100 * (1 - Math.min(p / 0.5, 1))), 3)}%`;
+          if (distance.current)
+            distance.current.textContent = `${pad(Math.round(100 * (1 - Math.min(p / 0.5, 1))), 3)}%`;
           if (impact.current) impact.current.textContent = hit ? " · Impact" : "";
           readout.classList.toggle(styles.hit, hit);
         },
@@ -77,7 +77,12 @@ export default function Manifesto() {
         .fromTo(q(`.${styles.seam}`), { scaleY: 0, opacity: 1 }, { scaleY: 1, duration: 0.06 }, 0.5)
         .to(q(`.${styles.seam}`), { opacity: 0.45, duration: 0.2 }, 0.58)
         // 0.55 → 0.8: "collide." breaks out; the words settle into the lockup, the × between them
-        .fromTo(q("[data-part=collide]"), { opacity: 0, scale: 0.6, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.24 }, 0.56)
+        .fromTo(
+          q("[data-part=collide]"),
+          { opacity: 0, scale: 0.6, y: 40 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.24 },
+          0.56,
+        )
         .to(row, { y: 0, scale: 1, duration: 0.25 }, 0.55)
         .to([art, web], { x: 0, duration: 0.25 }, 0.55)
         .fromTo(q(`.${styles.times}`), { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.66)
@@ -87,7 +92,8 @@ export default function Manifesto() {
     { scope: root },
   );
 
-  const { image } = manifesto;
+  const lead = manifesto.lines.slice(0, -1).join(" ");
+  const last = manifesto.lines[manifesto.lines.length - 1];
 
   return (
     <section id="manifesto" ref={root} className={styles.manifesto} aria-labelledby="manifesto-title">
@@ -124,23 +130,16 @@ export default function Manifesto() {
       </div>
 
       <div className={styles.after}>
-        <ol className={styles.lines}>
-          {manifesto.lines.map((l, i) => (
-            <li key={i} data-part="line">
-              <span className={styles.num}>{pad(i + 1)}</span>
-              <p>
-                <DecryptedText text={l} delay={i * 250} duration={1500} encryptedClassName={styles.encrypted} />
-              </p>
-            </li>
-          ))}
-        </ol>
-        <ArtSlot
-          fig={image.fig}
-          src={image.src || undefined}
-          alt={image.alt}
-          sizes="(max-width: 900px) 100vw, 22vw"
-          className={styles.slot}
-        />
+        <p className={styles.text} data-part="text">
+          <DecryptedText text={lead} duration={2200} encryptedClassName={styles.encrypted} />
+          <DecryptedText
+            text={last}
+            delay={1900}
+            duration={700}
+            className={styles.last}
+            encryptedClassName={styles.encrypted}
+          />
+        </p>
       </div>
     </section>
   );

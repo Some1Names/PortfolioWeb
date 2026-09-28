@@ -1,4 +1,4 @@
-/* 00 — Manifesto: a pinned stage where "art" and "WEB" collide, then the lines and a drawing slot.
+/* 00 — Manifesto: a pinned stage where "art" and "WEB" collide, then the manifesto as one paragraph.
    Everything here is laid out in its finished state; the scroll timeline animates into it. */
 .manifesto {
   position: relative;
@@ -55,7 +55,12 @@
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, rgba(242, 240, 247, 0.45), rgba(154, 107, 255, 0.12) 30%, transparent 60%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(242, 240, 247, 0.45),
+    rgba(154, 107, 255, 0.12) 30%,
+    transparent 60%
+  );
 }
 .ring {
   position: absolute;
@@ -140,50 +145,30 @@
   border-bottom: 4px solid var(--collide);
 }
 
-/* ---------- after the stage: the three lines and a drawing slot ---------- */
+/* ---------- after the stage: the manifesto as one paragraph ---------- */
+/* darkroom style: mono capitals, the block starting at the page's centre line */
 .after {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
-  gap: 48px;
-  align-items: start;
-  padding: 24px var(--gutter) 120px;
+  padding: 56px var(--gutter) 128px;
 }
-.lines {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 40px;
-  margin: 0;
-  padding: 24px 0 0;
-  border-top: 1px solid var(--line-2);
-  list-style: none;
-}
-.lines li {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.num {
+.text {
+  margin: 0 0 0 50%;
+  max-width: 720px;
   font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: var(--collide);
-}
-.lines p {
-  margin: 0;
-  font-size: 18px;
+  font-size: clamp(14px, 1.2vw, 18px);
   line-height: 1.6;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--soft);
 }
-.lines li:last-child p {
+/* the closing sentence, on its own line and brighter */
+.last {
+  margin-top: 1.6em;
   color: var(--text-strong);
 }
-/* the still-scrambled tail of a line while it decrypts */
+/* the still-scrambled tail while it decrypts */
 .encrypted {
   color: var(--collide);
   opacity: 0.8;
-}
-.slot {
-  aspect-ratio: 3 / 4;
 }
 
 @media (max-width: 900px) {
@@ -214,15 +199,10 @@
     font-size: clamp(64px, 22vw, 120px);
   }
   .after {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 40px;
-    padding-bottom: 88px;
+    padding: 40px var(--gutter) 88px;
   }
-  .lines {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-  .lines p {
-    font-size: 16px;
+  .text {
+    margin-left: 0;
+    font-size: 14px;
   }
 }
