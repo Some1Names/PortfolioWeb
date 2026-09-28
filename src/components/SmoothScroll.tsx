@@ -34,7 +34,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       if ((nav?.type === "reload" || nav?.type === "back_forward") && raw) saved = Number(raw);
     } catch {}
     const hashTarget = window.location.hash.length > 1 ? document.getElementById(window.location.hash.slice(1)) : null;
-    lenis.scrollTo(saved ?? hashTarget ?? 0, { immediate: true });
+    // a replayed intro (it plays on reload) hands over to the cover, so it starts at the top
+    lenis.scrollTo(introPlaying() ? 0 : (saved ?? hashTarget ?? 0), { immediate: true });
     // the loading intro holds the page still until it hands over
     let stopWaiting = () => {};
     if (introPlaying()) {
