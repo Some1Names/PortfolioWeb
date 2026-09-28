@@ -27,9 +27,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // suppressHydrationWarning: the intro's inline script adds data-intro to <html> before React
+    // hydrates (this silences only <html>'s own attributes, not its children)
     <html
       lang="en"
       className={`${orangeAvenue.variable} ${orangeAvenueOutline.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
     >
       <body>
         <SmoothScroll>{children}</SmoothScroll>

@@ -18,7 +18,12 @@ const HIDE_AFTER = 80;
 // ignore scroll jitter smaller than this before flipping between hidden and shown
 const TOLERANCE = 8;
 
-export default function Nav() {
+// On the home page the section links scroll in place. On other pages (the /inspiration
+// supplement) they go back to the home page's sections. Page links are plain <a> on purpose:
+// a full load lets Lenis and the hero pin set up fresh, so /#work lands in the right place.
+export default function Nav({ page = "home" }: { page?: "home" | "inspiration" }) {
+  const home = page === "home";
+  const sectionHref = (href: string) => (home ? href : `/${href}`);
   const bar = useRef<HTMLDivElement>(null);
   const value = useRef<HTMLSpanElement>(null);
   const [open, setOpen] = useState(false);
@@ -47,6 +52,7 @@ export default function Nav() {
       },
     });
 
+    if (!home) return;
     // current module = the section crossing the middle of the screen.
     // refreshPriority -1 measures these after the hero's pin spacer exists; the nav is created
     // before the hero, so without it every start would be one screen too early.
@@ -65,24 +71,29 @@ export default function Nav() {
 
   // an open mobile menu keeps the nav on screen
   const navHidden = hidden && !open;
+  const onInspiration = page === "inspiration" ? "page" : undefined;
 
   return (
     <>
       <nav className={`${styles.nav} glass ${navHidden ? styles.navHidden : ""}`} aria-label="Main">
-        <a href="#top" className={styles.logo}>
+        <a href={home ? "#top" : "/"} className={styles.logo}>
           Uefa
         </a>
         <div className={styles.links}>
           {items.map((it) => (
             <a
               key={it.href}
-              href={it.href}
+              href={sectionHref(it.href)}
               className={styles.link}
               aria-current={active === it.href ? "true" : undefined}
             >
               {it.n} {it.label}
             </a>
           ))}
+          {/* the supplement: its own page, marked "+" instead of a section number */}
+          <a href="/inspiration" className={styles.link} aria-current={onInspiration}>
+            <span className={styles.plus}>+</span> Inspiration
+          </a>
         </div>
         {/* keeps the XP gauge's slot free, so the links sit where they did */}
         <span className={styles.xpSpace} aria-hidden="true" />
@@ -90,11 +101,12 @@ export default function Nav() {
           {open ? "Close" : "Menu"}
         </button>
         {open && (
-          <div className={`${styles.sheet} glass`}>
+          // data-lenis-prevent: the sheet scrolls natively, not through Lenis
+          <div className={`${styles.sheet} glass`} data-lenis-prevent>
             {items.map((it) => (
               <a
                 key={it.href}
-                href={it.href}
+                href={sectionHref(it.href)}
                 onClick={() => setOpen(false)}
                 aria-current={active === it.href ? "true" : undefined}
               >
@@ -102,6 +114,10 @@ export default function Nav() {
                 {it.label}
               </a>
             ))}
+            <a href="/inspiration" onClick={() => setOpen(false)} aria-current={onInspiration}>
+              <span>+</span>
+              Inspiration
+            </a>
           </div>
         )}
       </nav>

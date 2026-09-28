@@ -36,38 +36,42 @@
   mask-image: linear-gradient(to right, transparent, #000 30%);
 }
 
-.portrait {
+/* the picture floats free across the seam (spans the portrait and seam columns) */
+.still {
   position: relative;
-  grid-column: 1;
+  grid-column: 1 / 3;
+  grid-row: 1;
   margin: 0;
   height: 640px;
-  display: flex;
-  flex-direction: column;
-  border-color: rgba(255, 255, 255, 0.14);
 }
-.portraitHead,
-.portraitFoot {
+/* a picture on black: the screen blend drops the black. It sits on the figure, not the image:
+   GSAP's entrance leaves a transform here, which isolates anything inside, so a blend on the
+   image would only mix with this box. */
+.stillScreen {
+  mix-blend-mode: screen;
+}
+.art {
+  position: absolute;
+  inset: -40px -12% 64px -4%;
+}
+/* a cut-out stands on the bottom of the figure and bleeds off the page's left edge (the side a
+   cropped photo is usually cut on); its cut bottom edge fades out under the signature */
+.stillAlpha .art {
+  inset: -40px 0 0 calc(var(--gutter) * -1);
+  mask-image: linear-gradient(to top, transparent, #000 24%);
+}
+.stillFoot {
+  position: absolute;
+  left: 0;
+  bottom: 0;
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
-  padding: 12px 20px;
+  gap: 18px;
   font-family: var(--mono);
   font-size: 11px;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 1.5px;
-}
-.portraitHead {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.portraitFoot {
-  padding: 16px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-.portrait .portraitBody {
-  flex: 1;
-  min-height: 0;
-  margin: 16px;
 }
 .sig {
   font-family: var(--display);
@@ -80,6 +84,7 @@
 /* seam in the empty middle column, between the art page (portrait) and the web page (text) */
 .seam {
   grid-column: 2;
+  grid-row: 1;
   justify-self: center;
   transform-origin: top left;
 }
@@ -141,6 +146,21 @@
 .fact dd {
   margin: 0;
 }
+/* to the /inspiration supplement */
+.inspire {
+  align-self: flex-start;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--collide);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+.inspire:hover {
+  color: var(--collide);
+}
 
 @media (max-width: 900px) {
   .about {
@@ -148,9 +168,15 @@
     flex-direction: column;
     padding: 72px var(--gutter) 56px;
   }
-  .portrait {
+  .still {
     height: 420px;
     order: 2;
+  }
+  .art {
+    inset: 0 0 48px;
+  }
+  .stillAlpha .art {
+    inset: 0 0 0 calc(var(--gutter) * -1);
   }
   .seam {
     order: 2;
@@ -172,6 +198,9 @@
   .sub,
   .facts {
     order: 4;
+  }
+  .inspire {
+    order: 5;
   }
   .fact {
     flex-direction: column;

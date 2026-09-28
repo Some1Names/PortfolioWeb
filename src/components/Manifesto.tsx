@@ -4,7 +4,8 @@ import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { thesis, manifesto } from "@/data/site";
 import Seam from "./motifs/Seam";
-import ArtSlot from "./motifs/ArtSlot";
+import Cutout from "./motifs/Cutout";
+import Tag from "./hud/Tag";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import DecryptedText from "./reactbits/DecryptedText";
@@ -49,13 +50,16 @@ export default function Manifesto() {
         <p className={styles.bigArt} aria-hidden="true">
           {thesis.lead} <span>{thesis.art}</span>
         </p>
-        <ArtSlot
-          fig={manifesto.fig}
-          src={manifesto.artSrc || undefined}
-          alt="Drawing by Uefa"
-          sizes="(max-width: 900px) 100vw, 360px"
-          className={styles.slot}
-        />
+        <figure className={styles.figure}>
+          <Cutout
+            src={manifesto.artSrc}
+            alt={manifesto.artAlt}
+            mode="fade"
+            sizes="(max-width: 900px) 100vw, 420px"
+            className={styles.painting}
+          />
+          <Tag label={manifesto.fig} x={104} y={80} to={{ x: 72, y: 50 }} side="art" phone={{ x: 2, y: 88 }} />
+        </figure>
       </div>
 
       <Seam direction="auto" className={styles.seam} />

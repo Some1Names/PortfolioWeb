@@ -3,10 +3,12 @@
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { about } from "@/data/site";
-import ArtSlot from "./motifs/ArtSlot";
+import Cutout from "./motifs/Cutout";
+import Tag from "./hud/Tag";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
+import Crosshairs from "./hud/Crosshairs";
 import styles from "./About.module.css";
 
 export default function About() {
@@ -27,10 +29,12 @@ export default function About() {
         },
       );
       gsap.fromTo(
-        `.${styles.portrait}`,
-        { scale: 0.94, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: root.current, start: "top 70%" } },
+        `.${styles.still}`,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: root.current, start: "top 70%" } },
       );
+      // the picture drifts slowly, like it's floating
+      gsap.to(`.${styles.art}`, { y: -8, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.from(`.${styles.seam}`, {
         scaleX: 0,
         scaleY: 0,
@@ -51,29 +55,31 @@ export default function About() {
   );
 
   const words = about.statement.split(" ");
+  const art = about.portrait;
 
   return (
     <section id="about" ref={root} className={styles.about}>
+      <Crosshairs />
       <div className={styles.beam} aria-hidden="true" />
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />
 
-      <figure className={`${styles.portrait} glass`}>
-        <figcaption className={styles.portraitHead}>
-          <span>Portrait</span>
-          <span className="fig-art">Fig. 02 — Art</span>
-        </figcaption>
-        <ArtSlot
-          label="[ portrait / still of you ]"
-          src={about.portrait || undefined}
-          alt="Portrait of Uefa"
-          sizes="(max-width: 900px) 100vw, 40vw"
-          className={styles.portraitBody}
+      <figure className={`${styles.still} ${art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}>
+        <Cutout
+          src={art.src}
+          alt={art.alt}
+          mode={art.mode}
+          sizes="(max-width: 900px) 100vw, 45vw"
+          // a cut-out stands in the bottom-left corner, against the page edge
+          position={art.mode === "alpha" ? "0% 100%" : undefined}
+          className={styles.art}
         />
-        <div className={styles.portraitFoot}>
+        {/* starts left of centre so the label (~225px) stays clear of the text column down to 901px */}
+        <Tag label={art.fig} x={48} y={88} to={{ x: 40, y: 60 }} side="collide" phone={{ x: 0, y: 2 }} />
+        <figcaption className={styles.stillFoot}>
           <span className={styles.sig}>Uefa</span>
           <span>ACS · KMUTT · Thailand</span>
-        </div>
+        </figcaption>
       </figure>
 
       <Seam direction="auto" className={styles.seam} />
@@ -97,6 +103,9 @@ export default function About() {
             </div>
           ))}
         </dl>
+        <a href="/inspiration" className={styles.inspire}>
+          What inspires me →
+        </a>
       </div>
       <Folio page={4} />
     </section>

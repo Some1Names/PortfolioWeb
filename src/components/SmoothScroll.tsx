@@ -3,8 +3,10 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { introPlaying, onIntroDone } from "@/lib/intro";
 
-const SCROLL_KEY = "scroll-y";
+// scroll positions are saved per page, so Back from another page returns to where you were
+const scrollKey = () => `scroll-y:${window.location.pathname}`;
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -21,21 +23,32 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     // The hero pin adds a screen of scroll space only once GSAP runs (after hydration), so a
     // position the browser applied earlier (a #hash, or the spot it restores on reload) ends up
     // a screen off and the page jumps. This effect runs after every section has created its
-    // ScrollTriggers, so take over here: restore a reload to where it was, otherwise go to the
-    // hash target or the top, now that the pin exists.
+    // ScrollTriggers, so take over here: restore a reload or Back/Forward to where it was,
+    // otherwise go to the hash target or the top, now that the pin exists.
     history.scrollRestoration = "manual";
     ScrollTrigger.refresh();
     const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
     let saved: number | null = null;
     try {
-      const raw = sessionStorage.getItem(SCROLL_KEY);
-      if (nav?.type === "reload" && raw) saved = Number(raw);
+      const raw = sessionStorage.getItem(scrollKey());
+      if ((nav?.type === "reload" || nav?.type === "back_forward") && raw) saved = Number(raw);
     } catch {}
     const hashTarget = window.location.hash.length > 1 ? document.getElementById(window.location.hash.slice(1)) : null;
     lenis.scrollTo(saved ?? hashTarget ?? 0, { immediate: true });
+    // the loading intro holds the page still until it hands over
+    let stopWaiting = () => {};
+    if (introPlaying()) {
+      lenis.stop();
+      stopWaiting = onIntroDone(() => {
+        lenis.start();
+        // re-measure now the page scrollbar is back: while scrolling was locked, some browsers
+        // (phones especially) give the page its full width, and the hero pin kept that width
+        ScrollTrigger.refresh();
+      });
+    }
     const remember = () => {
       try {
-        sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+        sessionStorage.setItem(scrollKey(), String(window.scrollY));
       } catch {}
     };
     window.addEventListener("pagehide", remember);
@@ -53,6 +66,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     document.addEventListener("click", onClick);
 
     return () => {
+      stopWaiting();
       window.removeEventListener("pagehide", remember);
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(tick);

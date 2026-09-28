@@ -1,0 +1,168 @@
+/* the first-visit loading intro (IntroGate decides; hidden unless <html data-intro="play">) */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100; /* above the nav (50) and the XP gauge (51) */
+  display: none;
+  background: var(--bg);
+  color: var(--muted);
+}
+:global(html[data-intro="play"]) .intro,
+.intro.running {
+  display: block;
+}
+/* failsafe: if the JS never arrives, reveal the page after 10s (the JS cancels this with data-intro-js) */
+:global(html[data-intro="play"]:not([data-intro-js])) .intro {
+  animation: introFailsafe 0.4s ease 10s forwards;
+}
+@keyframes introFailsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* JS hook: the component is playing (keeps it shown while it fades after the hand-over) */
+.running {
+  --hook: intro-running;
+}
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- corner labels ---------- */
+.corner {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.tl {
+  top: 24px;
+  left: var(--gutter);
+}
+.tr {
+  top: 24px;
+  right: var(--gutter);
+}
+.bl {
+  bottom: 24px;
+  left: var(--gutter);
+}
+.br {
+  bottom: 24px;
+  right: var(--gutter);
+}
+/* the measuring line's length readout, above the line */
+.lineLabel {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 28px);
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--lav);
+  opacity: 0;
+}
+.skip {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 52px;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line-2);
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.skip:hover,
+.skip:focus-visible {
+  color: var(--collide);
+  border-color: var(--collide);
+}
+
+/* ---------- the "Uefa" wordmark: a pink and a blue copy glitch over the white one ---------- */
+.mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.mark > span {
+  grid-area: 1 / 1;
+  font-family: var(--display);
+  font-size: clamp(72px, 14vw, 180px);
+  line-height: 1;
+  color: var(--text-strong);
+}
+.mark .markPink {
+  color: var(--art);
+  opacity: 0;
+}
+.mark .markBlue {
+  color: var(--web);
+  opacity: 0;
+}
+.glitch .markPink {
+  animation: glitchPink 0.7s steps(1, end) forwards;
+}
+.glitch .markBlue {
+  animation: glitchBlue 0.7s steps(1, end) forwards;
+}
+.glitch .markMain {
+  animation: glitchMain 0.7s steps(1, end) forwards;
+}
+@keyframes glitchPink {
+  0% { opacity: 0.9; transform: translate(-6px, 0); clip-path: inset(0 0 55% 0); }
+  20% { transform: translate(4px, 2px); clip-path: inset(40% 0 20% 0); }
+  40% { transform: translate(-3px, -1px); clip-path: inset(10% 0 60% 0); }
+  60% { transform: translate(2px, 0); clip-path: inset(65% 0 5% 0); }
+  80% { opacity: 0.6; transform: translate(-1px, 0); clip-path: inset(30% 0 40% 0); }
+  100% { opacity: 0; transform: none; clip-path: inset(0); }
+}
+@keyframes glitchBlue {
+  0% { opacity: 0.9; transform: translate(6px, 0); clip-path: inset(50% 0 0 0); }
+  20% { transform: translate(-4px, -2px); clip-path: inset(15% 0 55% 0); }
+  40% { transform: translate(3px, 1px); clip-path: inset(60% 0 15% 0); }
+  60% { transform: translate(-2px, 0); clip-path: inset(5% 0 70% 0); }
+  80% { opacity: 0.6; transform: translate(1px, 0); clip-path: inset(45% 0 25% 0); }
+  100% { opacity: 0; transform: none; clip-path: inset(0); }
+}
+@keyframes glitchMain {
+  0% { opacity: 0.3; }
+  10% { opacity: 1; }
+  25% { opacity: 0.5; }
+  35% { opacity: 1; }
+  100% { opacity: 1; }
+}
+/* JS hook for the glitch start (declared by the rules above) */
+
+/* phones: the four labels don't fit side by side, so keep two, and Skip takes the bottom-right */
+@media (max-width: 600px) {
+  .tr,
+  .br {
+    display: none;
+  }
+  .skip {
+    bottom: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none !important;
+  }
+}

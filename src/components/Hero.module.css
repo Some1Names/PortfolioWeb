@@ -11,9 +11,6 @@
 .fadeIn {
   --hook: fade-in;
 }
-.driftSlow {
-  --hook: drift-slow;
-}
 .driftFast {
   --hook: drift-fast;
 }
@@ -78,12 +75,12 @@
   mix-blend-mode: screen;
 }
 /* the seam (Seam component supplies width and gradient); inset so its registration
-   marks clear the fixed nav (64px) and the bottom link bar (72px) */
+   marks clear the fixed nav (64px) and the hero's bottom edge */
 .axis {
   position: absolute;
   left: 50%;
   top: 76px;
-  height: calc(100% - 160px);
+  height: calc(100% - 100px);
   margin-left: -1px;
   opacity: 0.55;
 }
@@ -119,12 +116,15 @@
 }
 
 /* ---------- foreground ---------- */
+/* shares its row with the top corners, so it narrows to fit between them (520px = the wider
+   corner block, the 235px readout, plus a 24px gap, on both sides; its text needs ~280px) */
 .caption {
   position: absolute;
   top: 84px;
-  left: 50%;
-  width: 500px;
-  margin-left: -250px;
+  left: 0;
+  right: 0;
+  width: min(500px, calc(100vw - 2 * var(--gutter) - 520px));
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   font-family: var(--mono);
@@ -134,51 +134,16 @@
   letter-spacing: 2px;
 }
 
-.frame {
-  position: absolute;
-  left: 50%;
-  top: 130px;
-  width: 300px;
-  height: 400px;
-  margin-left: -150px;
-  backdrop-filter: blur(12px) saturate(120%);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-.cornerTL,
-.cornerTR,
-.cornerBL,
-.cornerBR {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 0 solid var(--text);
-  transition: border-color 0.3s;
-}
-.frame:hover .cornerTL,
-.frame:hover .cornerTR,
-.frame:hover .cornerBL,
-.frame:hover .cornerBR {
-  border-color: var(--collide);
-}
-.cornerTL { left: -1px; top: -1px; border-left-width: 2px; border-top-width: 2px; }
-.cornerTR { right: -1px; top: -1px; border-right-width: 2px; border-top-width: 2px; }
-.cornerBL { left: -1px; bottom: -1px; border-left-width: 2px; border-bottom-width: 2px; }
-.cornerBR { right: -1px; bottom: -1px; border-right-width: 2px; border-bottom-width: 2px; }
 .canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
-.frame .framePlaceholder {
-  position: absolute;
-  inset: 0;
-  min-height: 0;
-}
-
 .left {
   position: absolute;
+  z-index: 4;
   left: var(--gutter);
-  top: 120px;
+  bottom: 48px;
   width: 340px;
   display: flex;
   flex-direction: column;
@@ -209,12 +174,6 @@
   font-size: 17px;
   line-height: 1.55;
 }
-.code {
-  font-size: 11px;
-}
-.codeLine {
-  display: inline;
-}
 .barcode {
   display: flex;
   flex-direction: column;
@@ -236,8 +195,9 @@
 
 .right {
   position: absolute;
+  z-index: 4;
   right: var(--gutter);
-  top: 120px;
+  bottom: 48px;
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -265,41 +225,6 @@
 .status dd {
   margin: 0;
 }
-/* cover line: "When art & web collide." in both voices */
-.cover {
-  margin: 0;
-  font-family: var(--display);
-  font-size: 40px;
-  line-height: 1.05;
-  color: var(--text-strong);
-}
-.coverArt {
-  color: var(--art);
-}
-.coverAmp {
-  font-family: var(--mono);
-  font-size: 0.5em;
-  vertical-align: middle;
-  color: var(--collide);
-}
-.coverWeb {
-  font-family: var(--mono);
-  font-size: 0.8em;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-  color: var(--web);
-}
-.cover i {
-  border-bottom: 2px solid var(--collide);
-}
-.hero .folio {
-  bottom: 88px;
-}
-.issue {
-  align-self: flex-end;
-  font-size: 140px;
-  text-align: right;
-}
 
 /* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
    than the type and sits lower to keep the word where it was */
@@ -308,7 +233,8 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 115px;
+  top: 110px;
+  z-index: 2;
   height: calc(var(--name-size) * 1.15);
   margin: 0;
   font-family: var(--display);
@@ -331,92 +257,81 @@
   white-space: nowrap;
 }
 
-.bar {
+/* printed-halftone dots over the web half */
+.halftone {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 72px;
+  inset: 0;
+  background-image: radial-gradient(rgba(232, 230, 238, 0.55) 1px, transparent 1.4px);
+  background-size: 6px 6px;
+  opacity: 0.06;
+  mask-image: linear-gradient(to left, #000, transparent 60%);
+}
+/* the columns' empty space lets the pointer through to the name (TechText letters can be dragged) */
+.left,
+.right {
+  pointer-events: none;
+}
+.left > *,
+.right > * {
+  pointer-events: auto;
+}
+/* coordinates + live clock (top-right corner) */
+.readout {
   display: flex;
-  border-width: 1px 0 0 0;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
   font-family: var(--mono);
-  font-size: 12px;
-  text-transform: uppercase;
+  font-size: 11px;
   letter-spacing: 1.5px;
-}
-.barCta {
-  display: flex;
-  align-items: center;
-  padding: 0 40px;
-  background: var(--text);
-  color: var(--bg);
-  text-decoration: none;
-}
-.barCta:hover {
-  background: var(--lav);
-  color: var(--bg);
-}
-.barLink {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  text-decoration: none;
-}
-.barLink:last-child {
-  border-right: 0;
-}
-.arrow {
+  text-transform: uppercase;
   color: var(--muted);
+}
+/* top corners, level with the caption: barcode (left), coordinates + clock (right).
+   .hero raises specificity over CutPanel's own position: relative */
+.hero .cornerLeft,
+.hero .cornerRight {
+  position: absolute;
+  z-index: 4;
+  top: 84px;
+}
+.hero .cornerLeft {
+  left: var(--gutter);
+}
+.hero .cornerRight {
+  right: var(--gutter);
 }
 
 /* ---------- smaller screens ---------- */
-@media (max-width: 1200px) {
-  .code,
-  .issue {
-    display: none;
-  }
-}
-
 @media (max-width: 900px) {
   .hero {
     height: 100svh;
     min-height: 760px;
   }
-  /* nav is 56px and the bar 64px on phones */
+  /* nav is 56px on phones */
   .axis {
     top: 68px;
-    height: calc(100% - 144px);
+    height: calc(100% - 92px);
   }
   .caption,
   .right,
-  .code,
   .barcode,
+  .readout,
   .circle,
-  .cover,
-  .hero .folio,
-  .framePlaceholder figcaption {
+  .hero .folio {
     display: none;
-  }
-  .frame {
-    top: 80px;
-    width: 200px;
-    height: 260px;
-    margin-left: -100px;
   }
   .name {
     --name-size: clamp(120px, 40vw, 180px);
+    top: 72px;
     bottom: auto;
-    top: 311px;
   }
   .left {
     left: 0;
     right: 0;
     width: auto;
     top: auto;
-    bottom: 64px;
+    bottom: 0;
   }
   .panel {
     border-width: 1px 0 0 0;
@@ -430,16 +345,5 @@
   }
   .panelFoot {
     padding: 12px var(--gutter);
-  }
-  .bar {
-    height: 64px;
-  }
-  .barCta {
-    flex: 1;
-    justify-content: space-between;
-    padding: 0 var(--gutter);
-  }
-  .barLink {
-    display: none;
   }
 }

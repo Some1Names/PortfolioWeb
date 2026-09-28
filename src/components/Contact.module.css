@@ -247,3 +247,14 @@
     order: 9;
   }
 }
+
+/* the end band (motifs/EndBand) runs full width at the very end of the issue */
+.endPlace {
+  margin: 0 calc(var(--gutter) * -1) -40px;
+}
+@media (max-width: 900px) {
+  .endPlace {
+    order: 12;
+    margin-bottom: -24px; /* matches .contact's phone bottom padding */
+  }
+}

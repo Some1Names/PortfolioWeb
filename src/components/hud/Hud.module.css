@@ -1,0 +1,247 @@
+/* ---------- HUD kit: original shapes, tinted per side ---------- */
+.sideArt {
+  --side: var(--art);
+}
+.sideWeb {
+  --side: var(--web);
+}
+.sideCollide {
+  --side: var(--collide);
+}
+
+/* ---------- tag: label + leader line + reticle ---------- */
+.tag {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.tagLine {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.tagLine line {
+  stroke: var(--side);
+  stroke-width: 1;
+}
+.reticle {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px;
+  border: 1px solid var(--side);
+  border-radius: 50%;
+}
+.reticle::before,
+.reticle::after {
+  content: "";
+  position: absolute;
+  background: var(--side);
+}
+.reticle::before {
+  left: 5px;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+}
+.reticle::after {
+  top: 5px;
+  left: -4px;
+  right: -4px;
+  height: 1px;
+}
+.tagLabel {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translateY(-50%);
+  padding: 5px 12px 5px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #0a0a0c;
+  background: var(--side);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+/* label sits to the left of its start point (pointer leaves from the label's right edge) */
+.tagLabelLeft {
+  transform: translate(-100%, -50%);
+}
+@media (max-width: 1399px) {
+  .tagWide {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .tagNoPhone {
+    display: none;
+  }
+  .tagLine,
+  .reticle {
+    display: none;
+  }
+  .tagLabel {
+    left: var(--px);
+    top: var(--py);
+    transform: none;
+  }
+}
+
+/* ---------- cut panel: two angled corners, 1px edge ---------- */
+.cut {
+  --notch: 14px;
+  position: relative;
+  isolation: isolate;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px) saturate(120%);
+  clip-path: polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch));
+}
+.cut::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: rgba(16, 15, 21, 0.86);
+  clip-path: polygon(calc(var(--notch) - 0.5px) 0, 100% 0, 100% calc(100% - var(--notch) + 0.5px), calc(100% - var(--notch) + 0.5px) 100%, 0 100%, 0 calc(var(--notch) - 0.5px));
+}
+.cutAlt {
+  clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, var(--notch) 100%, 0 calc(100% - var(--notch)));
+}
+.cutAlt::before {
+  clip-path: polygon(0 0, calc(100% - var(--notch) + 0.5px) 0, 100% calc(var(--notch) - 0.5px), 100% 100%, calc(var(--notch) - 0.5px) 100%, 0 calc(100% - var(--notch) + 0.5px));
+}
+
+/* ---------- brackets: corner marks ---------- */
+.brackets {
+  --b: 22px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.brackets i {
+  position: absolute;
+  width: var(--b);
+  height: var(--b);
+  border: 0 solid var(--lav);
+}
+.brackets i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.brackets i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.brackets i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.brackets i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+/* ---------- glitch: flickering pixel squares ---------- */
+.glitch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch i {
+  position: absolute;
+  animation: glitchBlink 2.4s steps(1, end) infinite;
+}
+.gArt {
+  background: var(--art);
+}
+.gCollide {
+  background: var(--collide);
+}
+@keyframes glitchBlink {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: none;
+  }
+  18% {
+    opacity: 0;
+  }
+  42% {
+    opacity: 0.6;
+    transform: translateX(6px);
+  }
+  64% {
+    opacity: 0;
+  }
+}
+/* the global reduced-motion rule shortens durations; an infinite loop would strobe, so stop it */
+@media (prefers-reduced-motion: reduce) {
+  .glitch i {
+    animation: none;
+  }
+}
+
+/* ---------- crosshairs: "+" marks at a section's corners ---------- */
+.cross {
+  position: absolute;
+  inset: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+.cross i {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+}
+.cross i::before,
+.cross i::after {
+  content: "";
+  position: absolute;
+  background: var(--line-3);
+}
+.cross i::before {
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+.cross i::after {
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+.cross i:nth-child(1) {
+  left: 0;
+  top: 0;
+}
+.cross i:nth-child(2) {
+  right: 0;
+  top: 0;
+}
+.cross i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+}
+.cross i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+}
+/* phones: the page folio sits where the bottom-right mark would */
+@media (max-width: 900px) {
+  .cross {
+    display: none;
+  }
+}

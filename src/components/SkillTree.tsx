@@ -8,6 +8,7 @@ import Logo from "./motifs/Logo";
 import { projects } from "@/data/projects";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
+import Crosshairs from "./hud/Crosshairs";
 import styles from "./SkillTree.module.css";
 
 // sets --side for everything inside a branch: pink, blue or violet
@@ -112,6 +113,7 @@ export default function SkillTree() {
 
   return (
     <section id="skills" ref={root} className={styles.skills}>
+      <Crosshairs />
       <div className={styles.glow} aria-hidden="true" />
       <div className={styles.grid} aria-hidden="true" />
 

@@ -1,0 +1,63 @@
+/* the portrait box: centred on the seam, standing on the bottom edge (behind the bar),
+   in front of the name. Everything inside is positioned in % of this box. */
+.figure {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 0;
+  /* 78% of the hero, but no wider than leaves room for the side tags (portrait tablets) */
+  height: min(78%, calc((50vw - 168px) * 2.381));
+  aspect-ratio: 3 / 4;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.portrait,
+.tags {
+  position: absolute;
+  inset: 0;
+}
+.tags {
+  z-index: 3;
+}
+.photo {
+  object-fit: contain;
+  object-position: 50% 100%;
+}
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.placeholder svg {
+  position: absolute;
+  inset: 8% 6% 0;
+  width: 88%;
+  height: 92%;
+  fill: none;
+  stroke: var(--lav);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 6;
+  opacity: 0.6;
+}
+.placeholder span {
+  position: relative;
+  margin-bottom: 38%;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 106, 213, 0.45);
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--art);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+/* phones: a smaller figure standing on the bottom edge, its top where it sat when a 64px
+   link bar ran along the bottom */
+@media (max-width: 900px) {
+  .figure {
+    bottom: 0;
+    height: calc(64% + 64px);
+  }
+}

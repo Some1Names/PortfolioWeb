@@ -7,6 +7,8 @@ import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Silk from "./reactbits/Silk";
+import Crosshairs from "./hud/Crosshairs";
+import EndBand from "./motifs/EndBand";
 import styles from "./Contact.module.css";
 
 export default function Contact() {
@@ -48,6 +50,7 @@ export default function Contact() {
 
   return (
     <section id="contact" ref={root} className={styles.contact}>
+      <Crosshairs />
       <Silk className={styles.silk} color="#4a3a7a" speed={3} scale={1} noiseIntensity={1.4} rotation={0.35} />
       <div className={styles.shade} aria-hidden="true" />
       <div className={`outline-num ${styles.bigNum}`} aria-hidden="true">
@@ -96,7 +99,7 @@ export default function Contact() {
 
       <div className={styles.end}>
         <p className={styles.colophon}>
-          End of {site.volume}: designed, drawn and coded by hand.
+          End of {site.volume}: designed and coded by hand; imagery generated with AI.
           <br />
           Set in Orange Avenue and Geist Mono. <span>When art &amp; web collide.</span>
         </p>
@@ -112,6 +115,7 @@ export default function Contact() {
         <span>Built with Next.js + Lenis</span>
         <a href="#top">Back to top ↑</a>
       </footer>
+      <EndBand className={styles.endPlace} />
     </section>
   );
 }
