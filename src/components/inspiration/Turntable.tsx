@@ -287,11 +287,16 @@ export default function Turntable({ cover, playing, progress }: { cover: string;
           if (!raf && visible) raf = requestAnimationFrame(frame);
         };
 
+        // the record's centre sits at --record-x (a share of the width, set in CSS): the view is
+        // slid sideways with the camera's film offset, so the perspective doesn't change
         const fit = () => {
           const { width, height } = mount.getBoundingClientRect();
           if (!width || !height) return;
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
+          const x = parseFloat(getComputedStyle(el).getPropertyValue("--record-x")) || 0.5;
+          const tan = Math.tan(T.MathUtils.degToRad(camera.fov / 2));
+          camera.filmOffset = (0.5 - x) * camera.getFilmWidth() * 2 * tan * camera.aspect;
           camera.updateProjectionMatrix();
           kick();
         };
