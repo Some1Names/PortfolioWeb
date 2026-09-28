@@ -225,16 +225,20 @@
 }
 
 /* ---------- the record library: a pane of liquid glass over the deck ---------- */
-/* the right 40%, reaching a little into the deck's 60% and high enough to cover the tonearm's
-   pivot, so the arm shows blurred through the glass and only its stylus end sits in the clear */
+/* a full-height pane over the right 40%, square, flush with the page's right edge. It reaches a
+   little into the deck's 60% and over the tonearm's pivot, so the arm shows blurred through the
+   glass and only its stylus end sits in the clear. Its contents keep to the page's gutter. */
 .library {
   position: absolute;
   z-index: 2;
-  top: 7%;
+  top: 0;
+  bottom: 0;
   left: 58%;
-  right: var(--gutter);
-  padding: 26px 22px 18px;
-  border-radius: 28px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px var(--gutter) 32px 36px;
   isolation: isolate;
   /* the glass: a heavy blur that lifts the colour of whatever is behind, a faint violet tint */
   background:
@@ -242,13 +246,9 @@
     rgba(18, 15, 26, 0.28);
   /* unprefixed only: the CSS build adds -webkit- for Safari (given both, it kept just the prefix) */
   backdrop-filter: blur(26px) saturate(170%) brightness(1.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.34),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 32px rgba(255, 255, 255, 0.035),
-    0 30px 70px rgba(0, 0, 0, 0.5),
-    0 2px 10px rgba(0, 0, 0, 0.3);
+    inset 0 0 40px rgba(255, 255, 255, 0.03),
+    -30px 0 80px rgba(0, 0, 0, 0.45);
 }
 /* the light on the glass: a soft sheen from the top-left corner... */
 .library::before {
@@ -256,20 +256,18 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  border-radius: inherit;
-  background: radial-gradient(120% 70% at 12% 0%, rgba(255, 255, 255, 0.14), transparent 55%);
+  background: radial-gradient(90% 55% at 0% 0%, rgba(255, 255, 255, 0.13), transparent 60%);
   pointer-events: none;
 }
-/* ...and a brighter rim where the edge catches it (top-left and bottom-right) */
+/* ...and a bright leading edge, strongest at the top where the light catches it */
 .library::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.04) 32%, rgba(255, 255, 255, 0.02) 68%, rgba(201, 179, 255, 0.4));
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.08) 45%, rgba(201, 179, 255, 0.35));
   pointer-events: none;
 }
 .libraryHead {
@@ -307,7 +305,6 @@
   padding: 16px 14px;
   border: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
   background: transparent;
   color: inherit;
   font: inherit;
@@ -406,9 +403,15 @@
   .library {
     position: relative;
     top: auto;
+    bottom: auto;
     left: auto;
     right: auto;
     margin: 36px var(--gutter) 0;
+    padding: 26px 22px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .library::after {
+    display: none;
   }
 }
 @media (max-width: 900px) {
@@ -427,7 +430,6 @@
   .library {
     margin: 40px 0 0;
     padding: 20px 10px 10px;
-    border-radius: 22px;
   }
   .libraryHead p {
     font-size: 26px;
