@@ -227,7 +227,8 @@
 /* ---------- the record library: a pane of liquid glass over the deck ---------- */
 /* a full-height pane over the right 40%, square, flush with the page's right edge. It reaches a
    little into the deck's 60% and over the tonearm's pivot, so the arm shows blurred through the
-   glass and only its stylus end sits in the clear. Its contents keep to the page's gutter. */
+   glass and only its stylus end sits in the clear. Its contents sit at the top, kept to the
+   page's gutter. */
 .library {
   position: absolute;
   z-index: 2;
@@ -235,10 +236,7 @@
   bottom: 0;
   left: 58%;
   right: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 32px var(--gutter) 32px 36px;
+  padding: 48px var(--gutter) 32px 36px;
   isolation: isolate;
   /* the glass: a heavy blur that lifts the colour of whatever is behind, a faint violet tint */
   background:
