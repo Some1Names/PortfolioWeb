@@ -7,12 +7,13 @@ import styles from "./RecordPlayer.module.css";
 
 // The deck: "Vinyl player" by AlexEsfell (CC BY 4.0, public/models/vinyl_player.glb), recoloured,
 // with our own record on the platter; the playing song's cover is its label. While a clip plays
-// the record spins at 33⅓ rpm and the tonearm rides from the outer groove inward with the clip's
+// the record spins at 16⅔ rpm (half a real LP's speed, calmer to watch) and the tonearm rides from the outer groove inward with the clip's
 // progress; paused, the record slows to a stop and the arm swings back to its rest. three.js
 // loads only here. Until the model is ready (or without WebGL) a flat record stands in.
 
 const MODEL = "/models/vinyl_player.glb";
-const SPIN = ((33 + 1 / 3) / 60) * Math.PI * 2; // rad/s
+const RPM = 16 + 2 / 3;
+const SPIN = (RPM / 60) * Math.PI * 2; // rad/s
 const RECORD_R = 0.66; // the record's radius in the model's units (the platter's is 0.705)
 const LABEL = 0.33; // the label's radius, as a share of the record's (a real 12" record's is ~1/3)
 const GROOVE_OUT = 0.6; // where the stylus sits when a clip starts...
