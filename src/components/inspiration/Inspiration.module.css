@@ -1,9 +1,86 @@
 /* the /inspiration supplement */
 .page {
   position: relative;
+  isolation: isolate;
   min-height: 100vh;
   overflow: hidden;
   background: radial-gradient(ellipse at 80% 0%, #1c1829 0%, #0f0e13 45%, var(--bg) 80%);
+}
+
+/* ---------- the grid rails: the header's columns carried down the whole page ---------- */
+/* five hairlines: the two gutters and the header's three inner column lines (its columns are
+   1 : 1 : 1 : 1.4), ticks every 80px on the outer two, and coordinates in the left margin */
+.rails {
+  --rail: rgba(255, 255, 255, 0.05);
+  --tick: rgba(255, 255, 255, 0.12);
+  --content: calc(100% - 2 * var(--gutter));
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--rail), var(--rail)),
+    linear-gradient(var(--rail), var(--rail)),
+    linear-gradient(var(--rail), var(--rail)),
+    linear-gradient(var(--rail), var(--rail)),
+    linear-gradient(var(--rail), var(--rail)),
+    repeating-linear-gradient(var(--tick) 0 1px, transparent 1px 80px),
+    repeating-linear-gradient(var(--tick) 0 1px, transparent 1px 80px);
+  background-size:
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    1px 100%,
+    9px 100%,
+    9px 100%;
+  background-repeat: no-repeat;
+  background-position:
+    var(--gutter) 0,
+    calc(var(--gutter) + var(--content) * 0.2273) 0,
+    calc(var(--gutter) + var(--content) * 0.4545) 0,
+    calc(var(--gutter) + var(--content) * 0.6818) 0,
+    calc(100% - var(--gutter)) 0,
+    calc(var(--gutter) - 4px) 0,
+    calc(100% - var(--gutter) + 4px) 0;
+}
+.rails span {
+  position: absolute;
+  left: 6px;
+  transform: translateY(-50%);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.22);
+}
+/* the coordinates need a wide margin */
+@media (max-width: 1180px) {
+  .rails span {
+    display: none;
+  }
+}
+/* phones: the header has two columns, so the rails are the gutters and the middle */
+@media (max-width: 900px) {
+  .rails {
+    background-image:
+      linear-gradient(var(--rail), var(--rail)),
+      linear-gradient(var(--rail), var(--rail)),
+      linear-gradient(var(--rail), var(--rail)),
+      repeating-linear-gradient(var(--tick) 0 1px, transparent 1px 80px),
+      repeating-linear-gradient(var(--tick) 0 1px, transparent 1px 80px);
+    background-size:
+      1px 100%,
+      1px 100%,
+      1px 100%,
+      9px 100%,
+      9px 100%;
+    background-position:
+      var(--gutter) 0,
+      50% 0,
+      calc(100% - var(--gutter)) 0,
+      calc(var(--gutter) - 4px) 0,
+      calc(100% - var(--gutter) + 4px) 0;
+  }
 }
 
 /* ---------- sections ---------- */

@@ -23,6 +23,15 @@ export default function Inspiration() {
 
   return (
     <div className={styles.page}>
+      {/* the page's grid rails: the header's columns carried down the page, with ticks and
+          coordinates in the margin */}
+      <div className={styles.rails} data-part="rails" aria-hidden="true">
+        {Array.from({ length: 20 }, (_, i) => (
+          <span key={i} style={{ top: i * 400 }}>
+            Y_{String(i * 400).padStart(4, "0")}
+          </span>
+        ))}
+      </div>
       <Masthead />
 
       <section id="shelf" aria-label={inspiration.shelf.label} className={styles.group}>

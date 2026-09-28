@@ -2,9 +2,11 @@
 .head {
   padding: 120px var(--gutter) 72px;
 }
+/* exact proportions (minmax 0), so long content can't widen a column: the page's grid rails line
+   up with these column lines */
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1.4fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
   border: 2px solid var(--text-strong);
 }
 .cell {
@@ -215,7 +217,7 @@
     padding: 80px var(--gutter) 48px;
   }
   .grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .titleCell {
     padding: 16px 12px 12px;
