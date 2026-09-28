@@ -1,0 +1,297 @@
+/* the VHS shelf: full width, its ends fading into the page */
+.shelf {
+  --h: 400px; /* a tape's height */
+  --front: calc(var(--h) * 2 / 3); /* the chosen tape's case: a 2:3 poster */
+  --cover: calc(var(--front) + 36px); /* ...plus the case and sleeve peeking out behind it */
+  --spine: 54px;
+  --gap: 16px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  margin: 28px calc(-1 * var(--gutter)) 0;
+}
+
+/* ---------- filter tabs ---------- */
+.filters {
+  display: flex;
+  justify-content: center;
+}
+.filters button {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--line-2);
+  border-left-width: 0;
+  background: transparent;
+  color: var(--soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.filters button:first-child {
+  border-left-width: 1px;
+}
+.filters button:hover {
+  color: var(--text-strong);
+}
+.filters button[aria-pressed="true"] {
+  background: var(--text-strong);
+  color: var(--bg);
+}
+
+/* ---------- the row of tapes ---------- */
+/* the chosen tape's centre sits on the row's centre: the track is shifted by the tapes before
+   it (spines) plus half the chosen one */
+.row {
+  position: relative;
+  height: var(--h);
+  margin-top: 36px;
+  overflow: hidden;
+  touch-action: pan-y;
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.row:focus-visible {
+  outline-offset: -2px;
+}
+.track {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  gap: var(--gap);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translateX(calc(-1 * (var(--f) * (var(--spine) + var(--gap)) + var(--cover) / 2)));
+  transition: transform 0.7s var(--ease);
+  animation: rowIn 0.5s ease both;
+}
+@keyframes rowIn {
+  from {
+    opacity: 0;
+  }
+}
+.tape {
+  position: relative;
+  flex: none;
+  width: var(--spine);
+  height: 100%;
+  overflow: clip;
+  overflow-clip-margin: 24px;
+  transition: width 0.7s var(--ease);
+}
+.tape.on {
+  width: var(--cover);
+}
+
+/* ---------- a spine: a strip of the poster, the title printed down it ---------- */
+.spine {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: var(--spine);
+  padding: 0;
+  border: 0;
+  background: #0c0b10;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 0.4s, transform 0.3s var(--ease);
+}
+.spine:hover {
+  transform: translateY(-6px);
+}
+.spineArt {
+  object-fit: cover;
+  object-position: 50% 30%;
+  filter: saturate(0.9) brightness(0.7);
+}
+.spineTitle {
+  position: absolute;
+  top: 16%;
+  bottom: 12%;
+  left: 50%;
+  overflow: hidden;
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: 18px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+.spineYear {
+  position: absolute;
+  top: 8px;
+  left: 4px;
+  right: 4px;
+  padding: 3px 0;
+  background: rgba(242, 240, 247, 0.9);
+  color: #0a0a0c;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+/* worn plastic: darker edges, a lighter rim, fine scuffs */
+.wear {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12), transparent 12%, transparent 80%, rgba(0, 0, 0, 0.45)),
+    linear-gradient(rgba(0, 0, 0, 0.25), transparent 8%, transparent 90%, rgba(0, 0, 0, 0.35)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px);
+}
+
+/* ---------- the chosen tape: its case, pulled out ---------- */
+.case {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s;
+}
+.on .case {
+  opacity: 1;
+  pointer-events: auto;
+}
+.on .spine {
+  opacity: 0;
+  pointer-events: none;
+}
+.front,
+.caseBack,
+.sleeve {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--front);
+}
+.front {
+  left: 0;
+  overflow: hidden;
+  background: #0c0b10;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+.poster {
+  object-fit: cover;
+}
+/* the black case, then the pink sleeve, peeking out to the right */
+.caseBack {
+  left: 16px;
+  top: 1.5%;
+  bottom: 1.5%;
+  background: #121016;
+  border: 1px solid #26232e;
+}
+/* the sleeve: printed card, shaded where the case sits against it, a fold line near its edge */
+.sleeve {
+  left: 34px;
+  top: 3%;
+  bottom: 3%;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.45), transparent 22%),
+    linear-gradient(90deg, transparent calc(100% - 9px), rgba(0, 0, 0, 0.25) calc(100% - 9px), rgba(0, 0, 0, 0.25) calc(100% - 8px), transparent calc(100% - 8px)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 4px),
+    linear-gradient(160deg, #ff6ad5, #a93e93);
+}
+.case:hover .front {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--art);
+}
+
+/* ---------- under the shelf: arrows either side of the caption ---------- */
+.info {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 0 var(--gutter);
+}
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.arrow:hover:not(:disabled) {
+  border-color: var(--lav);
+  color: var(--text-strong);
+}
+.arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.caption {
+  text-align: center;
+  animation: captionIn 0.5s var(--ease) both;
+}
+@keyframes captionIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.1;
+  color: var(--text-strong);
+}
+.original {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--art);
+}
+.year {
+  margin: 6px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .tape,
+  .spine,
+  .case,
+  .caption {
+    transition: none;
+    animation: none;
+  }
+  .spine:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .shelf {
+    --h: 250px;
+    --spine: 34px;
+    --gap: 10px;
+    margin: 24px calc(-1 * var(--gutter)) 0;
+  }
+  .spineTitle {
+    font-size: 14px;
+  }
+  .spineYear {
+    display: none;
+  }
+}

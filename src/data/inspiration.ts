@@ -1,28 +1,19 @@
-// The /inspiration supplement: favourite films and anime as cover-art cards, and music on a
+// The /inspiration supplement: favourite films and anime as tapes on a VHS shelf, and music on a
 // record player. Covers are official artwork loaded from TMDB (posters) and Apple Music (music
 // artwork); the images are not stored in this repo. A new cover must come from one of those two
-// hosts (see images.remotePatterns in next.config.ts). `note` is your "why"; cards without one
-// skip it.
-import type { Side } from "./site";
+// hosts (see images.remotePatterns in next.config.ts).
 
+// A tape on the shelf. Under the featured tape: the title, then `original` (the original-language
+// title) or, without one, `by`, in pink; then the year (and `by` for anime, the studio).
 export type Favourite = {
   title: string;
+  kind: "movie" | "anime";
   year: number;
-  by: string; // director / studio / artist; on an artist card, the linked song
+  by: string; // director (films) or studio (anime)
+  original?: string;
   cover: string;
   alt: string;
   href: string; // the page the cover came from
-  source: "TMDB" | "Apple Music";
-  note?: string;
-  tag?: string; // small chip on the cover
-};
-
-export type FavGroup = {
-  id: string;
-  label: string;
-  side: Side; // which accent colours the group
-  shape: "poster" | "square";
-  items: Favourite[];
 };
 
 // A song on the record player. `preview` is Apple Music's official 30-second clip and `href`
@@ -43,7 +34,7 @@ export const inspiration: {
   title: string;
   intro: string;
   credits: string;
-  groups: FavGroup[];
+  shelf: { label: string; items: Favourite[] };
   music: { label: string; tracks: Track[] };
   // the turntable's 3D model (CC BY 4.0: credit the author, link the licence, say what changed)
   model: { title: string; href: string; author: string; authorHref: string; license: string; licenseHref: string; changes: string };
@@ -53,69 +44,59 @@ export const inspiration: {
   // DRAFT: rewrite in your own words
   intro: "The films, shows and music I keep coming back to while I draw and code.",
   credits: "Posters: TMDB. Music artwork and previews: Apple Music. Not endorsed by either.",
-  groups: [
-    {
-      id: "movies",
-      label: "Movies",
-      side: "collide",
-      shape: "poster",
-      items: [
-        {
-          title: "Tenet",
-          year: 2020,
-          by: "Christopher Nolan",
-          cover: "https://media.themoviedb.org/t/p/w500/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
-          alt: "Poster for Tenet",
-          href: "https://www.themoviedb.org/movie/577922-tenet",
-          source: "TMDB",
-        },
-        {
-          title: "The Dark Knight",
-          year: 2008,
-          by: "Christopher Nolan",
-          cover: "https://media.themoviedb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-          alt: "Poster for The Dark Knight",
-          href: "https://www.themoviedb.org/movie/155-the-dark-knight",
-          source: "TMDB",
-        },
-      ],
-    },
-    {
-      id: "anime",
-      label: "Anime",
-      side: "art",
-      shape: "poster",
-      items: [
-        {
-          title: "Tokyo Ghoul",
-          year: 2014,
-          by: "Studio Pierrot",
-          cover: "https://media.themoviedb.org/t/p/w500/1m4RlC9BTCbyY549TOdVQ5NRPcR.jpg",
-          alt: "Poster for Tokyo Ghoul",
-          href: "https://www.themoviedb.org/tv/61374",
-          source: "TMDB",
-        },
-        {
-          title: "Jujutsu Kaisen",
-          year: 2020,
-          by: "MAPPA",
-          cover: "https://media.themoviedb.org/t/p/w500/6qQzMJG27XOJsyAEEIisoJB45j2.jpg",
-          alt: "Poster for Jujutsu Kaisen",
-          href: "https://www.themoviedb.org/tv/95479",
-          source: "TMDB",
-        },
-        {
-          title: "Chainsaw Man",
-          year: 2022,
-          by: "MAPPA",
-          cover: "https://media.themoviedb.org/t/p/w500/npdB6eFzizki0WaZ1OvKcJrWe97.jpg",
-          alt: "Poster for Chainsaw Man",
-          href: "https://www.themoviedb.org/tv/114410",
-          source: "TMDB",
-        },
-      ],
-    },
-  ],
+  shelf: {
+    label: "Film & Anime",
+    items: [
+      {
+        title: "Tenet",
+        kind: "movie",
+        year: 2020,
+        by: "Christopher Nolan",
+        cover: "https://media.themoviedb.org/t/p/w500/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
+        alt: "Poster for Tenet",
+        href: "https://www.themoviedb.org/movie/577922-tenet",
+      },
+      {
+        title: "The Dark Knight",
+        kind: "movie",
+        year: 2008,
+        by: "Christopher Nolan",
+        cover: "https://media.themoviedb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+        alt: "Poster for The Dark Knight",
+        href: "https://www.themoviedb.org/movie/155-the-dark-knight",
+      },
+      {
+        title: "Tokyo Ghoul",
+        kind: "anime",
+        year: 2014,
+        by: "Studio Pierrot",
+        original: "東京喰種トーキョーグール",
+        cover: "https://media.themoviedb.org/t/p/w500/1m4RlC9BTCbyY549TOdVQ5NRPcR.jpg",
+        alt: "Poster for Tokyo Ghoul",
+        href: "https://www.themoviedb.org/tv/61374",
+      },
+      {
+        title: "Jujutsu Kaisen",
+        kind: "anime",
+        year: 2020,
+        by: "MAPPA",
+        original: "呪術廻戦",
+        cover: "https://media.themoviedb.org/t/p/w500/6qQzMJG27XOJsyAEEIisoJB45j2.jpg",
+        alt: "Poster for Jujutsu Kaisen",
+        href: "https://www.themoviedb.org/tv/95479",
+      },
+      {
+        title: "Chainsaw Man",
+        kind: "anime",
+        year: 2022,
+        by: "MAPPA",
+        original: "チェンソーマン",
+        cover: "https://media.themoviedb.org/t/p/w500/npdB6eFzizki0WaZ1OvKcJrWe97.jpg",
+        alt: "Poster for Chainsaw Man",
+        href: "https://www.themoviedb.org/tv/114410",
+      },
+    ],
+  },
   model: {
     title: "Vinyl player",
     href: "https://sketchfab.com/3d-models/vinyl-player-9eb895af086a4cbb95f86bc2fa773b60",

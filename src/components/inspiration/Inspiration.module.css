@@ -36,91 +36,10 @@
   color: #c9c5d4;
 }
 
-/* ---------- groups: a wrapping row of cards ---------- */
+/* ---------- sections ---------- */
 .group {
   position: relative;
   padding: 72px var(--gutter) 0;
-}
-.cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin: 24px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.cards > li {
-  width: clamp(150px, 20vw, 260px);
-}
-
-/* ---------- card ---------- */
-.sideArt {
-  --side: var(--art);
-}
-.sideWeb {
-  --side: var(--web);
-}
-.sideCollide {
-  --side: var(--collide);
-}
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  height: 100%;
-  padding: 10px 10px 16px;
-  color: var(--text);
-  text-decoration: none;
-}
-.cover {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  margin-bottom: 8px;
-  background: var(--card);
-}
-.poster {
-  aspect-ratio: 2 / 3;
-}
-.square {
-  aspect-ratio: 1 / 1;
-}
-.coverImg {
-  object-fit: cover;
-}
-.chip {
-  position: absolute;
-  left: 8px;
-  top: 8px;
-  max-width: calc(100% - 16px);
-  padding: 4px 8px;
-  background: var(--side);
-  color: #0a0a0c;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
-}
-.cardTitle {
-  font-family: var(--display);
-  font-size: 22px;
-  line-height: 1.1;
-  color: var(--text-strong);
-  overflow-wrap: anywhere;
-}
-.meta {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--side);
-  overflow-wrap: anywhere;
-}
-.note {
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);
 }
 
 /* ---------- footer ---------- */
@@ -152,61 +71,12 @@
   color: var(--collide);
 }
 
-/* under the image: shows while a cover loads, or instead of one that failed */
-.textCover {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  padding: 14px;
-  border: 1px solid var(--side);
-  font-family: var(--display);
-  font-size: 26px;
-  line-height: 1.05;
-  color: var(--text-strong);
-  overflow-wrap: anywhere;
-}
-
-/* hover and keyboard focus: the card lifts and brackets frame the cover
-   (the cut-corner clip hides a focus outline, so this is the focus indicator) */
-.card {
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.card:hover,
-.card:focus-visible {
-  transform: translateY(-4px);
-}
-.cardBrackets {
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.card .cardBrackets i {
-  border-color: var(--side);
-}
-.card:hover .cardBrackets,
-.card:focus-visible .cardBrackets {
-  opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .card,
-  .cardBrackets {
-    transition: none;
-  }
-  .card:hover,
-  .card:focus-visible {
-    transform: none;
-  }
-}
-
 @media (max-width: 900px) {
   .head {
     padding: 80px var(--gutter) 48px;
   }
   .group {
     padding-top: 56px;
-  }
-  .cards > li {
-    width: calc(50% - 12px);
   }
   .foot {
     flex-direction: column;

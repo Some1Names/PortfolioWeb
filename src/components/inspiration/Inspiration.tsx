@@ -1,42 +1,20 @@
 "use client";
 
-import { useRef } from "react";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { inspiration } from "@/data/inspiration";
 import ModuleLabel from "../motifs/ModuleLabel";
 import EndBand from "../motifs/EndBand";
 import Crosshairs from "../hud/Crosshairs";
-import FavCard from "./FavCard";
+import Shelf from "./Shelf";
 import RecordPlayer from "./RecordPlayer";
 import styles from "./Inspiration.module.css";
 
-// The supplement: a header, one section per group of favourites, the record player, and a footer
-// with credits.
+// The supplement: a header, the VHS shelf of films and anime, the record player, and a footer with
+// credits.
 const { model } = inspiration;
 
 export default function Inspiration() {
-  const root = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) return;
-      // each group's cards rise in as the group scrolls into view
-      root.current?.querySelectorAll<HTMLElement>(`.${styles.cards}`).forEach((list) => {
-        gsap.from(list.children, {
-          y: 24,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          stagger: 0.06,
-          scrollTrigger: { trigger: list, start: "top 85%" },
-        });
-      });
-    },
-    { scope: root },
-  );
-
   return (
-    <div ref={root} className={styles.page}>
+    <div className={styles.page}>
       <header className={`${styles.head} web-grid`}>
         <Crosshairs />
         <span className={styles.kicker}>{inspiration.label}</span>
@@ -44,21 +22,13 @@ export default function Inspiration() {
         <p className={styles.intro}>{inspiration.intro}</p>
       </header>
 
-      {inspiration.groups.map((g, i) => (
-        <section key={g.id} id={g.id} aria-label={g.label} className={styles.group}>
-          <ModuleLabel n={String(i + 1).padStart(2, "0")} text={g.label} />
-          <ul className={styles.cards}>
-            {g.items.map((f) => (
-              <li key={f.title}>
-                <FavCard fav={f} group={g} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <section id="shelf" aria-label={inspiration.shelf.label} className={styles.group}>
+        <ModuleLabel n="01" text={inspiration.shelf.label} />
+        <Shelf items={inspiration.shelf.items} />
+      </section>
 
       <section id="music" aria-label={inspiration.music.label} className={styles.group}>
-        <ModuleLabel n={String(inspiration.groups.length + 1).padStart(2, "0")} text={inspiration.music.label} />
+        <ModuleLabel n="02" text={inspiration.music.label} />
         <RecordPlayer tracks={inspiration.music.tracks} />
       </section>
 
