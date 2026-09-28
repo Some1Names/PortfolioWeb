@@ -6,16 +6,46 @@
   isolation: isolate;
   margin: 32px calc(-1 * var(--gutter)) 0;
 }
-/* behind the section, low down so they run behind the now-playing controls rather than hide
-   behind the deck: React Bits Threads, which swell while a track plays. Under the glass they
-   show as a soft moving glow */
+/* the site's textures behind the section, as on the cover: ink hatching on the art side (left,
+   behind the record) and the hairline grid on the web side (right, behind the glass), each
+   fading out towards the middle and at the section's top and bottom. They reach up behind the
+   section's label and down past the deck, where nothing covers them. */
+.player::before,
+.player::after {
+  content: "";
+  position: absolute;
+  inset: -120px 0 -64px;
+  z-index: -1;
+  pointer-events: none;
+  mask-composite: intersect;
+}
+.player::before {
+  background-image: repeating-linear-gradient(135deg, rgba(255, 106, 213, 0.1) 0 1px, transparent 1px 8px);
+  mask-image:
+    linear-gradient(to right, #000, transparent 62%),
+    linear-gradient(transparent, #000 14%, #000 82%, transparent);
+}
+.player::after {
+  background-image:
+    linear-gradient(rgba(92, 138, 255, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 138, 255, 0.11) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image:
+    linear-gradient(to left, #000 20%, transparent 75%),
+    linear-gradient(transparent, #000 14%, #000 82%, transparent);
+}
+
+/* over the deck (under the now-playing block and the glass, which sit above it): React Bits
+   Threads, low across the section, light drawn on transparent so they glow over the vinyl.
+   They swell while a track plays. (No mix-blend-mode: in Chrome a blended layer underneath
+   stops the glass's backdrop blur from picking it up, and the threads showed sharp through it.) */
 .threads {
   position: absolute;
   inset: 38% 0 -140px;
   width: auto;
   height: auto;
-  z-index: -1;
-  opacity: 0.9;
+  z-index: 1;
+  opacity: 0.85;
   mask-image: linear-gradient(transparent, #000 18%, #000 80%, transparent);
 }
 
@@ -34,9 +64,10 @@
     linear-gradient(to bottom, #000 52%, transparent 90%);
   mask-composite: intersect;
 }
-/* under the record: centred on it */
+/* under the record: centred on it, above the threads */
 .overlay {
   position: absolute;
+  z-index: 2;
   bottom: 0;
   left: calc(27% - min(270px, 24%));
   width: min(540px, 48%);

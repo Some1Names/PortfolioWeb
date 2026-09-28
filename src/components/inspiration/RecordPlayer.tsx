@@ -47,7 +47,7 @@ export default function RecordPlayer({ tracks }: { tracks: Track[] }) {
 
   return (
     <div className={styles.player} data-state={s.playing ? "playing" : "paused"} data-index={s.index}>
-      {/* behind the section: React Bits Threads, swelling while a track plays */}
+      {/* over the deck: React Bits Threads, swelling while a track plays */}
       <Threads className={styles.threads} color="#9a6bff" amplitude={s.playing ? 1.5 : 0.5} distance={0.25} />
       <div className={styles.deck}>
         <Turntable cover={track.cover} playing={s.playing} progress={p} />
