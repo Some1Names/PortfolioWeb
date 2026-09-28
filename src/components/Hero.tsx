@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { onIntroDone } from "@/lib/intro";
 import { starField } from "@/lib/stars";
-import { site, heroFrames, cover } from "@/data/site";
+import { site, heroFrames, cover, thesis } from "@/data/site";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import CutPanel from "./hud/CutPanel";
@@ -15,6 +15,9 @@ import TechText from "./reactbits/TechText";
 import styles from "./Hero.module.css";
 
 const stars = starField(60, 100, 72, 7);
+
+// words between *stars* in the cover copy are set bold
+const Bold = ({ text }: { text: string }) => <>{text.split("*").map((s, i) => (i % 2 ? <b key={i}>{s}</b> : s))}</>;
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -158,7 +161,7 @@ export default function Hero() {
         <div className={styles.orbit} />
       </div>
 
-      <div className={`${styles.caption} ${styles.fadeIn}`}>
+      <div className={`${styles.caption} ${styles.fadeIn}`} data-hero="caption">
         <span>Rendered at night</span>
         <span>/</span>
         <span>Built in Thailand</span>
@@ -194,35 +197,66 @@ export default function Hero() {
       </CoverFigure>
 
       {/* ---------- top corners, like a magazine cover's issue details ---------- */}
-      <div className={`${styles.barcode} ${styles.cornerLeft} ${styles.fadeIn}`} aria-hidden="true">
+      <div className={`${styles.barcode} ${styles.cornerLeft} ${styles.fadeIn}`} data-hero="barcode" aria-hidden="true">
         <div />
         <span>UF—2026—V01—TH</span>
       </div>
-      <CutPanel corners="tr-bl" notch={10} className={`${styles.readout} ${styles.cornerRight} ${styles.fadeIn}`}>
+      <CutPanel
+        corners="tr-bl"
+        notch={10}
+        className={`${styles.readout} ${styles.cornerRight} ${styles.fadeIn}`}
+        data-hero="readout"
+      >
         <span>{cover.coords}</span>
         <span>
           SYS_TIME <SysTime /> · UTC+7
         </span>
       </CutPanel>
 
-      {/* ---------- bottom corners: intro (art side) and status (web side) ---------- */}
-      <div className={styles.left}>
-        <CutPanel className={`${styles.panel} ${styles.fadeIn} ${styles.driftFast}`}>
-          <div className={styles.panelHead}>Index / Portfolio {site.volume}</div>
-          <p className={styles.panelBody}>{site.tagline}</p>
-          <div className={styles.panelFoot}>{site.program}</div>
-        </CutPanel>
+      {/* ---------- under the small print: the thesis (left) and your roles (right) ---------- */}
+      <div className={`${styles.intro} ${styles.fadeIn} ${styles.driftFast}`} data-hero="intro">
+        <p className={styles.headline}>
+          {thesis.lead} <span className={styles.art}>{thesis.art}</span> <br />
+          and <span className={styles.web}>{thesis.web}</span> <br />
+          {thesis.end}
+        </p>
+        <p className={styles.blurb}>
+          <Bold text={cover.intro} />
+        </p>
+        <a href="#work" className={`btn btn-solid ${styles.cta}`}>
+          See my work →
+        </a>
       </div>
-      <div className={styles.right}>
-        <CutPanel as="dl" corners="tr-bl" className={`${styles.status} ${styles.fadeIn} ${styles.driftFast}`}>
-          {site.status.map((r) => (
-            <div key={r.label}>
-              <dt>{r.label}</dt>
-              <dd>{r.value}</dd>
-            </div>
+      <div className={`${styles.roles} ${styles.fadeIn} ${styles.driftFast}`} data-hero="roles">
+        <p className={styles.rolesTitle}>
+          {cover.roles.map((r) => (
+            <span key={r}>{r}</span>
           ))}
-        </CutPanel>
+        </p>
+        <p className={styles.blurb}>
+          <Bold text={cover.focus} />
+        </p>
       </div>
+
+      {/* ---------- bottom corners: two tiles (left) and the status card (right) ---------- */}
+      <dl className={`${styles.tiles} ${styles.fadeIn} ${styles.driftFast}`} data-hero="tiles">
+        {cover.tiles.map((t) => (
+          <CutPanel key={t.label} notch={10} className={styles.tile}>
+            <dt>{t.label}</dt>
+            <dd>{t.value}</dd>
+          </CutPanel>
+        ))}
+      </dl>
+      <CutPanel corners="tr-bl" className={`${styles.card} ${styles.fadeIn} ${styles.driftFast}`} data-hero="card">
+        <div className={styles.cardText}>
+          <span className={styles.cardLabel}>{cover.card.label}</span>
+          <span className={styles.cardValue}>{cover.card.value}</span>
+          <span className={styles.cardLabel}>{cover.card.foot}</span>
+        </div>
+        <a href="#contact" className={styles.cardArrow} aria-label="Get in touch">
+          ↗
+        </a>
+      </CutPanel>
 
       <Folio page={1} className={styles.folio} />
     </section>

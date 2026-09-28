@@ -38,15 +38,6 @@ export const site = {
   name: "Uefa",
   volume: "Vol. 01",
   year: 2026,
-  tagline:
-    "Applied Computer Science (ACS) student at KMUTT. I build web applications in Next.js and TypeScript, with a focus on motion and visual systems.",
-  program: "Applied Computer Science · KMUTT",
-  status: [
-    { label: "Status", value: "Open to internships" },
-    { label: "Focus", value: "Web / Motion" },
-    { label: "Stack", value: "Next.js · TS" },
-    { label: "Year", value: "2026" },
-  ],
   emails: [
     { label: "Work email", address: "uefapeerawit@gmail.com" },
     { label: "Personal email", address: "himarukoishiwa@gmail.com" },
@@ -123,17 +114,33 @@ export const heroFrames = {
 // The centre of the cover: you, cut out, standing in front of the name. Put a transparent
 // PNG/WebP of yourself in public/art/ and set portrait.src; "" shows a placeholder outline.
 // Tags point at the portrait box (see TagSpec). "wide" tags show only at 1400px+.
+// Around it: the thesis headline (top left, with `intro` under it), your roles (top right, with
+// `focus` under it), two small tiles (bottom left) and a card whose arrow goes to Contact
+// (bottom right). In intro and focus, words between *stars* are set bold.
 export const cover: {
   portrait: { src: string; alt: string };
   tags: TagSpec[];
   coords: string;
+  intro: string;
+  roles: string[];
+  focus: string;
+  tiles: { label: string; value: string }[];
+  card: { label: string; value: string; foot: string };
 } = {
   portrait: { src: "", alt: "Portrait of Uefa" },
   tags: [
-    { label: "ACS · KMUTT", x: 106, y: 12, to: { x: 60, y: 12 }, side: "web", phone: { x: 56, y: 4 } },
-    { label: "Manga artist", x: -4, y: 16, to: { x: 38, y: 24 }, side: "art", phone: { x: 16, y: 26 } },
-    { label: "Motion / WebGL", x: 106, y: 30, to: { x: 66, y: 34 }, side: "collide", wide: true },
-    { label: "Next.js · TS", x: -2, y: 25, to: { x: 30, y: 40 }, side: "web", wide: true },
+    { label: "ACS · KMUTT", x: 106, y: 32, to: { x: 60, y: 14 }, side: "web", phone: { x: 56, y: 4 } },
+    { label: "Manga artist", x: -4, y: 36, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },
+    { label: "Motion / WebGL", x: 106, y: 52, to: { x: 66, y: 40 }, side: "collide", wide: true },
+    { label: "Next.js · TS", x: -2, y: 58, to: { x: 32, y: 46 }, side: "web", wide: true },
   ],
   coords: "X_13.65 N / Y_100.49 E",
+  intro: "Applied Computer Science (*ACS*) student at *KMUTT*.",
+  roles: ["Manga artist", "Web developer"],
+  focus: "I build web applications in *Next.js* and *TypeScript*, with a focus on motion and visual systems.",
+  tiles: [
+    { label: "Focus", value: "Web / Motion" },
+    { label: "Stack", value: "Next.js · TS" },
+  ],
+  card: { label: "Status", value: "Open to internships", foot: "Year · 2026" },
 };

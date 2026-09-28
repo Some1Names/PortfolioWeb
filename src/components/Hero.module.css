@@ -139,41 +139,74 @@
   height: 100%;
   display: block;
 }
-.left {
+/* under the small print: the thesis (left) and your roles (right). Their empty space lets the
+   pointer through to the name (TechText letters can be dragged); the button still takes clicks */
+.intro,
+.roles {
   position: absolute;
   z-index: 4;
+  top: 128px;
+  pointer-events: none;
+}
+.intro a {
+  pointer-events: auto;
+}
+.intro {
   left: var(--gutter);
-  bottom: 48px;
-  width: 340px;
-  display: flex;
-  flex-direction: column;
-  gap: 36px;
+  width: min(400px, calc(50vw - var(--gutter) - 24px));
 }
-.panel {
-  display: flex;
-  flex-direction: column;
+.roles {
+  right: var(--gutter);
+  width: min(540px, calc(50vw - var(--gutter) - 24px));
+  text-align: right;
 }
-.panelHead,
-.panelFoot {
-  padding: 12px 20px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-}
-.panelHead {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.panelFoot {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-.panelBody {
+.headline {
   margin: 0;
-  padding: 20px;
-  font-size: 17px;
-  line-height: 1.55;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(30px, 2.8vw, 42px);
+  line-height: 1.02;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-strong);
 }
+.headline .art {
+  color: var(--art);
+}
+.headline .web {
+  color: var(--web);
+}
+.rolesTitle {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  /* sized so each role stays on one line (the serif runs wide in capitals) */
+  font-size: clamp(36px, 3.4vw, 52px);
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+.rolesTitle span {
+  display: block;
+}
+.blurb {
+  max-width: 340px;
+  margin: 16px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--soft);
+}
+.blurb b {
+  font-weight: 500;
+  color: var(--text-strong);
+}
+.roles .blurb {
+  margin-left: auto;
+}
+.cta {
+  margin-top: 24px;
+}
+
 .barcode {
   display: flex;
   flex-direction: column;
@@ -193,47 +226,83 @@
   letter-spacing: 3px;
 }
 
-.right {
+/* bottom corners: two small tiles (left) and the status card (right).
+   .hero raises specificity over CutPanel's own position: relative */
+.tiles {
+  position: absolute;
+  z-index: 4;
+  left: var(--gutter);
+  bottom: 48px;
+  display: flex;
+  gap: 12px;
+  margin: 0;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+  padding: 14px 20px 16px;
+}
+.tile dt,
+.cardLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.tile dd {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-strong);
+}
+.hero .card {
   position: absolute;
   z-index: 4;
   right: var(--gutter);
   bottom: 48px;
   width: 300px;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.status {
-  margin: 0;
-  font-family: var(--mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.status div {
-  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 16px;
+  padding: 16px 16px 16px 20px;
 }
-.status div:last-child {
-  border-bottom: 0;
+.cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.status dt {
-  color: var(--muted);
+.cardValue {
+  font-size: 20px;
+  color: var(--text-strong);
 }
-.status dd {
-  margin: 0;
+.cardArrow {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--collide);
+  color: var(--bg);
+  font-size: 18px;
+  text-decoration: none;
+}
+.cardArrow:hover {
+  background: #b596ff;
+  color: var(--bg);
 }
 
 /* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
-   than the type and sits lower to keep the word where it was */
+   than the type. Centred a little below the middle, behind the portrait */
 .name {
   --name-size: clamp(150px, 25vw, 380px);
   position: absolute;
   left: 0;
   right: 0;
-  top: 110px;
+  top: calc(54% - var(--name-size) * 0.575);
   z-index: 2;
   height: calc(var(--name-size) * 1.15);
   margin: 0;
@@ -265,15 +334,6 @@
   background-size: 6px 6px;
   opacity: 0.06;
   mask-image: linear-gradient(to left, #000, transparent 60%);
-}
-/* the columns' empty space lets the pointer through to the name (TechText letters can be dragged) */
-.left,
-.right {
-  pointer-events: none;
-}
-.left > *,
-.right > * {
-  pointer-events: auto;
 }
 /* coordinates + live clock (top-right corner) */
 .readout {
@@ -313,37 +373,41 @@
     top: 36px;
     height: calc(100% - 60px);
   }
+  /* phones: the headline block on top, the name behind you, the status card along the bottom */
   .caption,
-  .right,
+  .roles,
+  .tiles,
   .barcode,
   .readout,
   .circle,
   .hero .folio {
     display: none;
   }
+  .intro {
+    top: 44px;
+    right: var(--gutter);
+    width: auto;
+  }
+  .headline {
+    font-size: 28px;
+  }
+  .blurb {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .cta {
+    margin-top: 16px;
+  }
   .name {
     --name-size: clamp(120px, 40vw, 180px);
-    top: 72px;
-    bottom: auto;
+    top: 244px;
   }
-  .left {
+  .hero .card {
     left: 0;
     right: 0;
-    width: auto;
-    top: auto;
     bottom: 0;
-  }
-  .panel {
-    border-width: 1px 0 0 0;
-  }
-  .panelHead {
-    display: none;
-  }
-  .panelBody {
+    width: auto;
     padding: 18px var(--gutter);
-    font-size: 15px;
-  }
-  .panelFoot {
-    padding: 12px var(--gutter);
+    align-items: center;
   }
 }
