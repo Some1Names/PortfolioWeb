@@ -45,7 +45,6 @@ export default function FavCard({ fav, group }: { fav: Favourite; group: FavGrou
         {fav.year} · {fav.by}
       </span>
       {fav.note && <span className={styles.note}>{fav.note}</span>}
-      {group.listen && <span className={styles.listen}>▶ Listen</span>}
     </CutPanel>
   );
 }

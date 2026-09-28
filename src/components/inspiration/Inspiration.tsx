@@ -7,9 +7,13 @@ import ModuleLabel from "../motifs/ModuleLabel";
 import EndBand from "../motifs/EndBand";
 import Crosshairs from "../hud/Crosshairs";
 import FavCard from "./FavCard";
+import RecordPlayer from "./RecordPlayer";
 import styles from "./Inspiration.module.css";
 
-// The supplement: a header, one section per group of favourites, and a footer with credits.
+// The supplement: a header, one section per group of favourites, the record player, and a footer
+// with credits.
+const { model } = inspiration;
+
 export default function Inspiration() {
   const root = useRef<HTMLDivElement>(null);
 
@@ -53,8 +57,16 @@ export default function Inspiration() {
         </section>
       ))}
 
+      <section id="music" aria-label={inspiration.music.label} className={styles.group}>
+        <ModuleLabel n={String(inspiration.groups.length + 1).padStart(2, "0")} text={inspiration.music.label} />
+        <RecordPlayer tracks={inspiration.music.tracks} />
+      </section>
+
       <footer className={styles.foot}>
-        <p className={styles.credits}>{inspiration.credits}</p>
+        <p className={styles.credits}>
+          {inspiration.credits} Turntable: <a href={model.href}>“{model.title}”</a> by{" "}
+          <a href={model.authorHref}>{model.author}</a>, <a href={model.licenseHref}>{model.license}</a> ({model.changes}).
+        </p>
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a full load on purpose: Lenis and the hero pin set up on load (see Nav) */}
         <a href="/" className={styles.back}>
           ← Back to the issue

@@ -1,0 +1,352 @@
+/* the music section: the turntable (left) and the record library (right) */
+.player {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  margin-top: 32px;
+}
+
+/* ---------- the deck ---------- */
+.deck {
+  position: relative;
+}
+/* a close-up on the record; its edges fade into the page, and its lower half fades out under
+   the now-playing overlay */
+.stage {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  mask-image:
+    radial-gradient(ellipse 58% 56% at 47% 45%, #000 60%, transparent 100%),
+    linear-gradient(to bottom, #000 50%, transparent 88%);
+  mask-composite: intersect;
+}
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.host,
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.canvas {
+  display: block;
+  animation: deckIn 0.8s ease both;
+}
+@keyframes deckIn {
+  from {
+    opacity: 0;
+  }
+}
+/* stands in until the 3D deck is ready (or without WebGL): a flat record, the cover as its label */
+.flat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(78%, 100vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 35%, rgba(0, 0, 0, 0.6) 35.5%, transparent 37%),
+    repeating-radial-gradient(circle, #0c0b10 0 2px, #15121c 2px 3px),
+    #0a090d;
+  box-shadow: 0 0 0 6px #15121d, 0 0 0 7px #3a3050;
+}
+.flatLabel {
+  position: absolute;
+  inset: 32%;
+  border-radius: 50%;
+  background: #2a2144 center / cover;
+}
+.flatSpin {
+  animation: flatSpin 1.8s linear infinite;
+}
+@keyframes flatSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.now {
+  margin-top: 8px;
+  text-align: center;
+}
+.nowTitle {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.1;
+  color: var(--text-strong);
+}
+.nowArtist {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tag {
+  color: var(--art);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+.progress span {
+  width: 4ch;
+  flex: none;
+}
+.progress span:last-child {
+  text-align: right;
+}
+/* the seek bar: a 3px track, filled with the seam up to the playhead */
+.seek {
+  --p: 0%;
+  flex: 1;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+.seek::-webkit-slider-runnable-track {
+  height: 3px;
+  background: var(--seam-x) 0 / var(--p) 100% no-repeat, #2a2833;
+}
+.seek::-moz-range-track {
+  height: 3px;
+  background: var(--seam-x) 0 / var(--p) 100% no-repeat, #2a2833;
+}
+.seek::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  margin-top: -4.5px;
+  border: 0;
+  background: var(--text-strong);
+  appearance: none;
+}
+.seek::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 0;
+  background: var(--text-strong);
+}
+.seek:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+.ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: rgba(18, 16, 24, 0.8);
+  color: var(--lav);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+}
+.ctrl:hover {
+  border-color: var(--lav);
+  color: var(--text-strong);
+}
+.ctrl svg {
+  fill: currentColor;
+}
+.ctrl svg.stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.play {
+  width: 64px;
+  height: 64px;
+  border-color: var(--collide);
+  background: var(--collide);
+  color: var(--bg);
+}
+.play:hover {
+  border-color: #b596ff;
+  background: #b596ff;
+  color: var(--bg);
+}
+.play svg {
+  width: 22px;
+  height: 22px;
+}
+.ctrl:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+.repeat[aria-pressed="true"] {
+  border-color: var(--collide);
+  color: var(--collide);
+}
+.note {
+  margin: 14px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--dim);
+}
+
+/* ---------- the record library ---------- */
+.libraryHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-2);
+}
+.libraryHead p {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 32px;
+  color: var(--text-strong);
+}
+.libraryHead span {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.row:hover {
+  background: rgba(154, 107, 255, 0.06);
+}
+/* the track that's on: a violet edge and a lighter title, not colour alone */
+.row[aria-current] {
+  background: #1c1629;
+  box-shadow: inset 3px 0 0 var(--collide);
+}
+.num,
+.len {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+.rowText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.rowTitle {
+  font-size: 17px;
+  color: var(--text-strong);
+  overflow-wrap: anywhere;
+}
+.row[aria-current] .rowTitle {
+  color: #c9b3ff;
+}
+.rowArtist {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* the playing row's number becomes a small moving equaliser */
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+.eq i {
+  width: 3px;
+  height: 100%;
+  background: var(--collide);
+  transform-origin: bottom;
+  animation: eq 0.9s ease-in-out infinite alternate;
+}
+.eq i:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.eq i:nth-child(3) {
+  animation-delay: -0.6s;
+}
+@keyframes eq {
+  from {
+    transform: scaleY(0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flatSpin,
+  .eq i {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .player {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .controls {
+    gap: 10px;
+  }
+  /* the record is small here: the now-playing block goes under it, reaching up only into the
+     faded bottom edge */
+  .overlay {
+    position: relative;
+    margin-top: -14%;
+  }
+}

@@ -122,14 +122,6 @@
   line-height: 1.5;
   color: var(--muted);
 }
-.listen {
-  margin-top: 4px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text);
-}
 
 /* ---------- footer ---------- */
 .foot {
@@ -148,6 +140,9 @@
 }
 .credits {
   margin: 0;
+}
+.credits a {
+  color: var(--soft);
 }
 .back {
   color: var(--text);
