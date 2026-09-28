@@ -31,6 +31,9 @@ export const manifesto = {
 
 export const site = {
   name: "Uefa",
+  realName: "Peerawit Umphaisri",
+  // other names you go by, in their own capitals (the a.k.a. line under the About signature)
+  aka: ["Yafuu", "yafuuyufaa", "N0tH1ma"],
   volume: "Vol. 01",
   year: 2026,
   emails: [
@@ -85,7 +88,7 @@ export const about = {
     alt: "AI-generated image: an orchid made of polished chrome, dripping, on black",
   },
   body: [
-    "I'm an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.",
+    `I'm ${site.realName}, ${site.name} to most people: an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.`,
     "Coursework keeps me grounded in the fundamentals (algorithms, computer architecture, programming language theory), and drawing keeps me honest about design.",
   ],
   facts: [

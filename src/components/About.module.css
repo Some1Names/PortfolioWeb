@@ -80,6 +80,26 @@
   text-transform: none;
   letter-spacing: 0;
 }
+/* two mono lines beside the signature: the a.k.a. line (on the signature's baseline) over the school */
+.stillLines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.aka {
+  color: var(--soft);
+  text-transform: none;
+  letter-spacing: 1px;
+}
+.aka b {
+  font-weight: inherit;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.akaName {
+  white-space: nowrap;
+}
 
 /* seam in the empty middle column, between the art page (portrait) and the web page (text) */
 .seam {
@@ -205,5 +225,15 @@
   .fact {
     flex-direction: column;
     gap: 4px;
+  }
+  /* tighter, so the a.k.a. line fits on one row down to 375px wide */
+  .stillFoot {
+    gap: 12px;
+  }
+  .aka {
+    letter-spacing: 0.3px;
+  }
+  .aka b {
+    letter-spacing: 1px;
   }
 }

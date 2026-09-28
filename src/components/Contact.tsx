@@ -111,7 +111,7 @@ export default function Contact() {
 
       <Folio page={7} className={styles.folio} />
       <footer className={styles.footer}>
-        <span>© {site.year} Uefa</span>
+        <span>© {site.year} {site.realName}</span>
         <span>Built with Next.js + Lenis</span>
         <a href="#top">Back to top ↑</a>
       </footer>

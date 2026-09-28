@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { about } from "@/data/site";
+import { about, site } from "@/data/site";
 import Cutout from "./motifs/Cutout";
 import Tag from "./hud/Tag";
 import Seam from "./motifs/Seam";
@@ -76,9 +76,24 @@ export default function About() {
         />
         {/* starts left of centre so the label (~225px) stays clear of the text column down to 901px */}
         <Tag label={art.fig} x={48} y={88} to={{ x: 40, y: 60 }} side="collide" phone={{ x: 0, y: 2 }} />
+        {/* the name, then the other names you go by (in their own capitals) over the school. Each
+            name keeps its dot and never splits, so a narrow screen breaks between names, before a dot */}
         <figcaption className={styles.stillFoot}>
-          <span className={styles.sig}>Uefa</span>
-          <span>ACS · KMUTT · Thailand</span>
+          <span className={styles.sig}>{site.name}</span>
+          <div className={styles.stillLines}>
+            <span className={styles.aka} data-part="aka">
+              <b>a.k.a.</b>{" "}
+              {site.aka.map((n, i) => (
+                <Fragment key={n}>
+                  {i > 0 && " "}
+                  <span className={styles.akaName} data-part="aka-name">
+                    {i > 0 ? `· ${n}` : n}
+                  </span>
+                </Fragment>
+              ))}
+            </span>
+            <span>ACS · KMUTT · Thailand</span>
+          </div>
         </figcaption>
       </figure>
 
