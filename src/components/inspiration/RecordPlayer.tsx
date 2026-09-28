@@ -4,6 +4,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import type { Track } from "@/data/inspiration";
 import { playerReducer, initialPlayer, formatTime, type PlayerAction, type PlayerState } from "./player";
 import Turntable from "./Turntable";
+import Threads from "../reactbits/Threads";
 import styles from "./RecordPlayer.module.css";
 
 // The music section: a turntable (left) and the record library (right). It plays Apple Music's
@@ -46,6 +47,8 @@ export default function RecordPlayer({ tracks }: { tracks: Track[] }) {
 
   return (
     <div className={styles.player} data-state={s.playing ? "playing" : "paused"} data-index={s.index}>
+      {/* behind the section: React Bits Threads, swelling while a track plays */}
+      <Threads className={styles.threads} color="#9a6bff" amplitude={s.playing ? 1.5 : 0.5} distance={0.25} />
       <div className={styles.deck}>
         <Turntable cover={track.cover} playing={s.playing} progress={p} />
 
