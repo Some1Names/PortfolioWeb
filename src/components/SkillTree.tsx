@@ -389,7 +389,7 @@ export default function SkillTree() {
           </div>
         ))}
       </div>
-      <Folio page={6} />
+      <Folio page={5} />
     </section>
   );
 }

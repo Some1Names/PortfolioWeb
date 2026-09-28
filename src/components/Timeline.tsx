@@ -80,7 +80,7 @@ export default function Timeline() {
         })}
         </ol>
       </div>
-      <Folio page={5} />
+      <Folio page={4} />
     </section>
   );
 }

@@ -216,7 +216,7 @@ export default function Work({ parties }: { parties: Record<string, Member[]> })
           <span className={styles.writeupArrow}>↗</span>
         </a>
       </div>
-      <Folio page={3} />
+      <Folio page={2} />
     </section>
   );
 }

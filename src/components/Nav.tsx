@@ -5,7 +5,6 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import styles from "./Nav.module.css";
 
 const items = [
-  { label: "Manifesto", href: "#manifesto" },
   { label: "Work", href: "#work" },
   { label: "About", href: "#about" },
   { label: "Timeline", href: "#timeline" },

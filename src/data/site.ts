@@ -17,10 +17,11 @@ export type TagSpec = {
 
 export type Side = "art" | "web" | "collide";
 
-// The site's thesis, used on the cover and the 00 — Manifesto spread
+// The site's thesis, used on the cover and at the end of the loading intro
 export const thesis = { lead: "When", art: "art", web: "web", end: "collide." };
 
-// DRAFT copy for the manifesto spread: rewrite these in your own words.
+// DRAFT copy for the manifesto: one paragraph in About, under the statement (the last line is set
+// apart, brighter). Rewrite these in your own words.
 export const manifesto = {
   lines: [
     "I draw before I code. The sketch decides how a page should feel; the code decides how it behaves.",

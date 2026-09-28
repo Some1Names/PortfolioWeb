@@ -109,7 +109,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <Folio page={7} className={styles.folio} />
+      <Folio page={6} className={styles.folio} />
       <footer className={styles.footer}>
         <span>© {site.year} {site.realName}</span>
         <span>Built with Next.js + Lenis</span>

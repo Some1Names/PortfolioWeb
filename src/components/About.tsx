@@ -2,13 +2,14 @@
 
 import { Fragment, useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { about, site } from "@/data/site";
+import { about, site, manifesto } from "@/data/site";
 import Cutout from "./motifs/Cutout";
 import Tag from "./hud/Tag";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Crosshairs from "./hud/Crosshairs";
+import DecryptedText from "./reactbits/DecryptedText";
 import styles from "./About.module.css";
 
 export default function About() {
@@ -55,6 +56,9 @@ export default function About() {
   );
 
   const words = about.statement.split(" ");
+  // the manifesto, as one paragraph with its closing line set apart
+  const credo = manifesto.lines.slice(0, -1).join(" ");
+  const credoEnd = manifesto.lines[manifesto.lines.length - 1];
   const art = about.portrait;
 
   return (
@@ -108,6 +112,17 @@ export default function About() {
             </span>
           ))}
         </h2>
+        {/* the manifesto, darkroom style: mono capitals that decrypt as they scroll in */}
+        <p className={styles.manifesto} data-part="manifesto">
+          <DecryptedText text={credo} duration={2200} encryptedClassName={styles.encrypted} />
+          <DecryptedText
+            text={credoEnd}
+            delay={1900}
+            duration={700}
+            className={styles.credoEnd}
+            encryptedClassName={styles.encrypted}
+          />
+        </p>
         <p className={styles.lead}>{about.body[0]}</p>
         <p className={styles.sub}>{about.body[1]}</p>
         <dl className={`${styles.facts} glass`}>
@@ -122,7 +137,7 @@ export default function About() {
           What inspires me →
         </a>
       </div>
-      <Folio page={4} />
+      <Folio page={3} />
     </section>
   );
 }

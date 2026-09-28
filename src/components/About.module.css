@@ -129,6 +129,25 @@
 .hl {
   color: var(--art);
 }
+/* the manifesto, darkroom style: mono capitals under the statement, the closing line brighter */
+.manifesto {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.credoEnd {
+  margin-top: 1.2em;
+  color: var(--text-strong);
+}
+/* the still-scrambled tail while it decrypts */
+.encrypted {
+  color: var(--collide);
+  opacity: 0.8;
+}
 .lead {
   margin: 0;
   font-size: 18px;
@@ -211,7 +230,8 @@
   .grid {
     left: 0;
   }
-  .statement {
+  .statement,
+  .manifesto {
     order: 3;
   }
   .lead,
