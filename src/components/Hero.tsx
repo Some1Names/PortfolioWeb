@@ -201,17 +201,12 @@ export default function Hero() {
         <div />
         <span>UF—2026—V01—TH</span>
       </div>
-      <CutPanel
-        corners="tr-bl"
-        notch={10}
-        className={`${styles.readout} ${styles.cornerRight} ${styles.fadeIn}`}
-        data-hero="readout"
-      >
+      <div className={`${styles.readout} ${styles.cornerRight} ${styles.fadeIn}`} data-hero="readout">
         <span>{cover.coords}</span>
         <span>
           SYS_TIME <SysTime /> · UTC+7
         </span>
-      </CutPanel>
+      </div>
 
       {/* ---------- under the small print: the thesis (left) and your roles (right) ---------- */}
       <div className={`${styles.intro} ${styles.fadeIn} ${styles.driftFast}`} data-hero="intro">
