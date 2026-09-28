@@ -23,7 +23,7 @@ const PIVOT = "pCylinder16";
 const PLATTER = "pCylinder2";
 const HEADSHELL = "pCylinder30";
 // the camera, relative to the record's centre (x, y, z): where it sits and what it looks at
-const CAM = { fov: 30, from: [1.45, 2.0, 0], at: [0, 0, -0.02] };
+const CAM = { fov: 30, from: [1.7, 2.35, 0], at: [0, 0, -0.02] };
 const part = (name: string) => name.split("_")[0];
 
 type Api = { setCover: (url: string) => void; kick: () => void };
@@ -287,16 +287,21 @@ export default function Turntable({ cover, playing, progress }: { cover: string;
           if (!raf && visible) raf = requestAnimationFrame(frame);
         };
 
-        // the record's centre sits at --record-x (a share of the width, set in CSS): the view is
-        // slid sideways with the camera's film offset, so the perspective doesn't change
+        // the record's centre sits exactly at --record-x (a share of the width, set in CSS, which
+        // also centres the now-playing block there): the view is slid sideways with the camera's
+        // film offset, a pure shift, so the perspective doesn't change
+        const recordTop = new T.Vector3(centre.x, platter.max.y + 0.012, centre.z);
         const fit = () => {
           const { width, height } = mount.getBoundingClientRect();
           if (!width || !height) return;
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
+          camera.filmOffset = 0;
+          camera.updateProjectionMatrix();
           const x = parseFloat(getComputedStyle(el).getPropertyValue("--record-x")) || 0.5;
+          const at = recordTop.clone().project(camera).x; // where it falls unshifted, -1..1
           const tan = Math.tan(T.MathUtils.degToRad(camera.fov / 2));
-          camera.filmOffset = (0.5 - x) * camera.getFilmWidth() * 2 * tan * camera.aspect;
+          camera.filmOffset = ((at + 1 - 2 * x) / 2) * camera.getFilmWidth() * 2 * tan * camera.aspect;
           camera.updateProjectionMatrix();
           kick();
         };
