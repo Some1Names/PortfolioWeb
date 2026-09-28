@@ -86,6 +86,11 @@ export const projects: Project[] = [
   },
 ];
 
+// the newest project (highest year; the first listed wins a tie), shown on the cover
+export const latestProject = projects.reduce((a, b) => (Number(b.year) > Number(a.year) ? b : a));
+// each project's anchor in the Work section
+export const projectAnchor = (p: Project) => `project-${p.id}`;
+
 export const writeup = {
   id: "03",
   kicker: "Write-up · [READ TIME]",

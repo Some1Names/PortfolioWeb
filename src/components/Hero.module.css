@@ -226,25 +226,8 @@
   letter-spacing: 3px;
 }
 
-/* bottom corners: two small tiles (left) and the status card (right).
+/* bottom corners: your newest project (left) and the status card (right), mirror images.
    .hero raises specificity over CutPanel's own position: relative */
-.tiles {
-  position: absolute;
-  z-index: 4;
-  left: var(--gutter);
-  bottom: 48px;
-  display: flex;
-  gap: 12px;
-  margin: 0;
-}
-.tile {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 150px;
-  padding: 14px 20px 16px;
-}
-.tile dt,
 .cardLabel {
   font-family: var(--mono);
   font-size: 11px;
@@ -252,15 +235,9 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-.tile dd {
-  margin: 0;
-  font-size: 20px;
-  color: var(--text-strong);
-}
 .hero .card {
   position: absolute;
   z-index: 4;
-  right: var(--gutter);
   bottom: 48px;
   width: 300px;
   display: flex;
@@ -268,6 +245,12 @@
   justify-content: space-between;
   gap: 16px;
   padding: 16px 16px 16px 20px;
+}
+.hero .cardLeft {
+  left: var(--gutter);
+}
+.hero .cardRight {
+  right: var(--gutter);
 }
 .cardText {
   display: flex;
@@ -376,7 +359,7 @@
   /* phones: the headline block on top, the name behind you, the status card along the bottom */
   .caption,
   .roles,
-  .tiles,
+  .hero .cardLeft,
   .barcode,
   .readout,
   .circle,

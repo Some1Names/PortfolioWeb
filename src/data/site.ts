@@ -115,8 +115,8 @@ export const heroFrames = {
 // PNG/WebP of yourself in public/art/ and set portrait.src; "" shows a placeholder outline.
 // Tags point at the portrait box (see TagSpec). "wide" tags show only at 1400px+.
 // Around it: the thesis headline (top left, with `intro` under it), your roles (top right, with
-// `focus` under it), two small tiles (bottom left) and a card whose arrow goes to Contact
-// (bottom right). In intro and focus, words between *stars* are set bold.
+// `focus` under it), your newest project (bottom left, from projects.ts) and a card whose arrow
+// goes to Contact (bottom right). In intro and focus, words between *stars* are set bold.
 export const cover: {
   portrait: { src: string; alt: string };
   tags: TagSpec[];
@@ -124,7 +124,6 @@ export const cover: {
   intro: string;
   roles: string[];
   focus: string;
-  tiles: { label: string; value: string }[];
   card: { label: string; value: string; foot: string };
 } = {
   portrait: { src: "", alt: "Portrait of Uefa" },
@@ -138,9 +137,5 @@ export const cover: {
   intro: "Applied Computer Science (*ACS*) student at *KMUTT*.",
   roles: ["Manga artist", "Web developer"],
   focus: "I build web applications in *Next.js* and *TypeScript*, with a focus on motion and visual systems.",
-  tiles: [
-    { label: "Focus", value: "Web / Motion" },
-    { label: "Stack", value: "Next.js · TS" },
-  ],
   card: { label: "Status", value: "Open to internships", foot: "Year · 2026" },
 };

@@ -3,7 +3,7 @@
 import { Fragment, useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { projects, writeup, type Member, type Project } from "@/data/projects";
+import { projects, writeup, projectAnchor, type Member, type Project } from "@/data/projects";
 import Seam from "./motifs/Seam";
 import ArtSlot from "./motifs/ArtSlot";
 import Folio from "./motifs/Folio";
@@ -132,7 +132,7 @@ export default function Work({ parties }: { parties: Record<string, Member[]> })
 
       <div className={styles.list}>
         {projects.map((p) => (
-          <article key={p.id} className={styles.row}>
+          <article key={p.id} id={projectAnchor(p)} className={styles.row}>
             {/* art page: the picture */}
             <div className={styles.media}>
               <div className={styles.mediaInner}>

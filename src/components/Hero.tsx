@@ -5,6 +5,7 @@ import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { onIntroDone } from "@/lib/intro";
 import { starField } from "@/lib/stars";
 import { site, heroFrames, cover, thesis } from "@/data/site";
+import { latestProject, projectAnchor } from "@/data/projects";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import CutPanel from "./hud/CutPanel";
@@ -233,16 +234,24 @@ export default function Hero() {
         </p>
       </div>
 
-      {/* ---------- bottom corners: two tiles (left) and the status card (right) ---------- */}
-      <dl className={`${styles.tiles} ${styles.fadeIn} ${styles.driftFast}`} data-hero="tiles">
-        {cover.tiles.map((t) => (
-          <CutPanel key={t.label} notch={10} className={styles.tile}>
-            <dt>{t.label}</dt>
-            <dd>{t.value}</dd>
-          </CutPanel>
-        ))}
-      </dl>
-      <CutPanel corners="tr-bl" className={`${styles.card} ${styles.fadeIn} ${styles.driftFast}`} data-hero="card">
+      {/* ---------- bottom corners: your newest project (left) and the status card (right) ---------- */}
+      <CutPanel className={`${styles.card} ${styles.cardLeft} ${styles.fadeIn} ${styles.driftFast}`} data-hero="latest">
+        <div className={styles.cardText}>
+          <span className={styles.cardLabel}>Latest work</span>
+          <span className={styles.cardValue}>{latestProject.title}</span>
+          <span className={styles.cardLabel}>
+            {latestProject.year} · {latestProject.status}
+          </span>
+        </div>
+        <a href={`#${projectAnchor(latestProject)}`} className={styles.cardArrow} aria-label={`See ${latestProject.title}`}>
+          ↗
+        </a>
+      </CutPanel>
+      <CutPanel
+        corners="tr-bl"
+        className={`${styles.card} ${styles.cardRight} ${styles.fadeIn} ${styles.driftFast}`}
+        data-hero="card"
+      >
         <div className={styles.cardText}>
           <span className={styles.cardLabel}>{cover.card.label}</span>
           <span className={styles.cardValue}>{cover.card.value}</span>
