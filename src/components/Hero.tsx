@@ -109,9 +109,9 @@ export default function Hero() {
             ?.to(q(`.${styles.rays}`), { opacity: 0.3, ease: "none" }, 0)
             .to(q(`.${styles.name}`), { yPercent: -40, opacity: 0, filter: "blur(12px)", ease: "none" }, 0)
             .to(q(`.${styles.driftFast}`), { y: -48, opacity: 0.35, ease: "none" }, 0)
-            // cover depth: the tags move faster than you
-            .to(q('[data-layer="portrait"]'), { yPercent: -8, ease: "none" }, 0)
-            .to(q('[data-layer="tags"]'), { yPercent: -16, ease: "none" }, 0);
+            // cover depth: the portrait stays standing on the bottom edge while the tags drift up
+            // past it (8%, as far as they used to move relative to it)
+            .to(q('[data-layer="tags"]'), { yPercent: -8, ease: "none" }, 0);
         });
       };
       // contextSafe keeps tweens made later (after the hand-over) in this component's cleanup
