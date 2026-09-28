@@ -157,7 +157,14 @@ export default function Threads({ color = "#ffffff", amplitude = 1, distance = 0
     if (!container) return;
 
     const still = prefersReducedMotion();
-    const renderer = new Renderer({ alpha: true });
+    // no WebGL (switched off, blocked, or the GPU's contexts used up): the background stays empty
+    // rather than throwing, which would take the whole page down with it
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ alpha: true });
+    } catch {
+      return;
+    }
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);

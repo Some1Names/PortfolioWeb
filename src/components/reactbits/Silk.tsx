@@ -102,7 +102,14 @@ export default function Silk({
     if (!isVisible || !container) return;
 
     const still = prefersReducedMotion();
-    const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 1.5) });
+    // no WebGL (switched off, blocked, or the GPU's contexts used up): the background stays empty
+    // rather than throwing, which would take the whole page down with it
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 1.5) });
+    } catch {
+      return;
+    }
     const gl = renderer.gl;
     gl.canvas.style.width = "100%";
     gl.canvas.style.height = "100%";
