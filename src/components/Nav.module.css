@@ -1,109 +1,108 @@
+/* a thin strip along the top: a hairline across the page, with small tabs sitting on it */
 .nav {
+  --nav-line: #2e2447;
+  --tab: #1a1426;
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
-  height: 64px;
+  height: 24px;
   padding: 0 var(--gutter);
+  display: grid;
+  /* links centred on the page, whatever the widths of the two ends */
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.nav::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  margin-top: -0.5px;
+  background: var(--nav-line);
+}
+
+.start,
+.links,
+.end {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border-width: 0 0 1px 0;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-/* doubled class beats .glass so the bar stays readable over content */
-.nav.nav {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)), rgba(10, 10, 12, 0.6);
-}
-/* slid up while scrolling down; back on scroll up, or when a link inside gets keyboard focus */
-.navHidden:not(:focus-within) {
-  transform: translateY(-100%);
-}
-
-.logo {
-  font-family: var(--display);
-  font-size: 26px;
-  text-decoration: none;
-}
-
-.links {
-  display: flex;
+  gap: 6px;
   height: 100%;
-  font-family: var(--mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
 }
-.link {
+.end {
+  justify-content: flex-end;
+}
+
+/* a tab: the whole 24px strip is the hit area, the fill is a 17px band through its middle */
+.tab {
+  --tab-bg: var(--tab);
   position: relative;
   display: flex;
   align-items: center;
-  padding: 0 22px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  height: 24px;
+  padding: 0 7px;
+  background: linear-gradient(var(--tab-bg), var(--tab-bg)) center / 100% 17px no-repeat;
+  color: var(--lav);
   text-decoration: none;
   white-space: nowrap;
 }
-.link:last-child {
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-.link[aria-current] {
+a.tab:hover {
   color: var(--text-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
-/* sits inside the left padding so the labels never shift when the current section changes */
-.link[aria-current]::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  margin-top: -3px;
-  background: var(--collide);
+/* the section you're reading (or the page you're on) */
+.tab[aria-current] {
+  --tab-bg: var(--collide);
+  color: var(--bg);
 }
-/* the supplement's "+", in place of a section number */
-.plus {
-  color: var(--collide);
+a.tab[aria-current]:hover {
+  color: var(--bg);
+}
+.tab[aria-current] .plus {
+  color: inherit;
 }
 
-/* XP gauge: fixed on its own, above the nav. While the nav is shown it sits in the nav's
-   right-hand slot and reads as part of it; when the nav hides it stays, as a small glass chip.
-   The 14px padding + 1px border hang into the gutter so the gauge lines up where it always was. */
+.brand {
+  color: var(--text-strong);
+}
+.plus {
+  color: var(--art);
+}
+
+/* the art → web seam, as a row of squares */
+.squares {
+  gap: 2px;
+}
+.squares i {
+  display: block;
+  width: 7px;
+  height: 7px;
+}
+.squares i:nth-child(1) { background: #ff6ad5; }
+.squares i:nth-child(2) { background: #e46ce6; }
+.squares i:nth-child(3) { background: #bf6cf5; }
+.squares i:nth-child(4) { background: #9a6bff; }
+.squares i:nth-child(5) { background: #7b7bff; }
+.squares i:nth-child(6) { background: #5c8aff; }
+
+/* XP gauge: one continuous bar */
 .xp {
-  position: fixed;
-  z-index: 51;
-  top: 14px;
-  right: calc(var(--gutter) - 15px);
-  height: 36px;
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid transparent;
-  font-family: var(--mono);
-  font-size: 11px;
+  gap: 8px;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  transition:
-    right 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.4s,
-    visibility 0.4s,
-    background-color 0.4s,
-    border-color 0.4s,
-    backdrop-filter 0.4s;
-}
-.xpAlone {
-  border-color: rgba(255, 255, 255, 0.12);
-  background-color: rgba(18, 18, 22, 0.72);
-  backdrop-filter: blur(24px) saturate(120%);
-}
-/* same width as the gauge's contents */
-.xpSpace {
-  flex: none;
-  width: 194px;
 }
 .track {
-  width: 120px;
-  height: 4px;
+  width: 72px;
+  height: 3px;
   background: #2a2833;
 }
 .fill {
@@ -113,133 +112,95 @@
   transform: scaleX(0);
 }
 .xpValue {
-  color: var(--text);
-  width: 34px;
+  width: 3ch;
+  color: var(--text-strong);
 }
 
 .menuBtn {
   display: none;
-  min-height: 64px;
-  min-width: 88px;
-  margin-right: calc(var(--gutter) * -1);
-  border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
-  background: transparent;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  min-width: 56px;
+  justify-content: center;
+  border: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
   cursor: pointer;
 }
+.menuBtn[aria-expanded="true"] {
+  --tab-bg: var(--collide);
+  color: var(--bg);
+}
 
-/* scrolls on its own when the rows don't fit (short or landscape phones), so the last one,
-   + Inspiration, stays reachable */
+/* phones: the section list drops down under the strip. It scrolls on its own when the rows
+   don't fit (short or landscape phones), so the last one, + Inspiration, stays reachable */
 .sheet {
   position: absolute;
-  top: 64px;
-  left: 0;
-  right: 0;
+  top: 30px;
+  left: 12px;
+  right: 12px;
   display: flex;
   flex-direction: column;
-  max-height: calc(100dvh - 64px);
+  max-height: calc(100dvh - 42px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  border: 1px solid var(--nav-line);
+  background: #120e18;
 }
 .sheet a {
   display: flex;
-  gap: 16px;
-  align-items: baseline;
-  padding: 18px var(--gutter);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-family: var(--display);
-  font-size: 32px;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-top: 1px solid var(--nav-line);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: var(--lav);
   text-decoration: none;
 }
-.sheet a span {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
+.sheet a:first-child {
+  border-top: 0;
 }
-/* bar + colour, so the current section is not marked by colour alone */
+/* a square + colour, so the current section is not marked by colour alone */
 .sheet a[aria-current] {
-  box-shadow: inset 3px 0 0 var(--collide);
-}
-.sheet a[aria-current] span {
   color: var(--collide);
 }
+.sheet a[aria-current]::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+}
 
-/* seven links + logo + XP bar need tighter links from 1360px down */
-@media (max-width: 1360px) {
-  .link {
-    padding: 0 14px;
-  }
-  .link[aria-current]::before {
-    left: 4px;
-  }
-}
-/* 901–1240px: the links fill the nav, so the gauge only shows once the nav has slid away */
-@media (max-width: 1240px) {
-  .xpSpace {
-    display: none;
-  }
-  .xp {
-    opacity: 0;
-    visibility: hidden;
-  }
-  .xpAlone {
-    opacity: 1;
-    visibility: visible;
-  }
-}
-/* 901–1100px: tighter still, so all seven fit */
+/* 901–1100px: the links take most of the strip */
 @media (max-width: 1100px) {
   .links {
-    letter-spacing: 1px;
+    gap: 4px;
   }
-  .link {
-    padding: 0 10px;
+  .tab {
+    padding: 0 6px;
   }
-  .link[aria-current]::before {
-    left: 2px;
+  .track {
+    width: 48px;
   }
 }
 @media (max-width: 900px) {
+  .nav {
+    grid-template-columns: 1fr auto;
+  }
   .links {
     display: none;
   }
   .menuBtn {
-    display: block;
-  }
-  .nav {
-    height: 56px;
-  }
-  .sheet {
-    top: 56px;
-    max-height: calc(100dvh - 56px);
-  }
-  .menuBtn {
-    min-height: 56px;
-  }
-  /* phones: a shorter gauge in the nav, between the logo and the 88px Menu button;
-     when the nav hides it slides over to the corner */
-  .xp {
-    opacity: 1;
-    visibility: visible;
-    top: 10px;
-    right: 100px;
-    padding: 0 10px;
-    gap: 8px;
-  }
-  .xpAlone {
-    right: calc(var(--gutter) - 11px);
+    display: flex;
   }
   .track {
-    width: 56px;
+    width: 40px;
   }
 }
 @media (max-width: 360px) {
+  .squares,
   .track {
-    width: 32px;
+    display: none;
   }
 }

@@ -9,7 +9,7 @@
 /* ---------- header ---------- */
 .head {
   position: relative;
-  padding: 160px var(--gutter) 72px;
+  padding: 120px var(--gutter) 72px;
   border-bottom: 1px solid var(--line);
 }
 .kicker {
@@ -205,7 +205,7 @@
 
 @media (max-width: 900px) {
   .head {
-    padding: 112px var(--gutter) 48px;
+    padding: 80px var(--gutter) 48px;
   }
   .group {
     padding-top: 56px;

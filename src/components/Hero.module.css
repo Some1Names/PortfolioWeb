@@ -75,12 +75,12 @@
   mix-blend-mode: screen;
 }
 /* the seam (Seam component supplies width and gradient); inset so its registration
-   marks clear the fixed nav (64px) and the hero's bottom edge */
+   marks clear the fixed nav (24px) and the hero's bottom edge */
 .axis {
   position: absolute;
   left: 50%;
-  top: 76px;
-  height: calc(100% - 100px);
+  top: 36px;
+  height: calc(100% - 60px);
   margin-left: -1px;
   opacity: 0.55;
 }
@@ -120,7 +120,7 @@
    corner block, the 235px readout, plus a 24px gap, on both sides; its text needs ~280px) */
 .caption {
   position: absolute;
-  top: 84px;
+  top: 44px;
   left: 0;
   right: 0;
   width: min(500px, calc(100vw - 2 * var(--gutter) - 520px));
@@ -293,7 +293,7 @@
 .hero .cornerRight {
   position: absolute;
   z-index: 4;
-  top: 84px;
+  top: 44px;
 }
 .hero .cornerLeft {
   left: var(--gutter);
@@ -308,10 +308,10 @@
     height: 100svh;
     min-height: 760px;
   }
-  /* nav is 56px on phones */
+  /* the nav is 24px on phones too */
   .axis {
-    top: 68px;
-    height: calc(100% - 92px);
+    top: 36px;
+    height: calc(100% - 60px);
   }
   .caption,
   .right,
