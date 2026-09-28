@@ -1,9 +1,7 @@
+/* 00 — Manifesto: a pinned stage where "art" and "WEB" collide, then the lines and a drawing slot.
+   Everything here is laid out in its finished state; the scroll timeline animates into it. */
 .manifesto {
   position: relative;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 2px minmax(0, 1fr);
-  min-height: 100vh;
   background: var(--bg-solid);
   border-top: 1px solid var(--line);
 }
@@ -15,96 +13,125 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 28px;
-  /* bottom padding leaves room for "collide." across the seam */
-  padding: 96px var(--gutter) 220px;
-}
-/* GSAP hooks for the slide-in; they need a declaration or the class is dropped */
-.art {
-  --hook: art-page;
-}
-.web {
-  --hook: web-page;
-}
-/* sized to stay on one line in half the screen ("When art" is ~4.9× its font size wide) */
-.bigArt {
+
+/* ---------- the stage ---------- */
+.stage {
   position: relative;
-  z-index: 1;
-  margin: 0;
-  font-family: var(--display);
-  font-size: clamp(64px, 8.4vw, 170px);
-  line-height: 0.9;
-  letter-spacing: -2px;
-  color: var(--text-strong);
+  height: 100vh;
+  min-height: 620px;
+  overflow: hidden;
 }
-.bigArt span {
-  color: var(--art);
-}
-/* height follows the screen so the whole spread fits one viewport */
-/* the painting has no frame: its edges fade into the page, and it tucks under the headline */
-.figure {
-  position: relative;
-  margin: -40px 0 0;
-  height: clamp(230px, calc(100vh - 500px), 520px);
-  aspect-ratio: 4 / 5;
-  max-width: 100%;
-}
-.painting {
+.label {
   position: absolute;
-  inset: 0;
+  top: 96px;
+  left: var(--gutter);
+  width: min(360px, 40%);
 }
-.bigWeb {
+/* a HUD readout: the distance between the words, down to IMPACT */
+.readout {
+  position: absolute;
+  top: 96px;
+  right: var(--gutter);
   margin: 0;
   font-family: var(--mono);
-  font-size: clamp(56px, 7vw, 120px);
-  line-height: 0.9;
-  letter-spacing: -3px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.readout b {
+  font-weight: 500;
+  color: var(--text-strong);
+}
+.hit,
+.hit b {
+  color: var(--art);
+}
+
+/* the impact: a flash, a shockwave ring, and the seam through the centre */
+.flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(242, 240, 247, 0.45), rgba(154, 107, 255, 0.12) 30%, transparent 60%);
+}
+.ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44vmin;
+  height: 44vmin;
+  margin: -22vmin 0 0 -22vmin;
+  border: 2px solid var(--collide);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.seam {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  height: 76%;
+  margin-left: -1px;
+  opacity: 0.45;
+  transform-origin: 50% 50%;
+}
+
+/* the two words, in their lockup: "art" ends just left of the centre, "WEB" starts just right
+   of it, the × between them. (The timeline scales the row up at the impact.) */
+.row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 24%;
+  z-index: 2;
+  height: 1em;
+  font-size: clamp(40px, 6.2vw, 110px);
+  line-height: 1;
+  pointer-events: none;
+}
+.art,
+.web {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+.art {
+  right: calc(50% + 0.35em);
+  font-family: var(--display);
+  color: var(--art);
+}
+.web {
+  left: calc(50% + 0.35em);
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: -0.04em;
   text-transform: uppercase;
   color: var(--web);
 }
-.amp {
+.times {
+  position: absolute;
+  top: 0.12em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 0.6em;
   color: var(--collide);
 }
-.code {
-  font-size: 12px;
-}
-.lines {
-  max-width: 460px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.lines p {
-  margin: 0;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--soft);
-}
-.lines p:last-child {
-  color: var(--text);
-}
-/* the still-scrambled tail of a manifesto line while it decrypts */
-.encrypted {
-  color: var(--collide);
-  opacity: 0.8;
-}
-.seam {
-  transform-origin: top left;
-}
-/* sized and placed by screen height too, so it never runs into the manifesto lines */
+
+/* "collide.", broken out of the impact */
 .collide {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 7vh;
+  top: 40%;
+  z-index: 1;
   margin: 0;
   text-align: center;
   font-family: var(--display);
-  font-size: clamp(88px, min(12vw, 20vh), 210px);
+  font-size: clamp(88px, min(14vw, 26vh), 250px);
   line-height: 1;
   color: var(--text-strong);
   pointer-events: none;
@@ -113,27 +140,89 @@
   border-bottom: 4px solid var(--collide);
 }
 
+/* ---------- after the stage: the three lines and a drawing slot ---------- */
+.after {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+  padding: 24px var(--gutter) 120px;
+}
+.lines {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  margin: 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--line-2);
+  list-style: none;
+}
+.lines li {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.num {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--collide);
+}
+.lines p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--soft);
+}
+.lines li:last-child p {
+  color: var(--text-strong);
+}
+/* the still-scrambled tail of a line while it decrypts */
+.encrypted {
+  color: var(--collide);
+  opacity: 0.8;
+}
+.slot {
+  aspect-ratio: 3 / 4;
+}
+
 @media (max-width: 900px) {
-  .manifesto {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: 0;
+  .stage {
+    height: 100svh;
+    min-height: 560px;
   }
-  .page {
-    padding: 72px var(--gutter) 48px;
-    gap: 20px;
+  .label {
+    top: 72px;
+    width: 50%;
   }
-  .seam {
-    margin: 0 var(--gutter);
+  /* too narrow for the label and the readout on one line: the readout goes to the bottom left,
+     opposite the folio */
+  .readout {
+    top: auto;
+    bottom: 20px;
+    left: var(--gutter);
+    right: auto;
+    font-size: 11px;
+    letter-spacing: 1.5px;
   }
-  .figure {
-    margin: 0;
-    width: 100%;
-    height: auto;
+  .row {
+    top: 28%;
+    font-size: clamp(34px, 11vw, 64px);
   }
   .collide {
-    position: static;
-    padding: 0 var(--gutter) 88px;
-    text-align: left;
-    font-size: clamp(72px, 22vw, 120px);
+    top: 44%;
+    font-size: clamp(64px, 22vw, 120px);
+  }
+  .after {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    padding-bottom: 88px;
+  }
+  .lines {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .lines p {
+    font-size: 16px;
   }
 }

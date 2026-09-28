@@ -27,11 +27,9 @@ export const manifesto = {
     "A game hidden inside an event site, a manga reader, this issue: each one started as a picture and ended as a page.",
     "This is where the two meet.",
   ],
-  // the image beside the manifesto: one of your drawings in public/art/, or a stand-in until then.
-  // Keep "AI" in the caption while it's a generated image.
-  fig: "Fig. A — Fresco × chrome · AI",
-  artSrc: "/art/manifesto.webp",
-  artAlt: "AI-generated image: a classical painted figure in draped robes, with liquid chrome pouring off her shoulder",
+  // the drawing beside the manifesto lines: one of yours in public/art/ (e.g. "/art/my-drawing.webp",
+  // with alt describing it); "" shows an empty slot until then
+  image: { src: "", alt: "", fig: "Fig. A — Drawing" },
 };
 
 export const site = {
