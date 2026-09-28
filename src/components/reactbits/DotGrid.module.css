@@ -1,0 +1,18 @@
+/* zero specificity so the page can position and layer it */
+:where(.layer) {
+  position: absolute;
+  inset: 0;
+}
+.layer {
+  overflow: hidden;
+  pointer-events: none;
+}
+/* about two screens tall; the component moves it down the section with a transform */
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  will-change: transform;
+}

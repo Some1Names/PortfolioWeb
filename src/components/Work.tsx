@@ -9,6 +9,7 @@ import ArtSlot from "./motifs/ArtSlot";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Crosshairs from "./hud/Crosshairs";
+import DotGrid from "./reactbits/DotGrid";
 import styles from "./Work.module.css";
 
 // Decoration drawn behind a project's placeholder until a real screenshot exists
@@ -118,6 +119,7 @@ export default function Work({ parties }: { parties: Record<string, Member[]> })
 
   return (
     <section id="work" ref={root} className={styles.work}>
+      <DotGrid className={styles.dots} />
       <Crosshairs />
       <div className={styles.sheet}>Sheet 01 / 05 ——— Selected projects, 2025–2026</div>
       <header className={`section-head ${styles.head}`}>

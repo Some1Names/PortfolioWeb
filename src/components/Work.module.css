@@ -1,10 +1,15 @@
 .work {
   position: relative;
+  isolation: isolate;
   padding: 140px var(--gutter) 120px;
   display: flex;
   flex-direction: column;
   gap: 56px;
   background: var(--bg-solid);
+}
+/* the dot grid, behind everything in the section (the cards are opaque, so it shows around them) */
+.dots {
+  z-index: -1;
 }
 .sheet {
   position: absolute;
