@@ -153,18 +153,18 @@
 }
 .intro {
   left: var(--gutter);
-  width: min(400px, calc(50vw - var(--gutter) - 24px));
+  width: min(520px, calc(50vw - var(--gutter) - 24px));
 }
 .roles {
   right: var(--gutter);
-  width: min(540px, calc(50vw - var(--gutter) - 24px));
+  width: min(680px, calc(50vw - var(--gutter) - 24px));
   text-align: right;
 }
 .headline {
   margin: 0;
   font-family: var(--sans);
   font-weight: 500;
-  font-size: clamp(30px, 2.8vw, 42px);
+  font-size: clamp(36px, 3.8vw, 60px);
   line-height: 1.02;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -181,7 +181,7 @@
   font-family: var(--display);
   font-weight: 400;
   /* sized so each role stays on one line (the serif runs wide in capitals) */
-  font-size: clamp(36px, 3.4vw, 52px);
+  font-size: clamp(38px, 4.2vw, 68px);
   line-height: 0.95;
   text-transform: uppercase;
   color: var(--text-strong);
@@ -190,9 +190,9 @@
   display: block;
 }
 .blurb {
-  max-width: 340px;
-  margin: 16px 0 0;
-  font-size: 15px;
+  max-width: 400px;
+  margin: 20px 0 0;
+  font-size: 17px;
   line-height: 1.5;
   color: var(--soft);
 }
