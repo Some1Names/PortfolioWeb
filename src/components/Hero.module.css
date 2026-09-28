@@ -145,7 +145,7 @@
 .roles {
   position: absolute;
   z-index: 4;
-  top: 128px;
+  top: 168px;
   pointer-events: none;
 }
 .intro a {
@@ -302,7 +302,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(54% - var(--name-size) * 0.575);
+  top: calc(58% - var(--name-size) * 0.575);
   z-index: 2;
   height: calc(var(--name-size) * 1.15);
   margin: 0;
