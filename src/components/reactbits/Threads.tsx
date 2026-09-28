@@ -2,8 +2,9 @@
 
 /*
  * Threads — shader from React Bits by David Haz (https://reactbits.dev), MIT + Commons Clause.
- * Local changes: a CSS module; the colour as a hex string; the amplitude eases towards its
- * prop instead of jumping (so the page can swell the threads, e.g. while music plays); device
+ * Local changes: a CSS module; the colour as a hex string; the amplitude and the colour ease
+ * towards their props instead of jumping (so the page can swell and tint the threads, e.g. with
+ * the music); device
  * pixel ratio capped at 1.5; pauses while off screen or in a hidden tab; a single still frame
  * for visitors who prefer reduced motion; no mouse interaction (it sits behind other content).
  */
@@ -172,6 +173,7 @@ export default function Threads({ color = "#ffffff", amplitude = 1, distance = 0
     container.appendChild(gl.canvas);
 
     let amp = target.current.amplitude;
+    const col = hexToRgb(target.current.color);
     const uniforms = {
       iTime: { value: 0 },
       iResolution: { value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
@@ -212,7 +214,9 @@ export default function Threads({ color = "#ffffff", amplitude = 1, distance = 0
       amp += (w.amplitude - amp) * 0.03;
       uniforms.uAmplitude.value = amp;
       uniforms.uDistance.value = w.distance;
-      uniforms.uColor.value.set(...hexToRgb(w.color));
+      const to = hexToRgb(w.color);
+      for (let i = 0; i < 3; i++) col[i] += (to[i] - col[i]) * 0.03;
+      uniforms.uColor.value.set(col[0], col[1], col[2]);
       uniforms.iTime.value = t * 0.001;
       render();
     };

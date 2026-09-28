@@ -19,6 +19,12 @@
 }
 
 /* ---------- the section's background: a CRT screen ---------- */
+/* the glow's colour, registered so it can fade from one poster's colour to the next */
+@property --glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #9a6bff;
+}
 /* fine scanlines over a soft violet glow behind the tapes; a flicker of tape static and, now and
    then, a slow rolling bar. Both move by transform only, so the page isn't repainted for them */
 .screen {
@@ -30,8 +36,9 @@
   pointer-events: none;
   background:
     repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.35) 0 1px, rgba(255, 255, 255, 0.018) 1px 2px, transparent 2px 3px),
-    radial-gradient(ellipse 55% 48% at var(--glow-x) 46%, rgba(154, 107, 255, 0.16), transparent 72%);
+    radial-gradient(ellipse 55% 48% at var(--glow-x) 46%, color-mix(in srgb, var(--glow) 18%, transparent), transparent 72%);
   mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+  transition: --glow 1.2s ease;
 }
 .screen::before {
   content: "";

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { Favourite } from "@/data/inspiration";
+import { artColor } from "@/lib/artColor";
 import { shelfItems, middleIndex, stepIndex, type ShelfFilter } from "./tapes";
 import styles from "./Shelf.module.css";
 
@@ -37,12 +38,27 @@ export default function Shelf({ items, onShow }: { items: Favourite[]; onShow?: 
     onShow?.(current.title);
   }, [current.title, onShow]);
 
+  // the screen's glow takes the chosen poster's colour (pulled into the palette)
+  const [glow, setGlow] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    artColor(current.cover).then((c) => live && setGlow(c));
+    return () => {
+      live = false;
+    };
+  }, [current.cover]);
+
   // a horizontal swipe (touch or pen) steps the shelf
   const swipe = useRef<number | null>(null);
 
   return (
     <div className={styles.shelf}>
-      <div className={styles.screen} data-part="screen" aria-hidden="true" />
+      <div
+        className={styles.screen}
+        data-part="screen"
+        aria-hidden="true"
+        style={glow ? ({ "--glow": glow } as React.CSSProperties) : undefined}
+      />
       <div className={styles.main}>
         <div className={styles.filters} role="group" aria-label="Show">
           {FILTERS.map((f) => (

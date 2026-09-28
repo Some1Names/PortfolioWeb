@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useRef, useState } from "react";
 import type { Track } from "@/data/inspiration";
+import { artColor } from "@/lib/artColor";
 import { playerReducer, initialPlayer, formatTime, type PlayerAction, type PlayerState } from "./player";
 import Turntable from "./Turntable";
 import Threads from "../reactbits/Threads";
@@ -28,6 +29,16 @@ export default function RecordPlayer({
   const [failed, setFailed] = useState<number[]>([]);
   const track = tracks[s.index];
   const broken = failed.includes(s.index);
+
+  // the threads take the album cover's colour (pulled into the palette)
+  const [ambient, setAmbient] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    artColor(track.cover).then((c) => live && setAmbient(c));
+    return () => {
+      live = false;
+    };
+  }, [track.cover]);
 
   // tell the page what's on the deck and whether it plays (the ticker between the sections shows it)
   useEffect(() => {
@@ -57,9 +68,19 @@ export default function RecordPlayer({
   const p = duration ? Math.min(time / duration, 1) : 0;
 
   return (
-    <div className={styles.player} data-state={s.playing ? "playing" : "paused"} data-index={s.index}>
+    <div
+      className={styles.player}
+      data-state={s.playing ? "playing" : "paused"}
+      data-index={s.index}
+      data-ambient={ambient ?? undefined}
+    >
       {/* over the deck: React Bits Threads, swelling while a track plays */}
-      <Threads className={styles.threads} color="#9a6bff" amplitude={s.playing ? 1.5 : 0.5} distance={0.25} />
+      <Threads
+        className={styles.threads}
+        color={ambient ?? "#9a6bff"}
+        amplitude={s.playing ? 1.5 : 0.5}
+        distance={0.25}
+      />
       <div className={styles.deck}>
         <Turntable cover={track.cover} playing={s.playing} progress={p} />
 
