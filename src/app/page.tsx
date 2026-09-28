@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav";
+import IntroGate from "@/components/intro/IntroGate";
 import Hero from "@/components/Hero";
 import Manifesto from "@/components/Manifesto";
 import Marquee from "@/components/Marquee";
@@ -14,6 +15,7 @@ export default async function Home() {
   const parties = await projectParties();
   return (
     <>
+      <IntroGate />
       <Nav />
       <main>
         <Hero />
