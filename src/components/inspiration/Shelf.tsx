@@ -20,7 +20,7 @@ const FILTERS: { id: ShelfFilter; label: string }[] = [
 // Dressed as a VCR: on-screen text in the corners, rental stickers on the chosen case, a shelf
 // with the tapes reflected in it, all on a CRT screen. Beside it (under it from 1100px down), a side note on the chosen
 // tape: your note, or a slot waiting for one.
-export default function Shelf({ items }: { items: Favourite[] }) {
+export default function Shelf({ items, onShow }: { items: Favourite[]; onShow?: (title: string) => void }) {
   const [filter, setFilter] = useState<ShelfFilter>("all");
   const list = shelfItems(items, filter);
   const [index, setIndex] = useState(() => middleIndex(items.length));
@@ -31,6 +31,11 @@ export default function Shelf({ items }: { items: Favourite[] }) {
     setFilter(f);
     setIndex(middleIndex(shelfItems(items, f).length));
   };
+
+  // tell the page which tape is out (the ticker between the sections shows it)
+  useEffect(() => {
+    onShow?.(current.title);
+  }, [current.title, onShow]);
 
   // a horizontal swipe (touch or pen) steps the shelf
   const swipe = useRef<number | null>(null);

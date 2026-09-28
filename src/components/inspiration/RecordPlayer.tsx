@@ -11,7 +11,13 @@ import styles from "./RecordPlayer.module.css";
 // 30-second previews; nothing plays until someone presses play or picks a track. When a clip
 // ends the next one starts, stopping after the last unless repeat is on. A clip that won't load
 // leaves its "Apple Music ↗" link as the way to listen.
-export default function RecordPlayer({ tracks }: { tracks: Track[] }) {
+export default function RecordPlayer({
+  tracks,
+  onDeck,
+}: {
+  tracks: Track[];
+  onDeck?: (title: string, playing: boolean) => void;
+}) {
   const [s, dispatch] = useReducer(
     (st: PlayerState, a: PlayerAction) => playerReducer(st, a, tracks.length),
     initialPlayer,
@@ -22,6 +28,11 @@ export default function RecordPlayer({ tracks }: { tracks: Track[] }) {
   const [failed, setFailed] = useState<number[]>([]);
   const track = tracks[s.index];
   const broken = failed.includes(s.index);
+
+  // tell the page what's on the deck and whether it plays (the ticker between the sections shows it)
+  useEffect(() => {
+    onDeck?.(track.title, s.playing);
+  }, [track.title, s.playing, onDeck]);
 
   // a clip (re)starts: from the top
   useEffect(() => {

@@ -1,18 +1,26 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { inspiration } from "@/data/inspiration";
 import ModuleLabel from "../motifs/ModuleLabel";
 import EndBand from "../motifs/EndBand";
 import Crosshairs from "../hud/Crosshairs";
 import Shelf from "./Shelf";
 import RecordPlayer from "./RecordPlayer";
+import Ticker from "./Ticker";
+import { middleIndex } from "./tapes";
 import styles from "./Inspiration.module.css";
 
-// The supplement: a header, the VHS shelf of films and anime, the record player, and a footer with
-// credits.
+// The supplement: a header, the VHS shelf of films and anime, a "now showing / now playing" ticker
+// that follows both, the record player, and a footer with credits.
 const { model } = inspiration;
 
 export default function Inspiration() {
+  const { shelf, music } = inspiration;
+  const [showing, setShowing] = useState(() => shelf.items[middleIndex(shelf.items.length)].title);
+  const [deck, setDeck] = useState({ title: music.tracks[0].title, playing: false });
+  const onDeck = useCallback((title: string, playing: boolean) => setDeck({ title, playing }), []);
+
   return (
     <div className={styles.page}>
       <header className={`${styles.head} web-grid`}>
@@ -24,12 +32,14 @@ export default function Inspiration() {
 
       <section id="shelf" aria-label={inspiration.shelf.label} className={styles.group}>
         <ModuleLabel n="01" text={inspiration.shelf.label} />
-        <Shelf items={inspiration.shelf.items} />
+        <Shelf items={shelf.items} onShow={setShowing} />
       </section>
+
+      <Ticker showing={showing} track={deck.title} playing={deck.playing} />
 
       <section id="music" aria-label={inspiration.music.label} className={styles.group}>
         <ModuleLabel n="02" text={inspiration.music.label} />
-        <RecordPlayer tracks={inspiration.music.tracks} />
+        <RecordPlayer tracks={music.tracks} onDeck={onDeck} />
       </section>
 
       <footer className={styles.foot}>

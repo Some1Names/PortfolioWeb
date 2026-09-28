@@ -1,0 +1,80 @@
+/* the "now showing / now playing" strip between the two sections, like the home page's marquee */
+.strip {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  margin-top: 72px;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-strip);
+}
+.track {
+  display: flex;
+  width: max-content;
+  animation: run 48s linear infinite;
+}
+@keyframes run {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.group {
+  display: flex;
+  align-items: center;
+}
+.item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 0 28px;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.item b {
+  font-weight: 400;
+}
+.show {
+  color: var(--art);
+}
+.play {
+  color: var(--web);
+}
+.deck {
+  color: var(--lav);
+}
+.title {
+  font-family: var(--display);
+  font-size: 26px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-strong);
+}
+.star {
+  font-size: 14px;
+  font-style: normal;
+  color: var(--collide);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .strip {
+    height: 52px;
+    margin-top: 56px;
+  }
+  .item {
+    padding: 0 18px;
+  }
+  .title {
+    font-size: 20px;
+  }
+}
