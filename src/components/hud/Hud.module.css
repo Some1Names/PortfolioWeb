@@ -115,44 +115,6 @@
   clip-path: polygon(0 0, calc(100% - var(--notch) + 0.5px) 0, 100% calc(var(--notch) - 0.5px), 100% 100%, calc(var(--notch) - 0.5px) 100%, 0 calc(100% - var(--notch) + 0.5px));
 }
 
-/* ---------- brackets: corner marks ---------- */
-.brackets {
-  --b: 22px;
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.brackets i {
-  position: absolute;
-  width: var(--b);
-  height: var(--b);
-  border: 0 solid var(--lav);
-}
-.brackets i:nth-child(1) {
-  left: 0;
-  top: 0;
-  border-left-width: 2px;
-  border-top-width: 2px;
-}
-.brackets i:nth-child(2) {
-  right: 0;
-  top: 0;
-  border-right-width: 2px;
-  border-top-width: 2px;
-}
-.brackets i:nth-child(3) {
-  left: 0;
-  bottom: 0;
-  border-left-width: 2px;
-  border-bottom-width: 2px;
-}
-.brackets i:nth-child(4) {
-  right: 0;
-  bottom: 0;
-  border-right-width: 2px;
-  border-bottom-width: 2px;
-}
-
 /* ---------- glitch: flickering pixel squares ---------- */
 .glitch {
   position: absolute;

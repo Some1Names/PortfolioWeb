@@ -1,13 +1,12 @@
 import Image from "next/image";
 import { cover } from "@/data/site";
-import Brackets from "../hud/Brackets";
 import Glitch from "../hud/Glitch";
 import Tag from "../hud/Tag";
 import styles from "./CoverFigure.module.css";
 
 // The centre of the cover: the portrait cut out (or a placeholder outline until the photo
-// arrives, or the hero video when given as children), standing in front of the name, with
-// brackets, glitch pixels and tags pointing at it.
+// arrives, or the hero video when given as children), standing in front of the name, unframed,
+// with glitch pixels and tags pointing at it.
 // data-layer attributes are the hooks Hero's GSAP timelines animate.
 export default function CoverFigure({ children }: { children?: React.ReactNode }) {
   const { portrait, tags } = cover;
@@ -35,7 +34,6 @@ export default function CoverFigure({ children }: { children?: React.ReactNode }
               <span>[ your portrait ]</span>
             </div>
           ))}
-        <Brackets />
         <Glitch />
       </div>
       <div className={styles.tags} data-layer="tags">
