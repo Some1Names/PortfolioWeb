@@ -6,36 +6,6 @@
   background: radial-gradient(ellipse at 80% 0%, #1c1829 0%, #0f0e13 45%, var(--bg) 80%);
 }
 
-/* ---------- header ---------- */
-.head {
-  position: relative;
-  padding: 120px var(--gutter) 72px;
-  border-bottom: 1px solid var(--line);
-}
-.kicker {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--collide);
-}
-.title {
-  margin: 12px 0 20px;
-  font-family: var(--display);
-  font-weight: 400;
-  /* 15vw cap: one unbreakable word, so below ~412px the 72px floor would run off the screen */
-  font-size: min(clamp(72px, 12vw, 200px), 15vw);
-  line-height: 0.9;
-  color: var(--text-strong);
-}
-.intro {
-  max-width: 560px;
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.6;
-  color: #c9c5d4;
-}
-
 /* ---------- sections ---------- */
 .group {
   position: relative;
@@ -72,9 +42,6 @@
 }
 
 @media (max-width: 900px) {
-  .head {
-    padding: 80px var(--gutter) 48px;
-  }
   .group {
     padding-top: 56px;
   }

@@ -4,14 +4,14 @@ import { useCallback, useState } from "react";
 import { inspiration } from "@/data/inspiration";
 import ModuleLabel from "../motifs/ModuleLabel";
 import EndBand from "../motifs/EndBand";
-import Crosshairs from "../hud/Crosshairs";
+import Masthead from "./Masthead";
 import Shelf from "./Shelf";
 import RecordPlayer from "./RecordPlayer";
 import Ticker from "./Ticker";
 import { middleIndex } from "./tapes";
 import styles from "./Inspiration.module.css";
 
-// The supplement: a header, the VHS shelf of films and anime, a "now showing / now playing" ticker
+// The supplement: a cyber-brutalist header, the VHS shelf of films and anime, a "now showing / now playing" ticker
 // that follows both, the record player, and a footer with credits.
 const { model } = inspiration;
 
@@ -23,12 +23,7 @@ export default function Inspiration() {
 
   return (
     <div className={styles.page}>
-      <header className={`${styles.head} web-grid`}>
-        <Crosshairs />
-        <span className={styles.kicker}>{inspiration.label}</span>
-        <h1 className={styles.title}>{inspiration.title}</h1>
-        <p className={styles.intro}>{inspiration.intro}</p>
-      </header>
+      <Masthead />
 
       <section id="shelf" aria-label={inspiration.shelf.label} className={styles.group}>
         <ModuleLabel n="01" text={inspiration.shelf.label} />

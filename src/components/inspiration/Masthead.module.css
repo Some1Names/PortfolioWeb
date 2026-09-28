@@ -1,0 +1,248 @@
+/* the Inspiration page's header: a cyber-brutalist grid of bordered cells */
+.head {
+  padding: 120px var(--gutter) 72px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.4fr;
+  border: 2px solid var(--text-strong);
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cell b {
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-strong);
+}
+
+/* ---------- the title: huge mono capitals, pink / blue ghosts, a scan line ---------- */
+.titleCell {
+  position: relative;
+  display: grid;
+  grid-column: 1 / -1;
+  overflow: hidden;
+  padding: 22px 18px 18px;
+  border-width: 2px 0;
+  border-color: var(--text-strong);
+}
+/* the title and its two ghosts share one grid area, the h1 on top */
+.titleCell > * {
+  grid-area: 1 / 1;
+}
+.title {
+  position: relative;
+  margin: 0;
+  font-family: var(--mono);
+  font-weight: 600;
+  /* sized to fit one line: 11 capitals at ~0.56em each (~6.15em), in the width left after the
+     gutters, the cell's padding and borders and the scrollbar (56px) */
+  font-size: min(200px, calc((100vw - 2 * var(--gutter) - 56px) / 6.3));
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+.ghostPink,
+.ghostBlue {
+  opacity: 0.75;
+  pointer-events: none;
+}
+.ghostPink {
+  color: var(--art);
+  transform: translate(-0.035em, 0.02em);
+  animation: glitchPink 5s steps(1) infinite;
+}
+.ghostBlue {
+  color: var(--web);
+  transform: translate(0.035em, -0.02em);
+  animation: glitchBlue 5s steps(1) infinite;
+}
+/* now and then the ghosts jump apart for a moment */
+@keyframes glitchPink {
+  92% {
+    transform: translate(-0.08em, 0.03em);
+  }
+  95% {
+    transform: translate(-0.02em, -0.02em);
+  }
+  98% {
+    transform: translate(-0.035em, 0.02em);
+  }
+}
+@keyframes glitchBlue {
+  92% {
+    transform: translate(0.08em, -0.04em);
+  }
+  95% {
+    transform: translate(0.01em, 0.02em);
+  }
+  98% {
+    transform: translate(0.035em, -0.02em);
+  }
+}
+/* a scan line sweeps down the title every few seconds */
+.titleCell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(185, 178, 207, 0.7), transparent);
+  box-shadow: 0 0 12px rgba(154, 107, 255, 0.6);
+  transform: translateY(-4px);
+  animation: scan 4.5s linear infinite;
+}
+@keyframes scan {
+  60%,
+  100% {
+    transform: translateY(var(--scan-to, 260px));
+  }
+}
+
+/* ---------- the intro, with a blinking block cursor ---------- */
+.introCell {
+  grid-column: span 2;
+  justify-content: center;
+}
+.intro {
+  max-width: 560px;
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 1.55;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #c9c5d4;
+}
+.cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 1.05em;
+  margin-left: 6px;
+  vertical-align: -0.15em;
+  background: var(--collide);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- the index: two filled cells that jump to the sections ---------- */
+.index {
+  justify-content: space-between;
+  background: #15121d;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+.index b {
+  margin-top: 18px;
+  font-size: 24px;
+}
+.index:hover {
+  background: var(--collide);
+  color: var(--bg);
+}
+.index:hover b {
+  color: var(--bg);
+}
+
+/* ---------- along the bottom: a barcode, the coordinates, a status light ---------- */
+.barcodeCell {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+.barcode {
+  flex: none;
+  width: 150px;
+  height: 22px;
+  background: repeating-linear-gradient(90deg, var(--text) 0 2px, transparent 2px 4px, var(--text) 4px 5px, transparent 5px 9px,
+      var(--text) 9px 12px, transparent 12px 14px);
+  opacity: 0.8;
+}
+.status {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.status span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.light {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--art);
+  box-shadow: 0 0 10px var(--art);
+  animation: blink 2.4s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghostPink,
+  .ghostBlue,
+  .titleCell::after,
+  .cursor,
+  .light {
+    animation: none;
+  }
+  .titleCell::after {
+    display: none;
+  }
+}
+
+/* phones: two columns; the title shrinks to the width */
+@media (max-width: 900px) {
+  .head {
+    padding: 80px var(--gutter) 48px;
+  }
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .titleCell {
+    padding: 16px 12px 12px;
+  }
+  .title {
+    font-size: calc((100vw - 2 * var(--gutter) - 44px) / 6.3);
+  }
+  .titleCell::after {
+    --scan-to: 110px;
+  }
+  .intro {
+    font-size: 16px;
+  }
+  /* small enough that "04 records →" stays on one line in half the width */
+  .index b {
+    font-size: 15px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .barcode {
+    width: 96px;
+  }
+}
+/* the smallest phones */
+@media (max-width: 360px) {
+  .index b {
+    font-size: 13px;
+    letter-spacing: 0;
+  }
+}
