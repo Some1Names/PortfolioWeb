@@ -14,16 +14,17 @@ import styles from "./SkillTree.module.css";
 // sets --side for everything inside a branch: pink, blue or violet
 const SIDE = { art: styles.sideArt, web: styles.sideWeb, collide: styles.sideCollide };
 
-// Layout of the desktop tree, in a coordinate space 660 units tall (scaled with the container).
+// Layout of the desktop tree, in a coordinate space 590 units tall (scaled with the container).
 // VIEW_W units fill the visible width. A branch with more than 4 skills makes the canvas wider
 // than that, and the tree scrolls sideways. The details panel sits to the right.
+// Rows are 136 apart: a 96-unit node, then 40 for the next branch's label and its item chips.
 const VIEW_W = 1040;
-const H = 660;
+const H = 590;
 const NODE_W = 150;
 const NODE_H = 96;
-const ROOT = { x: 20, y: 283, w: 170, h: 130 };
+const ROOT = { x: 20, y: 230, w: 170, h: 130 };
 const TRUNK_X = 225;
-const ROWS = [64, 224, 384, 544];
+const ROWS = [52, 188, 324, 460];
 const STUB = 28;
 const MAX = Math.max(4, ...branches.map((b) => b.skills.length));
 const COLS = Array.from({ length: MAX }, (_, i) => 255 + i * 190);
@@ -78,6 +79,7 @@ export default function SkillTree() {
 
   const total = branches.reduce((n, b) => n + b.skills.length + 1, 0);
   const unlocked = branches.reduce((n, b) => n + b.skills.length, 0);
+  const equipped = branches.reduce((n, b) => n + b.items.length, 0);
 
   useGSAP(
     () => {
@@ -170,6 +172,10 @@ export default function SkillTree() {
           <strong>2 shipped</strong>
         </div>
         <div>
+          <span>Items</span>
+          <strong>{equipped} equipped</strong>
+        </div>
+        <div>
           <span>Achievements</span>
           <strong>{achievements.length} unlocked</strong>
         </div>
@@ -218,6 +224,23 @@ export default function SkillTree() {
                 <div key={br.name} className={SIDE[br.side]}>
                   <span className={styles.branchLabel} style={{ left: pct(COLS[0], W), top: pct(ROWS[b] - 22, H) }}>
                     {br.name}
+                    {/* the branch's items: libraries shipped with, named on hover (and in the card) */}
+                    {br.items.length > 0 && (
+                      <span className={styles.items}>
+                        {br.items.map((it) => (
+                          <span
+                            key={it.name}
+                            role="img"
+                            aria-label={`${it.name}, used in ${it.usedIn}`}
+                            data-tip={`${it.name} · ${it.usedIn}`}
+                            data-part="item"
+                            className={styles.item}
+                          >
+                            <Logo name={it.name} className={styles.itemLogo} />
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </span>
                   {br.skills.map((sk, s) => {
                     const active = picked?.b === b && picked?.s === s;
@@ -297,6 +320,20 @@ export default function SkillTree() {
                 ))}
               </div>
             )}
+            {branch.items.length > 0 && (
+              <div className={styles.panelItems}>
+                <span>Items on this branch</span>
+                <ul>
+                  {branch.items.map((it) => (
+                    <li key={it.name} data-part="panel-item" title={`Used in ${it.usedIn}`}>
+                      <Logo name={it.name} className={styles.panelItemLogo} />
+                      {it.name}
+                      <span className={styles.srOnly}>, used in {it.usedIn}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <div className={styles.panelNext}>
             <span>Next quest</span>
@@ -310,6 +347,16 @@ export default function SkillTree() {
         {branches.map((br, b) => (
           <div key={br.name} className={`${styles.mBranch} ${SIDE[br.side]}`}>
             <div className={styles.mHead}>Branch / {br.name}</div>
+            {br.items.length > 0 && (
+              <div className={styles.mItems}>
+                {br.items.map((it) => (
+                  <span key={it.name} data-part="item" className={styles.mItem} title={`Used in ${it.usedIn}`}>
+                    <Logo name={it.name} className={styles.mItemLogo} />
+                    {it.name}
+                  </span>
+                ))}
+              </div>
+            )}
             <div className={styles.mList}>
               {br.skills.map((sk, s) => (
                 <button

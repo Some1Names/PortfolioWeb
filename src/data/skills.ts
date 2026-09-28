@@ -6,10 +6,17 @@ export type Skill = {
   why: string; // why / what you used it for: shown in the card when the node is clicked
 };
 
+// A library shipped with: the branch's "items", shown as logo chips beside its label and listed
+// in the details card. Logos come from src/data/logos.ts (by name).
+export type Item = { name: string; usedIn: string };
+
 export type Branch = {
   name: string;
   side: Side; // art (pink), web (blue) or collide (violet): colours the branch
   skills: Skill[]; // left to right = learning order; past 4, the desktop tree scrolls sideways
+  // libraries shipped with on this branch (from the package.json files of YafuuGallery,
+  // PirahusNext and this site)
+  items: Item[];
   nextQuest: string; // suggestion shown on the locked node
 };
 
@@ -39,6 +46,15 @@ export const branches: Branch[] = [
         why: "App Router on both projects and this site. Pages and API routes live in one codebase, so a feature ships as one change.",
       },
     ],
+    items: [
+      { name: "Tailwind CSS", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Motion", usedIn: "Pirahus" },
+      { name: "React Hook Form", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Zod", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Lucide", usedIn: "Pirahus · YafuuGallery" },
+      { name: "Vitest", usedIn: "YafuuGallery" },
+      { name: "next-intl", usedIn: "YafuuGallery" },
+    ],
     nextQuest: "Suggest: testing",
   },
   {
@@ -65,6 +81,12 @@ export const branches: Branch[] = [
         usedIn: "Pirahus",
         why: "Give each page its own mood: a different shader background per page on PirahusNext, and Light Rays and Silk on this site.",
       },
+    ],
+    // (React Three Fiber isn't listed: it's the "Three.js / R3F" skill above)
+    items: [
+      { name: "React Bits", usedIn: "Pirahus · this site" },
+      { name: "Lenis", usedIn: "YafuuGallery · this site" },
+      { name: "OGL", usedIn: "Pirahus · this site" },
     ],
     nextQuest: "Suggest: GLSL",
   },
@@ -93,6 +115,13 @@ export const branches: Branch[] = [
         why: "Hosting for both projects: PirahusNext and YafuuGallery are live on Vercel.",
       },
     ],
+    items: [
+      { name: "Better Auth", usedIn: "YafuuGallery" },
+      { name: "AWS S3", usedIn: "YafuuGallery" },
+      { name: "Resend", usedIn: "YafuuGallery" },
+      { name: "Axios", usedIn: "Pirahus · YafuuGallery" },
+      { name: "JWT", usedIn: "Pirahus" },
+    ],
     nextQuest: "Suggest: auth",
   },
   {
@@ -113,6 +142,7 @@ export const branches: Branch[] = [
         why: "UI design and wireframes: laying out the screens of my web projects before building them.",
       },
     ],
+    items: [],
     nextQuest: "Suggest: After Effects",
   },
 ];

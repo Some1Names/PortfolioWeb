@@ -90,7 +90,7 @@
 .stats {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   border-color: rgba(255, 255, 255, 0.14);
 }
 .stats div {
@@ -224,7 +224,56 @@
   letter-spacing: 2px;
 }
 .branchLabel {
+  z-index: 3; /* its item tooltips go over the nodes */
+  display: flex;
+  align-items: center;
   color: var(--side, var(--soft));
+}
+/* a branch's items: libraries shipped with, as small logo chips beside its label */
+.items {
+  display: flex;
+  gap: 4px;
+  margin-left: 12px;
+}
+.item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  color: #cfcbda;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+.item:hover {
+  border-color: var(--side, var(--lav));
+  color: var(--side, var(--lav));
+}
+.itemLogo {
+  font-size: 12px;
+}
+/* its name and where it was used, on hover, like a game item's tooltip */
+.item::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  padding: 5px 8px;
+  border: 1px solid var(--line-2);
+  background: rgba(10, 10, 12, 0.94);
+  color: var(--text);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.item:hover::after {
+  opacity: 1;
 }
 
 .root {
@@ -322,12 +371,17 @@
   background: rgba(255, 255, 255, 0.02);
 }
 /* Beside the tree, the tree sets the board's height: the panel fills it but never stretches it,
-   so picking a skill with a longer write-up doesn't shift the page. Tighter spacing where it's narrow. */
+   so picking a skill with a longer write-up doesn't shift the page. It gets a floor, though, for
+   narrow desktops where the (compact) tree is shorter than the longest write-up needs; the tree
+   then sits centred beside it. Tighter spacing where it's narrow. */
 @media (min-width: 1200px) {
   .panel {
     height: 0;
-    min-height: 100%;
+    min-height: max(100%, 490px);
     overflow-y: auto;
+  }
+  .treeWrap {
+    align-self: center;
   }
 }
 @media (min-width: 1200px) and (max-width: 1399px) {
@@ -401,12 +455,61 @@
 }
 .panelWhy span,
 .panelLinks span,
+.panelItems > span,
 .panelNext span {
   font-family: var(--mono);
   font-size: 10px;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 1.5px;
+}
+/* the branch's items in the card: compact chips (where each was used shows on hover), so the
+   card still fits beside the tree with its next quest in view */
+.panelItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.panelItems ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.panelItems li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.panelItemLogo {
+  font-size: 12px;
+  color: var(--side, var(--lav));
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* beside the tree (1200px and up) the card is too short to list the items as well: they're beside
+   each branch's label in the tree, named on hover. Below that the card sits under the tree and lists
+   them, for tablets that can't hover. (After the rules above, so it wins.) */
+@media (min-width: 1200px) {
+  .panelItems {
+    display: none;
+  }
 }
 .panelLinks a {
   justify-content: flex-start;
@@ -537,6 +640,31 @@
 .mobile {
   display: none;
 }
+/* phones: a branch's items under its heading, named (no hover there) */
+.mItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.mItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.mItemLogo {
+  font-size: 12px;
+  color: var(--side, var(--lav));
+}
 
 @media (max-width: 1199px) {
   .board {
@@ -593,6 +721,10 @@
     backdrop-filter: blur(24px) saturate(120%);
   }
   .panelClosed {
+    display: none;
+  }
+  /* the sticky card stays short: the items are already named under each branch */
+  .panelItems {
     display: none;
   }
   .panelHead button {
