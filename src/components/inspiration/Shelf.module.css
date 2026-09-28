@@ -8,12 +8,66 @@
   --reflect: 96px; /* room under the tapes for the shelf and their reflection */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   /* the shelf, then a side-note column in the right margin */
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(290px, 28vw, 420px);
   margin: 28px calc(-1 * var(--gutter)) 0;
 }
 .main {
   min-width: 0;
+}
+
+/* ---------- the section's background: a CRT screen ---------- */
+/* fine scanlines over a soft violet glow behind the tapes; a flicker of tape static and, now and
+   then, a slow rolling bar. Both move by transform only, so the page isn't repainted for them */
+.screen {
+  --glow-x: 38%;
+  position: absolute;
+  inset: -40px 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.35) 0 1px, rgba(255, 255, 255, 0.018) 1px 2px, transparent 2px 3px),
+    radial-gradient(ellipse 55% 48% at var(--glow-x) 46%, rgba(154, 107, 255, 0.16), transparent 72%);
+  mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+}
+.screen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: linear-gradient(transparent, rgba(185, 178, 207, 0.05), transparent);
+  transform: translateY(-100%);
+  animation: roll 9s linear infinite;
+}
+@keyframes roll {
+  to {
+    transform: translateY(560%);
+  }
+}
+.screen::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.07;
+  animation: tapeStatic 0.5s steps(1) infinite;
+}
+@keyframes tapeStatic {
+  25% {
+    transform: translate(-7%, 4%);
+  }
+  50% {
+    transform: translate(5%, -6%);
+  }
+  75% {
+    transform: translate(-3%, -2%);
+  }
 }
 
 /* ---------- filter tabs ---------- */
@@ -515,6 +569,8 @@
   .case,
   .captionOn,
   .sideNoteOn,
+  .screen::before,
+  .screen::after,
   .rec,
   .on .front,
   .on .front::after {
@@ -530,6 +586,9 @@
 @media (max-width: 1100px) {
   .shelf {
     display: block;
+  }
+  .screen {
+    --glow-x: 50%;
   }
   .side {
     margin: 36px var(--gutter) 0;

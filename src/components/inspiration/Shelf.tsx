@@ -18,7 +18,7 @@ const FILTERS: { id: ShelfFilter; label: string }[] = [
 // the case, and the row slides to keep it centred. Browse with the arrows, the ← → keys (with the
 // shelf focused), a click on a spine, or a swipe. The shelf is finite: the arrows stop at the ends.
 // Dressed as a VCR: on-screen text in the corners, rental stickers on the chosen case, a shelf
-// with the tapes reflected in it. Beside it (under it from 1100px down), a side note on the chosen
+// with the tapes reflected in it, all on a CRT screen. Beside it (under it from 1100px down), a side note on the chosen
 // tape: your note, or a slot waiting for one.
 export default function Shelf({ items }: { items: Favourite[] }) {
   const [filter, setFilter] = useState<ShelfFilter>("all");
@@ -37,6 +37,7 @@ export default function Shelf({ items }: { items: Favourite[] }) {
 
   return (
     <div className={styles.shelf}>
+      <div className={styles.screen} data-part="screen" aria-hidden="true" />
       <div className={styles.main}>
         <div className={styles.filters} role="group" aria-label="Show">
           {FILTERS.map((f) => (
