@@ -1,5 +1,6 @@
-/* the music section: the turntable across the full width, the record library floating over its
-   right side as a pane of liquid glass */
+/* the music section, split about 60/40: the record centred in the left 60%, the record library
+   in the right 40% as a pane of liquid glass. The deck runs on under the glass, so it has
+   something to blur. (For 50/50: --record-x 0.25 and the library's left 48%.) */
 .player {
   position: relative;
   margin: 32px calc(-1 * var(--gutter)) 0;
@@ -12,11 +13,11 @@
 /* a close-up on the record, which sits at --record-x across the width (the 3D camera reads it).
    The deck fades out towards the edges, and the record's lower half under the now-playing overlay */
 .stage {
-  --record-x: 0.38;
+  --record-x: 0.3;
   position: relative;
   height: clamp(520px, 50vw, 760px);
   mask-image:
-    radial-gradient(ellipse 42% 66% at 40% 46%, #000 55%, transparent 100%),
+    radial-gradient(ellipse 38% 66% at 32% 46%, #000 55%, transparent 100%),
     linear-gradient(to bottom, #000 52%, transparent 90%);
   mask-composite: intersect;
 }
@@ -24,8 +25,8 @@
 .overlay {
   position: absolute;
   bottom: 0;
-  left: calc(38% - min(270px, 23%));
-  width: min(540px, 46%);
+  left: calc(30% - min(270px, 25%));
+  width: min(540px, 50%);
 }
 .host,
 .canvas {
@@ -224,14 +225,14 @@
 }
 
 /* ---------- the record library: a pane of liquid glass over the deck ---------- */
-/* high enough to cover the tonearm's pivot, so the arm shows blurred through the glass and only
-   its stylus end sits in the clear on the record */
+/* the right 40%, reaching a little into the deck's 60% and high enough to cover the tonearm's
+   pivot, so the arm shows blurred through the glass and only its stylus end sits in the clear */
 .library {
   position: absolute;
   z-index: 2;
   top: 7%;
+  left: 58%;
   right: var(--gutter);
-  width: min(440px, 34%);
   padding: 26px 22px 18px;
   border-radius: 28px;
   isolation: isolate;
@@ -405,8 +406,8 @@
   .library {
     position: relative;
     top: auto;
+    left: auto;
     right: auto;
-    width: auto;
     margin: 36px var(--gutter) 0;
   }
 }
@@ -424,10 +425,6 @@
       linear-gradient(to bottom, #000 50%, transparent 88%);
   }
   .library {
-    position: relative;
-    top: auto;
-    right: auto;
-    width: auto;
     margin: 40px 0 0;
     padding: 20px 10px 10px;
     border-radius: 22px;
