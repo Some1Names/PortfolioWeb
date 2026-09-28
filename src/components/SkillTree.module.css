@@ -430,8 +430,7 @@
   letter-spacing: 1px;
 }
 
-/* ---------- loadout: libraries as item slots (achievements reuse the same frame) ---------- */
-.loadout,
+/* ---------- achievements: certificates, as unlocked cards in a framed list ---------- */
 .achievements {
   position: relative;
   display: flex;
@@ -440,7 +439,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.06);
 }
-.loadoutHead {
+.achHead {
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -452,10 +451,10 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-.loadoutHead span:first-child {
+.achHead span:first-child {
   color: var(--text);
 }
-.loadoutGroup {
+.achGroup {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
   background: rgba(10, 10, 12, 0.45);
@@ -469,47 +468,6 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-.slots {
-  margin: 0;
-  padding: 12px;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 8px;
-}
-.slot {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 12px 14px;
-  border: 1px solid var(--line-2);
-  background: var(--card);
-  transition: border-color 0.2s;
-}
-.slot:hover {
-  border-color: var(--side, var(--lav));
-}
-.slotLogo {
-  font-size: 28px;
-  margin-bottom: 4px;
-  color: #cfcbda;
-  transition: color 0.2s;
-}
-.slot:hover .slotLogo {
-  color: var(--side, var(--lav));
-}
-.slotName {
-  font-size: 14px;
-}
-.slotUsed {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
 /* ---------- achievements: a certificate thumbnail + what it is ---------- */
 .achList {
   padding: 12px;
@@ -738,7 +696,6 @@
     padding: 12px;
   }
   /* after the list and the sticky card, so the card never sits on top of it */
-  .loadout,
   .achievements {
     order: 3;
   }
@@ -749,21 +706,17 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
-  .loadoutHead {
+  .achHead {
     flex-direction: column;
     gap: 4px;
     padding: 12px 14px;
   }
-  .loadoutGroup {
+  .achGroup {
     grid-template-columns: minmax(0, 1fr);
   }
   .groupLabel {
     padding: 10px 14px;
     border-right: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  .slots {
-    padding: 10px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

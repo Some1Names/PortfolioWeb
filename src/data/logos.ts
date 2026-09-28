@@ -1,4 +1,4 @@
-// Brand marks used in the marquee, skill tree and loadout.
+// Brand marks used in the marquee and the skill tree.
 // Paths are from Simple Icons (https://simpleicons.org, CC0), 24×24 viewBox.
 export const icons: Record<string, string> = {
   nextdotjs:

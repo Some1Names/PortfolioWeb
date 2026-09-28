@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { branches, synergy, loadout, achievements } from "@/data/skills";
+import { branches, synergy, achievements } from "@/data/skills";
 import Logo from "./motifs/Logo";
 import { projects } from "@/data/projects";
 import Folio from "./motifs/Folio";
@@ -78,7 +78,6 @@ export default function SkillTree() {
 
   const total = branches.reduce((n, b) => n + b.skills.length + 1, 0);
   const unlocked = branches.reduce((n, b) => n + b.skills.length, 0);
-  const items = loadout.reduce((n, g) => n + g.items.length, 0);
 
   useGSAP(
     () => {
@@ -171,8 +170,8 @@ export default function SkillTree() {
           <strong>2 shipped</strong>
         </div>
         <div>
-          <span>Items</span>
-          <strong>{items} in loadout</strong>
+          <span>Achievements</span>
+          <strong>{achievements.length} unlocked</strong>
         </div>
       </div>
 
@@ -337,36 +336,14 @@ export default function SkillTree() {
         ))}
       </div>
 
-      {/* ---------- loadout: libraries shipped with, as item slots ---------- */}
-      <div className={styles.loadout}>
-        <div className={styles.loadoutHead}>
-          <span>Loadout</span>
-          <span>Libraries I&apos;ve shipped with · {items} items</span>
-        </div>
-        {loadout.map((g) => (
-          <div key={g.name} className={`${styles.loadoutGroup} ${SIDE[g.side]}`}>
-            <span className={styles.groupLabel}>{g.name}</span>
-            <ul className={styles.slots}>
-              {g.items.map((it) => (
-                <li key={it.name} className={styles.slot} title={`${it.name} · used in ${it.usedIn}`}>
-                  <Logo name={it.name} className={styles.slotLogo} />
-                  <span className={styles.slotName}>{it.name}</span>
-                  <span className={styles.slotUsed}>{it.usedIn}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
       {/* ---------- achievements: certificates, as unlocked cards ---------- */}
       <div className={styles.achievements}>
-        <div className={styles.loadoutHead}>
+        <div className={styles.achHead}>
           <span>Achievements</span>
           <span>{achievements.length} unlocked</span>
         </div>
         {achievements.map((a) => (
-          <div key={a.title} className={`${styles.loadoutGroup} ${SIDE[a.side]}`}>
+          <div key={a.title} className={`${styles.achGroup} ${SIDE[a.side]}`}>
             <span className={styles.groupLabel}>Unlocked · {a.date}</span>
             <div className={styles.achList}>
               <a href={a.image} target="_blank" rel="noreferrer" className={styles.ach}>

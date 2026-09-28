@@ -117,56 +117,7 @@ export const branches: Branch[] = [
   },
 ];
 
-// Loadout: libraries you've shipped with, shown as item slots under the skill tree.
-// Logos come from src/data/logos.ts (by name). Taken from the package.json files of
-// YafuuGallery, PirahusNext and this site.
-export type LoadoutItem = { name: string; usedIn: string };
-export type LoadoutGroup = { name: string; side: Side; items: LoadoutItem[] };
-
-export const loadout: LoadoutGroup[] = [
-  {
-    name: "Frontend",
-    side: "web",
-    items: [
-      { name: "Tailwind CSS", usedIn: "Pirahus · YafuuGallery" },
-      { name: "Motion", usedIn: "Pirahus" },
-      { name: "React Hook Form", usedIn: "Pirahus · YafuuGallery" },
-      { name: "Zod", usedIn: "Pirahus · YafuuGallery" },
-      { name: "Lucide", usedIn: "Pirahus · YafuuGallery" },
-    ],
-  },
-  {
-    name: "Motion & 3D",
-    side: "collide",
-    items: [
-      { name: "React Three Fiber", usedIn: "Pirahus" },
-      { name: "React Bits", usedIn: "Pirahus · this site" },
-      { name: "Lenis", usedIn: "YafuuGallery · this site" },
-      { name: "OGL", usedIn: "Pirahus · this site" },
-    ],
-  },
-  {
-    name: "Data & backend",
-    side: "web",
-    items: [
-      { name: "Better Auth", usedIn: "YafuuGallery" },
-      { name: "AWS S3", usedIn: "YafuuGallery" },
-      { name: "Resend", usedIn: "YafuuGallery" },
-      { name: "Axios", usedIn: "Pirahus · YafuuGallery" },
-      { name: "JWT", usedIn: "Pirahus" },
-    ],
-  },
-  {
-    name: "Tooling",
-    side: "web",
-    items: [
-      { name: "Vitest", usedIn: "YafuuGallery" },
-      { name: "next-intl", usedIn: "YafuuGallery" },
-    ],
-  },
-];
-
-// Achievements: certificates, shown as unlocked cards under the loadout.
+// Achievements: certificates, shown as unlocked cards under the skill tree.
 // The image lives in public/certificates/ (an image, not the PDF, so the file's metadata isn't published).
 export type Achievement = {
   title: string;
