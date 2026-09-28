@@ -605,6 +605,10 @@
 }
 
 @media (max-width: 900px) {
+  /* easy to tap */
+  .filters button {
+    min-height: 44px;
+  }
   .shelf {
     --h: 250px;
     --spine: 34px;

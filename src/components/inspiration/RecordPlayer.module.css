@@ -265,7 +265,8 @@
   letter-spacing: 1.5px;
   text-transform: uppercase;
   text-align: center;
-  color: var(--dim);
+  /* muted, not dim: 11px text needs 4.5:1 against the page (dim gave 3.8) */
+  color: var(--muted);
 }
 
 /* ---------- the record library: a pane of liquid glass over the deck ---------- */
