@@ -3,7 +3,36 @@
    something to blur. (For 50/50: the library's left 48%.) */
 .player {
   position: relative;
+  isolation: isolate;
   margin: 32px calc(-1 * var(--gutter)) 0;
+}
+/* the site's textures behind the section, as on the cover: ink hatching on the art side (left,
+   behind the record) and the hairline grid on the web side (right, behind the glass), each
+   fading out towards the middle and at the section's top and bottom. They reach up behind the
+   section's label and down past the deck, where nothing covers them. */
+.player::before,
+.player::after {
+  content: "";
+  position: absolute;
+  inset: -120px 0 -64px;
+  z-index: -1;
+  pointer-events: none;
+  mask-composite: intersect;
+}
+.player::before {
+  background-image: repeating-linear-gradient(135deg, rgba(255, 106, 213, 0.1) 0 1px, transparent 1px 8px);
+  mask-image:
+    linear-gradient(to right, #000, transparent 62%),
+    linear-gradient(transparent, #000 14%, #000 82%, transparent);
+}
+.player::after {
+  background-image:
+    linear-gradient(rgba(92, 138, 255, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 138, 255, 0.11) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image:
+    linear-gradient(to left, #000 20%, transparent 75%),
+    linear-gradient(transparent, #000 14%, #000 82%, transparent);
 }
 
 /* ---------- the deck ---------- */
