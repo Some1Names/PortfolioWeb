@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { introPlaying, onIntroDone } from "@/lib/intro";
 
 // scroll positions are saved per page, so Back from another page returns to where you were
 const scrollKey = () => `scroll-y:${window.location.pathname}`;
@@ -34,6 +35,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     } catch {}
     const hashTarget = window.location.hash.length > 1 ? document.getElementById(window.location.hash.slice(1)) : null;
     lenis.scrollTo(saved ?? hashTarget ?? 0, { immediate: true });
+    // the loading intro holds the page still until it hands over
+    let stopWaiting = () => {};
+    if (introPlaying()) {
+      lenis.stop();
+      stopWaiting = onIntroDone(() => lenis.start());
+    }
     const remember = () => {
       try {
         sessionStorage.setItem(scrollKey(), String(window.scrollY));
@@ -54,6 +61,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     document.addEventListener("click", onClick);
 
     return () => {
+      stopWaiting();
       window.removeEventListener("pagehide", remember);
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(tick);

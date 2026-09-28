@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { onIntroDone } from "@/lib/intro";
 import { starField } from "@/lib/stars";
 import { site, heroFrames, cover } from "@/data/site";
 import Seam from "./motifs/Seam";
@@ -20,7 +21,7 @@ export default function Hero() {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const reduce = prefersReducedMotion();
       const q = gsap.utils.selector(root);
 
@@ -51,10 +52,30 @@ export default function Hero() {
         }
       }
 
-      // ---- intro ----
-      let intro: gsap.core.Timeline | undefined;
+      // ---- scroll: pin the hero, scrub frames ----
+      let scroll: gsap.core.Timeline | undefined;
       if (!reduce) {
-        intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+        scroll = gsap.timeline({
+          scrollTrigger: {
+            trigger: root.current,
+            start: "top top",
+            end: "+=100%",
+            pin: true,
+            scrub: 1,
+          },
+        });
+        scroll
+          .to(frame, { i: Math.max(heroFrames.frameCount - 1, 0), snap: "i", ease: "none", onUpdate: draw }, 0)
+          .to(q(`.${styles.floor}`), { backgroundPositionY: "+=240px", ease: "none" }, 0);
+
+        // slow drift on the background ring
+        gsap.to(q(`.${styles.orbit}`), { rotate: "+=360", duration: 120, repeat: -1, ease: "none" });
+      }
+
+      // ---- entrance: waits for the loading intro (if one is playing) to hand over ----
+      const buildIntro = () => {
+        if (reduce) return;
+        const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
         intro
           .from(q(`.${styles.rays}`), { opacity: 0, duration: 2.2, ease: "power2.out" })
           .from(q(`.${styles.axis}`), { scaleY: 0, transformOrigin: "50% 0%", duration: 1.6, ease: "power3.inOut" }, 0)
@@ -69,53 +90,35 @@ export default function Hero() {
           );
         // tag lines draw out from the label to the spot they point at (end point grows from the start)
         root.current?.querySelectorAll<SVGLineElement>('[data-layer="tags"] line').forEach((line, i) => {
-          intro?.from(
+          intro.from(
             line,
             { attr: { x2: line.getAttribute("x1") ?? 0, y2: line.getAttribute("y1") ?? 0 }, duration: 0.6, ease: "power2.inOut" },
             1.1 + i * 0.1,
           );
         });
-
-        // slow drift on the background ring
-        gsap.to(q(`.${styles.orbit}`), { rotate: "+=360", duration: 120, repeat: -1, ease: "none" });
-      }
-
-      // ---- scroll: pin the hero, scrub frames, dissolve the name ----
-      if (!reduce) {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top top",
-            end: "+=100%",
-            pin: true,
-            scrub: 1,
-          },
-        });
-        tl.to(frame, {
-          i: Math.max(heroFrames.frameCount - 1, 0),
-          snap: "i",
-          ease: "none",
-          onUpdate: draw,
-        }, 0)
-          .to(q(`.${styles.floor}`), { backgroundPositionY: "+=240px", ease: "none" }, 0);
-
-        // The rays, name and panels are also animated by the intro. Their scroll tweens are added only
-        // once the intro has finished, so they record the settled state (visible, in place) as
-        // their start. Added earlier, they recorded the intro's hidden start, and scrolling back
-        // to the top left the name and panels invisible.
-        intro?.eventCallback("onComplete", () => {
-          tl.to(q(`.${styles.rays}`), { opacity: 0.3, ease: "none" }, 0)
+        // The rays, name and panels are also animated by the entrance. Their scroll tweens are added
+        // only once it has finished, so they record the settled state (visible, in place) as their
+        // start. Added earlier, they recorded the hidden start, and scrolling back to the top left
+        // the name and panels invisible.
+        intro.eventCallback("onComplete", () => {
+          scroll
+            ?.to(q(`.${styles.rays}`), { opacity: 0.3, ease: "none" }, 0)
             .to(q(`.${styles.name}`), { yPercent: -40, opacity: 0, filter: "blur(12px)", ease: "none" }, 0)
             .to(q(`.${styles.driftFast}`), { y: -48, opacity: 0.35, ease: "none" }, 0)
             // cover depth: the tags move faster than you
             .to(q('[data-layer="portrait"]'), { yPercent: -8, ease: "none" }, 0)
             .to(q('[data-layer="tags"]'), { yPercent: -16, ease: "none" }, 0);
         });
-      }
+      };
+      // contextSafe keeps tweens made later (after the hand-over) in this component's cleanup
+      const stopWaiting = onIntroDone(contextSafe ? contextSafe(buildIntro) : buildIntro);
 
       const onResize = () => draw();
       window.addEventListener("resize", onResize);
-      return () => window.removeEventListener("resize", onResize);
+      return () => {
+        stopWaiting();
+        window.removeEventListener("resize", onResize);
+      };
     },
     { scope: root },
   );
