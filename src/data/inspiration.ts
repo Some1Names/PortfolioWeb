@@ -4,13 +4,15 @@
 // hosts (see images.remotePatterns in next.config.ts).
 
 // A tape on the shelf. Under the featured tape: the title, then `original` (the original-language
-// title) or, without one, `by`, in pink; then the year (and `by` for anime, the studio).
+// title) or, without one, `by`, in pink; then the year (and `by` for anime, the studio); then
+// `note`, your "why", as the staff pick (tapes without one skip it).
 export type Favourite = {
   title: string;
   kind: "movie" | "anime";
   year: number;
   by: string; // director (films) or studio (anime)
   original?: string;
+  note?: string;
   cover: string;
   alt: string;
   href: string; // the page the cover came from

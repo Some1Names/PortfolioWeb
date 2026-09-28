@@ -5,6 +5,7 @@
   --cover: calc(var(--front) + 36px); /* ...plus the case and sleeve peeking out behind it */
   --spine: 54px;
   --gap: 16px;
+  --reflect: 96px; /* room under the tapes for the shelf and their reflection */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   margin: 28px calc(-1 * var(--gutter)) 0;
 }
@@ -40,12 +41,17 @@
 }
 
 /* ---------- the row of tapes ---------- */
+/* the stage holds the row, the giant kanji behind it and the VCR text over it (outside the row's
+   edge fade, so the corners stay crisp) */
+.stage {
+  position: relative;
+  margin-top: 36px;
+}
 /* the chosen tape's centre sits on the row's centre: the track is shifted by the tapes before
    it (spines) plus half the chosen one */
 .row {
   position: relative;
-  height: var(--h);
-  margin-top: 36px;
+  height: calc(var(--h) + var(--reflect));
   overflow: hidden;
   touch-action: pan-y;
   mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
@@ -59,10 +65,12 @@
   left: 50%;
   display: flex;
   gap: var(--gap);
-  height: 100%;
+  height: var(--h);
   margin: 0;
   padding: 0;
   list-style: none;
+  /* the tapes mirrored in the shelf, fading out (Chromium and Safari; elsewhere, no reflection) */
+  -webkit-box-reflect: below 14px linear-gradient(transparent 60%, rgba(255, 255, 255, 0.2));
   transform: translateX(calc(-1 * (var(--f) * (var(--spine) + var(--gap)) + var(--cover) / 2)));
   transition: transform 0.7s var(--ease);
   animation: rowIn 0.5s ease both;
@@ -202,6 +210,174 @@
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--art);
 }
 
+/* the shelf the tapes stand on */
+.plank {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--h) + 3px);
+  height: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(#26222f, #0e0c13);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+}
+
+/* a giant outlined 映画 ("film"), faint, behind the shelf */
+.kanji {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--h) / 2);
+  transform: translate(-50%, -50%);
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  font-size: min(38vw, 560px);
+  line-height: 1;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(154, 107, 255, 0.34);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------- a VCR's on-screen display, in the stage's corners ---------- */
+/* mono capitals with a pink / blue colour fringe, like text on a tape */
+.osd {
+  position: absolute;
+  inset: 4px var(--gutter) var(--reflect);
+  pointer-events: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-strong);
+  text-shadow:
+    -1.5px 0 rgba(255, 106, 213, 0.75),
+    1.5px 0 rgba(92, 138, 255, 0.75);
+}
+.osdTl,
+.osdTr,
+.osdBl,
+.osdBr {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.osdTl {
+  top: 0;
+  left: 0;
+}
+.osdTr {
+  top: 0;
+  right: 0;
+}
+.osdBl {
+  bottom: 0;
+  left: 0;
+}
+.osdBr {
+  bottom: 0;
+  right: 0;
+}
+.rec {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--art);
+  animation: rec 1.2s steps(1) infinite;
+}
+@keyframes rec {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- rental stickers on the chosen case ---------- */
+.rewind {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffd6f3, #ff6ad5 58%, #d24cb0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  color: #3a0b2c;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(12deg);
+}
+/* a price-tag notch on the right */
+.pick {
+  position: absolute;
+  left: 0;
+  bottom: 16px;
+  padding: 5px 16px 5px 10px;
+  background: var(--text-strong);
+  color: #0a0a0c;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%);
+}
+
+/* ---------- pulled out: a quick VHS tracking glitch ---------- */
+.on .front {
+  animation: tracking 0.5s steps(1);
+}
+@keyframes tracking {
+  0% {
+    transform: translateX(-7px);
+    filter: hue-rotate(40deg) brightness(1.3);
+  }
+  20% {
+    transform: translateX(5px);
+    filter: contrast(1.5);
+  }
+  40% {
+    transform: translateX(-3px);
+    filter: none;
+  }
+  60% {
+    transform: translateX(1px);
+  }
+  80% {
+    transform: none;
+  }
+}
+/* a band of noise rolling down the case */
+.front::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -25%;
+  height: 22%;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 4px);
+}
+.on .front::after {
+  animation: band 0.6s linear;
+}
+@keyframes band {
+  from {
+    top: -25%;
+    opacity: 1;
+  }
+  to {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
 /* ---------- under the shelf: arrows either side of the caption ---------- */
 .info {
   display: grid;
@@ -267,12 +443,24 @@
   color: var(--muted);
 }
 
+.note {
+  max-width: 460px;
+  margin: 14px auto 0;
+  font-size: 15px;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--soft);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .track,
   .tape,
   .spine,
   .case,
-  .caption {
+  .caption,
+  .rec,
+  .on .front,
+  .on .front::after {
     transition: none;
     animation: none;
   }
@@ -293,5 +481,27 @@
   }
   .spineYear {
     display: none;
+  }
+  .shelf {
+    --reflect: 72px;
+  }
+  /* the tapes fill the width here, so the screen text moves off them: the top pair above the
+     shelf, the bottom pair down in the reflection */
+  .stage {
+    padding-top: 28px;
+  }
+  .osd {
+    inset: 0 var(--gutter);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+  .kanji {
+    font-size: 62vw;
+  }
+  .rewind {
+    top: 8px;
+    right: 8px;
+    width: 54px;
+    height: 54px;
   }
 }

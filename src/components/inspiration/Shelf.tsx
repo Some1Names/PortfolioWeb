@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { Favourite } from "@/data/inspiration";
 import { shelfItems, middleIndex, stepIndex, type ShelfFilter } from "./tapes";
@@ -17,6 +17,8 @@ const FILTERS: { id: ShelfFilter; label: string }[] = [
 // from their posters. Every tape carries both, so the chosen one widens and its spine fades into
 // the case, and the row slides to keep it centred. Browse with the arrows, the ← → keys (with the
 // shelf focused), a click on a spine, or a swipe. The shelf is finite: the arrows stop at the ends.
+// Dressed as a VCR: on-screen text in the corners, rental stickers on the chosen case, a shelf
+// with the tapes reflected in it, and a giant 映画 ("film") behind.
 export default function Shelf({ items }: { items: Favourite[] }) {
   const [filter, setFilter] = useState<ShelfFilter>("all");
   const list = shelfItems(items, filter);
@@ -42,68 +44,101 @@ export default function Shelf({ items }: { items: Favourite[] }) {
         ))}
       </div>
 
-      <div
-        className={styles.row}
-        tabIndex={0}
-        aria-label="Shelf of films and anime: use the arrow keys to browse"
-        onKeyDown={(e) => {
-          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-            e.preventDefault();
-            go(e.key === "ArrowRight" ? 1 : -1);
-          }
-        }}
-        onPointerDown={(e) => {
-          if (e.pointerType !== "mouse") swipe.current = e.clientX;
-        }}
-        onPointerUp={(e) => {
-          const from = swipe.current;
-          swipe.current = null;
-          if (from !== null && Math.abs(e.clientX - from) > 40) go(e.clientX < from ? 1 : -1);
-        }}
-      >
-        {/* keyed by filter: a new filter builds a new row, already centred */}
-        <ol key={filter} className={styles.track} style={{ "--f": at } as React.CSSProperties}>
-          {list.map((it, i) => {
-            const on = i === at;
-            return (
-              <li key={it.title} className={`${styles.tape} ${on ? styles.on : ""}`}>
-                <button
-                  type="button"
-                  className={styles.spine}
-                  onClick={() => setIndex(i)}
-                  aria-label={`Show ${it.title}`}
-                  aria-hidden={on || undefined}
-                  tabIndex={on ? -1 : undefined}
-                >
-                  <Image src={it.cover} alt="" fill sizes="64px" className={styles.spineArt} />
-                  <span className={styles.spineYear} aria-hidden="true">
-                    {it.year}
-                  </span>
-                  <span className={styles.spineTitle} aria-hidden="true">
-                    {it.title}
-                  </span>
-                  <span className={styles.wear} aria-hidden="true" />
-                </button>
-                <a
-                  href={it.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.case}
-                  aria-label={`${it.title} on TMDB`}
-                  aria-hidden={!on || undefined}
-                  tabIndex={on ? undefined : -1}
-                >
-                  <span className={styles.sleeve} aria-hidden="true" />
-                  <span className={styles.caseBack} aria-hidden="true" />
-                  <span className={styles.front}>
-                    <Image src={it.cover} alt={it.alt} fill sizes="(max-width: 900px) 180px, 260px" className={styles.poster} />
+      <div className={styles.stage}>
+        <span className={styles.kanji} data-part="kanji" aria-hidden="true">
+          映画
+        </span>
+        <div
+          className={styles.row}
+          tabIndex={0}
+          aria-label="Shelf of films and anime: use the arrow keys to browse"
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+              e.preventDefault();
+              go(e.key === "ArrowRight" ? 1 : -1);
+            }
+          }}
+          onPointerDown={(e) => {
+            if (e.pointerType !== "mouse") swipe.current = e.clientX;
+          }}
+          onPointerUp={(e) => {
+            const from = swipe.current;
+            swipe.current = null;
+            if (from !== null && Math.abs(e.clientX - from) > 40) go(e.clientX < from ? 1 : -1);
+          }}
+        >
+          {/* keyed by filter: a new filter builds a new row, already centred */}
+          <ol key={filter} className={styles.track} style={{ "--f": at } as React.CSSProperties}>
+            {list.map((it, i) => {
+              const on = i === at;
+              return (
+                <li key={it.title} className={`${styles.tape} ${on ? styles.on : ""}`}>
+                  <button
+                    type="button"
+                    className={styles.spine}
+                    onClick={() => setIndex(i)}
+                    aria-label={`Show ${it.title}`}
+                    aria-hidden={on || undefined}
+                    tabIndex={on ? -1 : undefined}
+                  >
+                    <Image src={it.cover} alt="" fill sizes="64px" className={styles.spineArt} />
+                    <span className={styles.spineYear} aria-hidden="true">
+                      {it.year}
+                    </span>
+                    <span className={styles.spineTitle} aria-hidden="true">
+                      {it.title}
+                    </span>
                     <span className={styles.wear} aria-hidden="true" />
-                  </span>
-                </a>
-              </li>
-            );
-          })}
-        </ol>
+                  </button>
+                  <a
+                    href={it.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.case}
+                    aria-label={`${it.title} on TMDB`}
+                    aria-hidden={!on || undefined}
+                    tabIndex={on ? undefined : -1}
+                  >
+                    <span className={styles.sleeve} aria-hidden="true" />
+                    <span className={styles.caseBack} aria-hidden="true" />
+                    <span className={styles.front}>
+                      <Image
+                        src={it.cover}
+                        alt={it.alt}
+                        fill
+                        sizes="(max-width: 900px) 180px, 260px"
+                        className={styles.poster}
+                      />
+                      <span className={styles.wear} aria-hidden="true" />
+                      <span className={styles.rewind} aria-hidden="true">
+                        Be kind
+                        <br />
+                        rewind
+                      </span>
+                      <span className={styles.pick} aria-hidden="true">
+                        Staff pick ★
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+          <span className={styles.plank} data-part="plank" aria-hidden="true" />
+        </div>
+        {/* a VCR's on-screen display, in the corners */}
+        <div className={styles.osd} data-part="osd" aria-hidden="true">
+          <span className={styles.osdTl}>
+            <i className={styles.rec} /> Play ▶
+          </span>
+          <span className={styles.osdTr}>
+            SP · {String(at + 1).padStart(2, "0")} / {String(list.length).padStart(2, "0")}
+          </span>
+          <span className={styles.osdBl}>
+            <Timecode key={current.title} />
+          </span>
+          <span className={styles.osdBr}>Hi-Fi Stereo</span>
+        </div>
       </div>
 
       <div className={styles.info}>
@@ -114,6 +149,7 @@ export default function Shelf({ items }: { items: Favourite[] }) {
           <p className={styles.title}>{current.title}</p>
           <p className={styles.original}>{current.original ?? current.by}</p>
           <p className={styles.year}>{current.kind === "anime" ? `${current.year} · ${current.by}` : current.year}</p>
+          {current.note && <p className={styles.note}>Staff pick: “{current.note}”</p>}
         </div>
         <button
           type="button"
@@ -126,5 +162,22 @@ export default function Shelf({ items }: { items: Favourite[] }) {
         </button>
       </div>
     </div>
+  );
+}
+
+// the VCR's tape counter: runs from 0:00:00 while a tape is out (keyed by the tape, so it resets)
+function Timecode() {
+  const [sec, setSec] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setSec((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const hh = Math.floor(sec / 3600);
+  const mm = String(Math.floor(sec / 60) % 60).padStart(2, "0");
+  const ss = String(sec % 60).padStart(2, "0");
+  return (
+    <>
+      {hh}:{mm}:{ss}
+    </>
   );
 }
