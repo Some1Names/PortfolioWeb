@@ -92,7 +92,8 @@
   border-color: var(--collide);
 }
 
-/* ---------- the "Uefa" wordmark: a pink and a blue copy glitch over the white one ---------- */
+/* ---------- the closing line, the thesis: a pink and a blue copy glitch over the white one ----------
+   Set like the hero's headline (uppercase sans, three lines), which it hands over to. */
 .mark {
   position: absolute;
   inset: 0;
@@ -104,10 +105,21 @@
 }
 .mark > span {
   grid-area: 1 / 1;
-  font-family: var(--display);
-  font-size: clamp(72px, 14vw, 180px);
-  line-height: 1;
+  font-family: var(--sans);
+  font-weight: 500;
+  /* three lines: capped by the height too, for phones held sideways */
+  font-size: min(14vw, 20vh, 130px);
+  line-height: 1.02;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-align: center;
   color: var(--text-strong);
+}
+.markMain .art {
+  color: var(--art);
+}
+.markMain .web {
+  color: var(--web);
 }
 .mark .markPink {
   color: var(--art);

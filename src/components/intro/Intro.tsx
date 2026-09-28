@@ -3,10 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 import { finishIntro, introTooLate } from "@/lib/intro";
-import { site, cover } from "@/data/site";
+import { site, cover, thesis } from "@/data/site";
 import SysTime from "../hud/SysTime";
 import { DURATION, T, makePool, drawScene, measureHalf, counterAt, seg } from "./scene";
 import styles from "./Intro.module.css";
+
+// The thesis the intro ends on, broken into the hero's three lines, so the cover's own line reads as
+// this one landing ("art" pink and "web" blue in the white copy; the glitch copies are one colour).
+const Thesis = () => (
+  <>
+    {thesis.lead} <span className={styles.art}>{thesis.art}</span> <br />
+    and <span className={styles.web}>{thesis.web}</span> <br />
+    {thesis.end}
+  </>
+);
 
 // The first-visit loading intro (docs/superpowers/specs/2026-09-28-loading-intro-design.md).
 // IntroGate's inline script decides before the first paint whether it plays, by setting
@@ -153,9 +163,15 @@ export default function Intro() {
       </span>
       <span ref={label} className={styles.lineLabel} data-part="line-label" aria-hidden="true" />
       <div ref={mark} className={styles.mark} data-part="mark" aria-hidden="true">
-        <span className={styles.markPink}>{site.name}</span>
-        <span className={styles.markBlue}>{site.name}</span>
-        <span className={styles.markMain}>{site.name}</span>
+        <span className={styles.markPink}>
+          <Thesis />
+        </span>
+        <span className={styles.markBlue}>
+          <Thesis />
+        </span>
+        <span className={styles.markMain}>
+          <Thesis />
+        </span>
       </div>
       <button type="button" className={styles.skip} data-part="skip">
         Skip intro →

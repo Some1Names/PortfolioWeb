@@ -15,7 +15,7 @@ export const T = {
   network: 4.3,
   collapse: 5.4,
   converge: 5.7,
-  mark: 6.0, // the canvas is done; the "Uefa" wordmark takes over
+  mark: 6.0, // the canvas is done; the closing line (the thesis) takes over
   handover: 7.0,
   end: 7.6,
 } as const;
@@ -256,7 +256,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, t: number, w: number, h
     }
   }
 
-  // F: everything converges into one violet dot, which hands over to the wordmark
+  // F: everything converges into one violet dot, which hands over to the closing line
   if (t >= 5.85 && t < 6.1) {
     ctx.globalAlpha = seg(t, 5.85, T.mark) * (1 - seg(t, T.mark, 6.1));
     dot(ctx, cx, cy, 2.5, VIOLET);
