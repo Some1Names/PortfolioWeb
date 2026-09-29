@@ -113,6 +113,10 @@ export function project(p: Vec3, cam: Pose, vp: Viewport): Screen {
 
 export const overviewPose = (): Pose => ({ tx: 0, ty: 0, tz: 0, yaw: 0, pitch: 0, zoom: 1 });
 
+// the phones' mini sky: the whole map tipped toward the viewer, turned to `yaw`. Tipped, what
+// swings to the front drops, so the aim sits a little low and the zoom leaves room for a full turn.
+export const miniPose = (yaw: number): Pose => ({ ...overviewPose(), ty: -65, yaw, pitch: 0.35, zoom: 0.62 });
+
 // the card goes on the side away from what it's about
 export const cardSide = (x: number, vp: Viewport): Side => (x < vp.w / 2 ? "right" : "left");
 
@@ -350,7 +354,8 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
       const s = P(br.name);
       ctx.globalAlpha = a;
       ctx.fillStyle = p.colors[b];
-      ctx.fillText(br.title.toUpperCase(), s.x, s.y);
+      // lifted clear of the first star: at the mini sky's scale the anchor alone sits almost on it
+      ctx.fillText(br.title.toUpperCase(), s.x, s.y - 10);
     });
   }
   ctx.restore();

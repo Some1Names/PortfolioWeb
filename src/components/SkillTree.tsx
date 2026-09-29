@@ -9,6 +9,7 @@ import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Crosshairs from "./hud/Crosshairs";
 import ConstellationMap from "./skills/ConstellationMap";
+import MiniSky from "./skills/MiniSky";
 import styles from "./SkillTree.module.css";
 
 // sets --side for everything inside a branch: pink, blue or violet
@@ -114,6 +115,7 @@ export default function SkillTree() {
 
       {/* ---------- phones (and the fallback): one list per branch ---------- */}
       <div className={styles.mobile}>
+        {!listMode && <MiniSky />}
         {branches.map((br, b) => (
           <div key={br.name} className={`${styles.mBranch} ${SIDE[br.side]}`}>
             <div className={styles.mHead}>Branch / {br.name}</div>
