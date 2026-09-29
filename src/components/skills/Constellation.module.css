@@ -2,7 +2,8 @@
 .map {
   position: relative;
   height: clamp(520px, 42vw, 680px);
-  overflow: hidden;
+  /* clip, not hidden: hidden makes this a scroll container, which focusing a star would scroll */
+  overflow: clip;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: radial-gradient(ellipse at 50% 50%, rgba(28, 24, 41, 0.7), rgba(6, 6, 10, 0.85) 70%);
   user-select: none;

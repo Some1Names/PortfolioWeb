@@ -39,7 +39,7 @@ const SKY = layoutSky(branches.map((b) => ({ title: b.name, skills: b.skills.map
 const N = branches.length;
 
 type Star = { b: number; s: number };
-type Api = { open: (view: CardView, from: HTMLElement) => void; close: () => void; hover: (star: Star | null) => void };
+type Api = { open: (view: CardView, from: HTMLElement, keyboard: boolean) => void; close: () => void; hover: (star: Star | null) => void };
 
 export default function ConstellationMap({ onUnavailable }: { onUnavailable?: () => void }) {
   const root = useRef<HTMLDivElement>(null);
@@ -53,6 +53,8 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
   const itemEls = useRef<(HTMLSpanElement | null)[][]>(branches.map(() => []));
   const nameEls = useRef<(HTMLSpanElement | null)[]>([]);
   const api = useRef<Api | null>(null);
+  // opened from the keyboard: focus goes into the card once it's shown
+  const focusCard = useRef(false);
   const unavailable = useRef(onUnavailable);
   // what the card shows (kept while it slides out), whether it's open, and its side
   const [card, setCard] = useState<{ view: CardView | null; open: boolean; side: Side }>({ view: null, open: false, side: "right" });
@@ -60,6 +62,12 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
   useEffect(() => {
     unavailable.current = onUnavailable;
   }, [onUnavailable]);
+
+  useEffect(() => {
+    if (!card.open || !focusCard.current) return;
+    focusCard.current = false;
+    cardEl.current?.querySelector<HTMLElement>("button")?.focus({ preventScroll: true });
+  }, [card]);
 
   useEffect(() => {
     const el = root.current;
@@ -93,11 +101,13 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
     };
     const poseFor = (focus: number) => (focus === -1 ? planetPose(st.vp) : branchPose(SKY, focus, st.vp));
 
-    const place = (node: HTMLElement | null, x: number, y: number, alpha: number, scale = 1) => {
+    // (hidden also takes a button out of the Tab order: a star off the board or under the card
+    // can't take focus, which would scroll the board's contents or put the focus ring out of sight)
+    const place = (node: HTMLElement | null, x: number, y: number, alpha: number, scale = 1, hide = false) => {
       if (!node) return;
       node.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
       node.style.opacity = alpha.toFixed(3);
-      node.style.visibility = alpha < 0.03 ? "hidden" : "visible";
+      node.style.visibility = hide || alpha < 0.03 ? "hidden" : "visible";
     };
 
     const draw = () => {
@@ -124,6 +134,18 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
         synergy,
         glow,
       };
+      // where the card is on the board (read before this frame's style writes, so it costs no layout)
+      const cardNode = cardEl.current;
+      let box: { l: number; t: number; r: number; b: number } | null = null;
+      if (cardNode && (st.focus !== -2 || st.dim > 0.05)) {
+        const r = cardNode.getBoundingClientRect();
+        const o = el.getBoundingClientRect();
+        box = { l: r.left - o.left, t: r.top - o.top, r: r.right - o.left, b: r.bottom - o.top };
+      }
+      const covered = st.focus !== -2 ? box : null;
+      const away = (s: { x: number; y: number }) =>
+        s.x < 0 || s.y < 0 || s.x > st.vp.w || s.y > st.vp.h || (!!covered && s.x >= covered.l - 4 && s.x <= covered.r + 4 && s.y >= covered.t - 4 && s.y <= covered.b + 4);
+
       ctx.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
       ctx.clearRect(0, 0, st.vp.w, st.vp.h);
       drawSky(ctx, paint);
@@ -131,13 +153,13 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       // the HTML layer follows the drawing
       const P = (v: Vec3) => project(v, pose, st.vp);
       const pl = P(SKY.planet);
-      place(planetEl.current, pl.x, pl.y, appearPlanet(st.reveal));
+      place(planetEl.current, pl.x, pl.y, appearPlanet(st.reveal), 1, away(pl));
       SKY.branches.forEach((br, b) => {
         const n = br.stars.length + 1;
         const ba = branchAlpha(paint, b);
         br.stars.forEach((v, k) => {
           const s = P(v);
-          place(starEls.current[b][k], s.x, s.y, appear(st.reveal, b, k, N, n) * ba, labelScale(s.scale));
+          place(starEls.current[b][k], s.x, s.y, appear(st.reveal, b, k, N, n) * ba, labelScale(s.scale), away(s));
         });
         const last = appear(st.reveal, b, n - 1, N, n) * ba;
         const l = P(br.locked);
@@ -167,14 +189,11 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
 
       // the leader line: from the open star (or the planet) to the card's near edge
       const line = leader.current;
-      const cardNode = cardEl.current;
-      if (line && cardNode) {
+      if (line) {
         const from = st.picked ? P(SKY.branches[st.picked.b].stars[st.picked.s]) : st.lit === -1 ? pl : null;
-        if (from && st.dim > 0.05) {
-          const r = cardNode.getBoundingClientRect();
-          const o = el.getBoundingClientRect();
-          const x2 = st.side === "right" ? r.left - o.left : r.right - o.left;
-          const y2 = Math.min(Math.max(from.y, r.top - o.top + 24), r.bottom - o.top - 24);
+        if (from && box && st.dim > 0.05) {
+          const x2 = st.side === "right" ? box.l : box.r;
+          const y2 = Math.min(Math.max(from.y, box.t + 24), box.b - 24);
           line.setAttribute("x1", from.x.toFixed(1));
           line.setAttribute("y1", from.y.toFixed(1));
           line.setAttribute("x2", x2.toFixed(1));
@@ -227,8 +246,9 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       }
       st.dirty = true;
     };
-    const open = (view: CardView, from: HTMLElement) => {
+    const open = (view: CardView, from: HTMLElement, keyboard: boolean) => {
       st.opener = from;
+      focusCard.current = keyboard;
       const focus = view.kind === "planet" ? -1 : view.b;
       const { pose, side } = poseFor(focus);
       st.picked = view.kind === "skill" ? { b: view.b, s: view.s } : null;
@@ -325,7 +345,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
           className={styles.planet}
           aria-label="Origin — open the player card"
           aria-pressed={view?.kind === "planet"}
-          onClick={(e) => api.current?.open({ kind: "planet" }, e.currentTarget)}
+          onClick={(e) => api.current?.open({ kind: "planet" }, e.currentTarget, e.detail === 0)}
         >
           <span className={styles.hit} />
           <span className={styles.planetHint} aria-hidden="true">
@@ -356,7 +376,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
                   className={`${styles.star} ${on ? styles.starOn : ""}`}
                   aria-label={`${sk.name} — ${br.name} skill, used in ${sk.usedIn}`}
                   aria-pressed={on}
-                  onClick={(e) => api.current?.open({ kind: "skill", b, s }, e.currentTarget)}
+                  onClick={(e) => api.current?.open({ kind: "skill", b, s }, e.currentTarget, e.detail === 0)}
                   onPointerEnter={() => api.current?.hover({ b, s })}
                   onPointerLeave={() => api.current?.hover(null)}
                 >

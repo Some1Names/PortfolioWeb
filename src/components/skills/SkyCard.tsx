@@ -62,7 +62,7 @@ function SkillCard({ b, s, onClose }: { b: number; s: number; onClose: () => voi
         <span>Branch / {br.name}</span>
         <Close onClose={onClose} />
       </div>
-      <div key={`${b}-${s}`} className={styles.cardBody}>
+      <div key={`${b}-${s}`} className={styles.cardBody} data-lenis-prevent>
         <strong className={styles.cardTitle}>
           <Logo name={sk.name} className={styles.cardLogo} />
           {sk.name}
@@ -111,7 +111,7 @@ function PlayerCard({ onClose }: { onClose: () => void }) {
         <span>Origin / Player</span>
         <Close onClose={onClose} />
       </div>
-      <div key="planet" className={styles.cardBody}>
+      <div key="planet" className={styles.cardBody} data-lenis-prevent>
         <strong className={styles.playerName}>
           <DecryptedText text={site.name} duration={900} encryptedClassName={styles.encrypted} />
         </strong>
