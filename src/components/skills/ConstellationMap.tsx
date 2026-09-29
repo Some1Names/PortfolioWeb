@@ -11,7 +11,6 @@ import {
   drawSky,
   labelPx,
   labelScale,
-  layoutSky,
   makeGlow,
   overviewPose,
   planetPose,
@@ -23,6 +22,7 @@ import {
   type Viewport,
 } from "./constellation";
 import SkyCard, { type CardView } from "./SkyCard";
+import { getSky } from "./sky";
 import styles from "./Constellation.module.css";
 
 // 04 — the Skills section's star map, on 901px and up
@@ -35,7 +35,6 @@ import styles from "./Constellation.module.css";
 const HEX = { art: "#ff6ad5", web: "#5c8aff", collide: "#9a6bff" } as const; // --art, --web, --collide
 const SIDE = { art: styles.sideArt, web: styles.sideWeb, collide: styles.sideCollide };
 const COLORS = branches.map((b) => HEX[b.side]);
-const SKY = layoutSky(branches.map((b) => ({ title: b.name, skills: b.skills.map((s) => s.name), items: b.items.length })));
 const N = branches.length;
 
 type Star = { b: number; s: number };
@@ -78,12 +77,15 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       return;
     }
     const ctx: CanvasRenderingContext2D = maybe;
+    const SKY = getSky();
     const still = prefersReducedMotion();
     const glow = makeGlow(document);
     const t0 = performance.now();
     const st = {
-      vp: { w: 1, h: 1 } as Viewport,
+      vp: { w: 1, h: 1 } as Viewport, // the board (this element): what the constellations fit in
       dpr: 1,
+      sky: { w: 1, h: 1 }, // the whole sky around it (the parent stage), which the canvas covers
+      off: { x: 0, y: 0 }, // the board's top-left corner in the sky
       cam: overviewPose(),
       focus: -2, // what's open: a branch, -1 = the planet, -2 = nothing (the full map)
       lit: -2, // what stays bright while the rest fades (it outlives `focus` through the fade back)
@@ -146,9 +148,10 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       const away = (s: { x: number; y: number }) =>
         s.x < 0 || s.y < 0 || s.x > st.vp.w || s.y > st.vp.h || (!!covered && s.x >= covered.l - 4 && s.x <= covered.r + 4 && s.y >= covered.t - 4 && s.y <= covered.b + 4);
 
-      ctx.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
-      ctx.clearRect(0, 0, st.vp.w, st.vp.h);
-      drawSky(ctx, paint);
+      // drawn in board px, onto a canvas that spreads past the board over the whole sky
+      ctx.setTransform(st.dpr, 0, 0, st.dpr, st.off.x * st.dpr, st.off.y * st.dpr);
+      ctx.clearRect(-st.off.x, -st.off.y, st.sky.w, st.sky.h);
+      drawSky(ctx, { ...paint, bounds: { x0: -st.off.x, y0: -st.off.y, x1: st.sky.w - st.off.x, y1: st.sky.h - st.off.y } });
 
       // the HTML layer follows the drawing
       const P = (v: Vec3) => project(v, pose, st.vp);
@@ -220,10 +223,17 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
     const size = () => {
       const w = el.clientWidth;
       const h = el.clientHeight;
-      if (!w || !h) return;
+      const stage = el.parentElement;
+      if (!w || !h || !stage) return;
       st.dpr = Math.min(window.devicePixelRatio || 1, 2);
-      cv.width = Math.round(w * st.dpr);
-      cv.height = Math.round(h * st.dpr);
+      st.off = { x: el.offsetLeft, y: el.offsetTop };
+      st.sky = { w: stage.clientWidth, h: stage.clientHeight };
+      cv.style.left = `${-st.off.x}px`;
+      cv.style.top = `${-st.off.y}px`;
+      cv.style.width = `${st.sky.w}px`;
+      cv.style.height = `${st.sky.h}px`;
+      cv.width = Math.round(st.sky.w * st.dpr);
+      cv.height = Math.round(st.sky.h * st.dpr);
       st.vp = { w, h };
       el.toggleAttribute("data-small", labelPx(st.vp) < 13);
       // an open constellation stays framed for the new size
@@ -307,6 +317,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
     el.dataset.running = "false";
     size();
     ro.observe(el);
+    if (el.parentElement) ro.observe(el.parentElement);
     io.observe(el);
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerleave", onLeave);

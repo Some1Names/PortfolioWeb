@@ -59,7 +59,7 @@
   align-items: center;
   gap: 8px;
 }
-/* the legend's marks: a star, a hollow locked star, an item dot */
+/* the legend's marks: a star, a hollow locked star, an item dot, a big and a small star */
 .legendStar {
   font-style: normal;
   font-size: 12px;
@@ -77,6 +77,22 @@
   height: 4px;
   border-radius: 50%;
   background: var(--soft);
+}
+.legendSize {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.legendSize b {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-strong);
+}
+.legendSize b + b {
+  width: 4px;
+  height: 4px;
+  opacity: 0.7;
 }
 .hint {
   color: var(--lav);
@@ -127,6 +143,36 @@
   font-family: var(--display);
   font-size: 26px !important;
   text-transform: none;
+}
+
+/* the stats bar and the star map share one sky: on 901px and up it runs edge to edge and is at
+   least the screen's height, so arriving at it fills the screen (the map takes the space left under
+   the stats bar, never less than 480px) */
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 901px) {
+  .stage {
+    min-height: 100svh;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 48px var(--gutter) 24px;
+    gap: 16px;
+    overflow: clip;
+    background: radial-gradient(ellipse at 50% 58%, rgba(28, 24, 41, 0.6), rgba(6, 6, 10, 0.92) 72%);
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.06),
+      inset 0 -1px rgba(255, 255, 255, 0.06);
+  }
+  /* the fallback list: no sky */
+  .listMode .stage {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
 }
 
 /* ---------- phones (and anywhere the star map can't draw): a list per branch ---------- */

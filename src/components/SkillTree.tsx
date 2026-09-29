@@ -19,7 +19,7 @@ type Picked = { b: number; s: number };
 const DEFAULT_PICK: Picked = { b: 0, s: 3 };
 
 // 04 — Skill tree. On 901px and up the skills are a 3D star map (skills/ConstellationMap, with its
-// own HUD card). On phones, and anywhere the map can't get a canvas, they're a list per branch with
+// own HUD card) filling the screen, the stats bar floating on its sky. On phones, and anywhere the map can't get a canvas, they're a list per branch with
 // a sticky details card. The stats bar and Achievements frame both.
 export default function SkillTree() {
   // the list's card: which skill it shows (null = closed)
@@ -63,6 +63,13 @@ export default function SkillTree() {
             Item
           </span>
           <span>
+            <i className={styles.legendSize} aria-hidden="true">
+              <b />
+              <b />
+            </i>
+            Bigger = learned earlier
+          </span>
+          <span>
             <i className={`${styles.legendSide} ${styles.sideArt}`} />
             Art
           </span>
@@ -78,6 +85,8 @@ export default function SkillTree() {
         </div>
       </header>
 
+      {/* the stats bar and the star map share one sky, full screen on 901px and up */}
+      <div className={styles.stage} data-part="stage">
       <div className={`${styles.stats} glass`}>
         <div>
           <span>Player</span>
@@ -112,6 +121,7 @@ export default function SkillTree() {
       </div>
 
       {!listMode && <ConstellationMap onUnavailable={() => setListMode(true)} />}
+      </div>
 
       {/* ---------- phones (and the fallback): one list per branch ---------- */}
       <div className={styles.mobile}>

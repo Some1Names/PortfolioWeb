@@ -1,15 +1,14 @@
 /* 04 — the Skills star map (docs/superpowers/specs/2026-09-30-skill-constellation-design.md) */
+/* the constellations' board: the space the full-screen sky (SkillTree's stage, which clips it and
+   draws its background) leaves under the stats bar. Never a scroll container: focusing a star would
+   scroll it. */
 .map {
   position: relative;
-  height: clamp(520px, 42vw, 680px);
-  /* clip, not hidden: hidden makes this a scroll container, which focusing a star would scroll */
-  overflow: clip;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: radial-gradient(ellipse at 50% 50%, rgba(28, 24, 41, 0.7), rgba(6, 6, 10, 0.85) 70%);
+  flex: 1 1 auto;
+  min-height: 480px;
   user-select: none;
   touch-action: pan-y; /* page scrolling passes straight through */
 }
-.canvas,
 .leader,
 .layer {
   position: absolute;
@@ -17,7 +16,11 @@
   width: 100%;
   height: 100%;
 }
+/* sized and placed by ConstellationMap to cover the whole sky around the board */
 .canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
   display: block;
 }
 .leader {

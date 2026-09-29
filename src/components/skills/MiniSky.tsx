@@ -3,12 +3,12 @@
 import { useEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 import { branches, synergy } from "@/data/skills";
-import { drawSky, layoutSky, makeGlow, miniPose, type Viewport } from "./constellation";
+import { drawSky, makeGlow, miniPose, type Viewport } from "./constellation";
+import { getSky } from "./sky";
 import styles from "./Constellation.module.css";
 
 const HEX = { art: "#ff6ad5", web: "#5c8aff", collide: "#9a6bff" } as const; // --art, --web, --collide
 const COLORS = branches.map((b) => HEX[b.side]);
-const SKY = layoutSky(branches.map((b) => ({ title: b.name, skills: b.skills.map((s) => s.name), items: b.items.length })));
 
 // The phones' small, decorative sky above the skills list: the four constellations and the planet,
 // turning once a minute, their names only. Still for reduced motion; drawn only while on screen.
@@ -22,6 +22,7 @@ export default function MiniSky() {
     const maybe = cv?.getContext("2d");
     if (!el || !cv || !maybe) return;
     const ctx: CanvasRenderingContext2D = maybe;
+    const SKY = getSky();
     const still = prefersReducedMotion();
     const glow = makeGlow(document);
     const t0 = performance.now();

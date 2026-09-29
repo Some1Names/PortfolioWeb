@@ -2,7 +2,7 @@
 // React and no DOM of their own, so the Node tests can run them
 // (docs/superpowers/specs/2026-09-30-skill-constellation-design.md §3).
 //
-// World space is in "overview pixels" for a 1240 × 600 board: x right, y up, z toward the viewer.
+// World space is in "overview pixels" for a 1240 × 720 board: x right, y up, z toward the viewer.
 // A camera Pose orbits a target point and scales the world onto the real board.
 
 // ---------- types and constants ----------
@@ -11,37 +11,62 @@ export type BranchShape = { title: string; skills: string[]; items: number };
 export type SkyBranch = {
   title: string;
   names: string[]; // the skills' names, in learning order
-  stars: Vec3[]; // one per skill
-  locked: Vec3; // the hollow next-quest star at the end of the chain
+  stars: Vec3[]; // one per skill, scattered
+  sizes: number[]; // each star's size: the first learned biggest (1.5), the newest smallest (0.75)
+  locked: Vec3; // the hollow next-quest star, at the end of the lines
   items: Vec3[]; // faint item dots
   name: Vec3; // where the constellation's name sits
 };
 export type Sky = { planet: Vec3; branches: SkyBranch[]; field: Vec3[][] };
+// a line between two constellations' stars ([branch, skill] each), with its label
+export type Link = { from: readonly [number, number]; to: readonly [number, number]; label: string };
 export type Pose = { tx: number; ty: number; tz: number; yaw: number; pitch: number; zoom: number };
 export type Viewport = { w: number; h: number };
 export type Screen = { x: number; y: number; scale: number; depth: number };
 export type Side = "left" | "right";
 
-export const WORLD = { w: 1240, h: 600 };
+export const WORLD = { w: 1240, h: 720 };
 export const FOCAL = 1400; // perspective distance, in world px
 export const CARD_W = 320; // the HUD card's width
 export const EDGE = 24; // the clear margin at the board's edges and beside the card
 export const LABEL_H = 18; // a skill label's line height
 
-// Each branch's chain, in data order (Frontend above, Motion & 3D right, Data below, Design left):
-// its first star, the step to the next (shrunk if the chain would outgrow `span`), its depth, and
-// the box its item dots scatter in (x, y = bottom-left corner).
-const CHAINS = [
-  { start: { x: -380, y: 200 }, step: { x: 150, y: 0 }, span: 600, z: -60, items: { x: -380, y: 250, w: 600, h: 30 } },
-  { start: { x: 380, y: 125 }, step: { x: 0, y: -62 }, span: 310, z: 40, items: { x: 360, y: -215, w: 70, h: 45 } },
-  { start: { x: -380, y: -200 }, step: { x: 150, y: 0 }, span: 600, z: -20, items: { x: -380, y: -280, w: 600, h: 30 } },
-  { start: { x: -520, y: 140 }, step: { x: 0, y: -62 }, span: 310, z: 60, items: { x: -600, y: -150, w: 40, h: 300 } },
+// The boards the layout is made on: the star map's board at 1440×900, 1100×800, 901×800, 1366×650
+// and 1920×1080 windows. On each, in the overview, every label and name is on the board and clear of
+// every other label, name, star and line. (Labels are HTML at a fixed size, so small boards crowd
+// them most; the sizes in between follow.)
+// (the tightest first, so most spots that don't fit are ruled out on the first board)
+export const REF_BOARDS: Viewport[] = [
+  { w: 808, h: 619 },
+  { w: 1231, h: 480 },
+  { w: 989, h: 619 },
+  { w: 1300, h: 719 },
+  { w: 1780, h: 899 },
 ];
-// the background starfield: three layers, deeper ones drifting less as the camera moves
+
+// Each branch's patch of sky, in data order: Frontend above the planet, Motion & 3D right, Data
+// below, Design left (world x0..x1 × y0..y1, and its depth). Its stars scatter inside, the first one
+// in `first`, on the side nearest the planet. The constellations stand on their own: told apart by
+// colour, grouping and the gaps between them, with no lines to the planet.
+const REGIONS = [
+  { x0: -320, x1: 200, y0: 110, y1: 285, z: -50, first: { x0: -220, x1: 100, y0: 110, y1: 170 } },
+  { x0: 170, x1: 430, y0: -200, y1: 180, z: 40, first: { x0: 170, x1: 280, y0: -90, y1: 90 } },
+  { x0: -320, x1: 200, y0: -300, y1: -110, z: -10, first: { x0: -220, x1: 100, y0: -170, y1: -110 } },
+  { x0: -575, x1: -370, y0: -190, y1: 170, z: 60, first: { x0: -470, x1: -370, y0: -90, y1: 90 } },
+];
+const OUT = 70; // how far past its patch the locked star may step
+const TURN = { min: 50, max: 150 }; // how far (degrees) each line turns from the one before
+const SPREAD = 90; // a constellation spans at least this both ways, and neither way over twice the other
+const TRIES = 250; // random spots tried for each star
+const ATTEMPTS = 80; // times a constellation may start over
+const STEP = { min: 60, max: 105 }; // a line's length, between neighbouring stars
+const GAP = 110; // the least distance between stars of different constellations
+// the background starfield: three layers, deeper ones drifting less as the camera moves, spread
+// wide enough to fill the whole full-screen sky around the board
 const FIELD = [
-  { n: 90, z: -380 },
-  { n: 60, z: -240 },
-  { n: 40, z: -120 },
+  { n: 230, z: -380 },
+  { n: 155, z: -240 },
+  { n: 100, z: -120 },
 ];
 
 export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -51,7 +76,7 @@ function seeded(seed: number) {
   return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
 }
 
-// ---------- the HTML labels' sizes (the framing must leave room for them) ----------
+// ---------- the HTML labels' sizes (the layout and the framing must leave room for them) ----------
 // skill labels are 13px, 12px on boards under 1000px wide
 export const labelPx = (vp: Viewport) => (vp.w < 1000 ? 12 : 13);
 // a skill label's reach from its star: a 14px gap, then ~0.57em a character
@@ -62,33 +87,259 @@ export const labelScale = (scale: number) => Math.min(1.1, Math.max(0.9, scale))
 export const nameW = (title: string) => title.length * 7.6;
 
 // ---------- layout ----------
-export function layoutSky(shapes: BranchShape[], seed = 11): Sky {
+type Pt = { x: number; y: number };
+type Box = { x: number; y: number; w: number; h: number };
+const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const turn = (a: Pt, b: Pt, c: Pt) => Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+// two lines cross (touching at an end doesn't count)
+const crosses = (p1: Pt, p2: Pt, p3: Pt, p4: Pt) => turn(p1, p2, p3) * turn(p1, p2, p4) < 0 && turn(p3, p4, p1) * turn(p3, p4, p2) < 0;
+// a line runs through a box
+function through(p: Pt, q: Pt, b: Box) {
+  const inBox = (u: Pt) => u.x > b.x && u.x < b.x + b.w && u.y > b.y && u.y < b.y + b.h;
+  if (inBox(p) || inBox(q)) return true;
+  const c = [
+    { x: b.x, y: b.y },
+    { x: b.x + b.w, y: b.y },
+    { x: b.x + b.w, y: b.y + b.h },
+    { x: b.x, y: b.y + b.h },
+  ];
+  return c.some((a, i) => crosses(p, q, a, c[(i + 1) % 4]));
+}
+const dotBox = (s: Pt, r: number): Box => ({ x: s.x - r, y: s.y - r, w: 2 * r, h: 2 * r });
+// (boxes get a few px of air)
+function labelBox(s: Screen, name: string, px: number): Box {
+  const ls = labelScale(s.scale);
+  return { x: s.x + 14 * ls - 3, y: s.y - (LABEL_H * ls) / 2 - 2, w: (labelW(name, px) - 14) * ls + 6, h: LABEL_H * ls + 4 };
+}
+const tagBox = (s: Pt, dx: number, text: string): Box => ({ x: s.x + dx - 3, y: s.y - 9, w: nameW(text) + 6, h: 18 });
+const onBoard = (b: Box, vp: Viewport) => b.x >= EDGE && b.y >= EDGE && b.x + b.w <= vp.w - EDGE && b.y + b.h <= vp.h - EDGE;
+
+// What's already in the sky, on one reference board, in board px: text (labels, names, the synergy
+// label), dots (stars, the planet, items; `id` marks a line's own end), and lines.
+type Board = { vp: Viewport; px: number; text: Box[]; dots: { id: string; box: Box }[]; lines: [Pt, Pt][] };
+
+// The whole sky, seeded (the same every visit). Constellation by constellation, each star takes a
+// random step (STEP) from the one before, inside its branch's patch, until it lands somewhere that
+// keeps, on every reference board: its label on the board and clear of all text, dots and lines;
+// its line clear of all text and dots and crossing no other line; and GAP from other constellations.
+// The locked star steps outward from the last one; then the name (above), then the item dots.
+export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky {
   const r = seeded(seed);
   const j = (a: number) => (r() * 2 - 1) * a;
-  const branches = shapes.map((shape, b): SkyBranch => {
-    const c = CHAINS[b % CHAINS.length];
-    const horizontal = c.step.y === 0;
-    const n = shape.skills.length; // steps from the first star to the locked one
-    const k = Math.min(1, c.span / (Math.max(n, 1) * Math.hypot(c.step.x, c.step.y)));
-    // the chain, gently zig-zagged across its direction
-    const at = (i: number): Vec3 => ({
-      x: c.start.x + c.step.x * k * i + (horizontal ? j(6) : j(16)),
-      y: c.start.y + c.step.y * k * i + (horizontal ? j(16) : j(5)),
-      z: c.z + j(18),
-    });
-    const stars = shape.skills.map((_, i) => at(i));
-    const locked = at(n);
-    const items = Array.from({ length: shape.items }, () => ({
-      x: c.items.x + r() * c.items.w,
-      y: c.items.y + r() * c.items.h,
-      z: c.z + j(10),
-    }));
-    const first = stars[0] ?? locked;
-    const name = { x: first.x - 6, y: first.y + (horizontal ? 36 : 34), z: first.z };
-    return { title: shape.title, names: shape.skills, stars, locked, items, name };
+  const cam = overviewPose();
+  const planet: Vec3 = { x: 0, y: 0, z: 0 };
+  const boards: Board[] = REF_BOARDS.map((vp) => {
+    const pl = project(planet, cam, vp);
+    return { vp, px: labelPx(vp), text: [], dots: [{ id: "planet", box: { x: pl.x - 28, y: pl.y - 18, w: 56, h: 36 } }], lines: [] };
   });
-  const field = FIELD.map((l) => Array.from({ length: l.n }, () => ({ x: j(900), y: j(520), z: l.z + j(30) })));
-  return { planet: { x: 0, y: 0, z: 0 }, branches, field };
+  const placed: { b: number; p: Vec3 }[] = []; // every star so far, for the gaps between constellations
+  const dist = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
+
+  // can a star (with its label, if it has one) go at c, joined by a line from `from` (its id; a
+  // constellation's first star has none)?
+  const fitsStar = (c: Vec3, label: string | null, from: Vec3 | null, fromId: string) =>
+    boards.every((B) => {
+      const s = project(c, cam, B.vp);
+      const lab = label ? labelBox(s, label, B.px) : null;
+      const dot = dotBox(s, 7);
+      if ((lab && !onBoard(lab, B.vp)) || !onBoard(dotBox(s, 6), B.vp)) return false;
+      if (B.text.some((o) => overlaps(dot, o) || (lab && overlaps(lab, o)))) return false;
+      if (B.dots.some((o) => overlaps(dot, o.box) || (lab && overlaps(lab, o.box)))) return false;
+      if (B.lines.some(([a, b]) => through(a, b, dotBox(s, 5)) || (lab && through(a, b, lab)))) return false;
+      if (!from) return true;
+      const f = project(from, cam, B.vp);
+      // its line: clear of all text (this label too) and of every dot but the one it starts from
+      if ([...B.text, ...(lab ? [lab] : [])].some((o) => through(f, s, o))) return false;
+      if (B.dots.some((o) => o.id !== fromId && through(f, s, dotBox({ x: o.box.x + o.box.w / 2, y: o.box.y + o.box.h / 2 }, Math.min(o.box.w, o.box.h) / 2 - 1)))) return false;
+      return !B.lines.some(([a, b]) => crosses(a, b, f, s));
+    });
+  // puts a star in; returns how to take it out again
+  const addStar = (c: Vec3, label: string | null, from: Vec3 | null, id: string) => {
+    const before = boards.map((B) => [B.text.length, B.dots.length, B.lines.length]);
+    boards.forEach((B) => {
+      const s = project(c, cam, B.vp);
+      if (label) B.text.push(labelBox(s, label, B.px));
+      B.dots.push({ id, box: dotBox(s, 7) });
+      if (from) B.lines.push([project(from, cam, B.vp), s]);
+    });
+    return () =>
+      boards.forEach((B, i) => {
+        B.text.length = before[i][0];
+        B.dots.length = before[i][1];
+        B.lines.length = before[i][2];
+      });
+  };
+  // can a tag (a name or the synergy label) go at c: on the board, clear of all text, dots and lines?
+  const fitsTag = (c: Vec3, dx: number, text: string, lines = true) =>
+    boards.every((B) => {
+      const t = tagBox(project(c, cam, B.vp), dx, text);
+      return (
+        onBoard(t, B.vp) &&
+        !B.text.some((o) => overlaps(t, o)) &&
+        !B.dots.some((o) => overlaps(t, o.box)) &&
+        !(lines && B.lines.some(([a, b]) => through(a, b, t)))
+      );
+    });
+  const addTag = (c: Vec3, dx: number, text: string) => boards.forEach((B) => B.text.push(tagBox(project(c, cam, B.vp), dx, text)));
+
+  // the synergy line's later end (the label is placed with it) and the star at its other end
+  const [synLate, synEarly] = synergy
+    ? synergy.from[0] * 100 + synergy.from[1] > synergy.to[0] * 100 + synergy.to[1]
+      ? [synergy.from, synergy.to]
+      : [synergy.to, synergy.from]
+    : [null, null];
+  const done: SkyBranch[] = [];
+
+  // (where a constellation gets stuck, it's taken out again and redrawn)
+  const snapshot = () => ({ at: boards.map((B) => [B.text.length, B.dots.length, B.lines.length]), placed: placed.length });
+  const restore = (sn: ReturnType<typeof snapshot>) => {
+    boards.forEach((B, i) => {
+      B.text.length = sn.at[i][0];
+      B.dots.length = sn.at[i][1];
+      B.lines.length = sn.at[i][2];
+    });
+    placed.length = sn.placed;
+  };
+
+  const branches = shapes.map((shape, b): SkyBranch => {
+    const R = REGIONS[b % REGIONS.length];
+    const inR = (p: Pt, out = 0) => p.x >= R.x0 - out && p.x <= R.x1 + out && p.y >= R.y0 - out && p.y <= R.y1 + out;
+    const own: Vec3[] = [];
+    // world rules: its gap from the other constellations, and room from its own stars
+    const clear = (c: Vec3) => dist(c, planet) >= 90 && placed.every((q) => (q.b === b ? dist(c, q.p) >= 50 : dist(c, q.p) >= GAP));
+
+    // the next star: the first of TRIES random spots that fits, or null (`force`: the last spot tried)
+    const place = (label: string | null, outward: boolean, force: boolean): Vec3 | null => {
+      const k = own.length;
+      const prev = own[k - 1] ?? null;
+      const fromId = `${b}.${k - 1}`;
+      const synHere = !!synLate && !!synEarly && synLate[0] === b && synLate[1] === k && label !== null;
+      let last: Vec3 | null = null;
+      for (let t = 0; t < TRIES; t++) {
+        let c: Vec3;
+        if (!prev) {
+          c = { x: R.first.x0 + r() * (R.first.x1 - R.first.x0), y: R.first.y0 + r() * (R.first.y1 - R.first.y0), z: R.z + j(55) };
+        } else {
+          const a = r() * Math.PI * 2;
+          const len = STEP.min + r() * (STEP.max - STEP.min);
+          c = { x: prev.x + Math.cos(a) * len, y: prev.y + Math.sin(a) * len, z: R.z + j(55) };
+        }
+        if (!inR(c, outward ? OUT : 0) || !clear(c) || (outward && prev && dist(c, planet) <= dist(prev, planet))) continue;
+        // keep turning: no straight runs, no doubling back
+        const pp = own[k - 2];
+        if (prev && pp) {
+          const u = { x: prev.x - pp.x, y: prev.y - pp.y };
+          const v = { x: c.x - prev.x, y: c.y - prev.y };
+          const deg = (Math.acos((u.x * v.x + u.y * v.y) / (Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y))) * 180) / Math.PI;
+          if (deg < TURN.min || deg > TURN.max) continue;
+        }
+        last = c;
+        if (!fitsStar(c, label, prev, fromId)) continue;
+        const undo = addStar(c, label, prev, `${b}.${k}`);
+        if (synHere) {
+          // the synergy label goes halfway along its line: it has to fit too
+          const other = synEarly![0] === b ? own[synEarly![1]] : done[synEarly![0]]?.stars[synEarly![1]];
+          const mid = other ? { x: (other.x + c.x) / 2, y: (other.y + c.y) / 2, z: (other.z + c.z) / 2 } : null;
+          if (mid && !fitsTag(mid, 8, synergy!.label, false)) {
+            undo();
+            continue;
+          }
+          if (mid) addTag(mid, 8, synergy!.label);
+        }
+        own.push(c);
+        placed.push({ b, p: c });
+        return c;
+      }
+      if (!force) return null;
+      const c = last ?? { x: (R.x0 + R.x1) / 2, y: (R.y0 + R.y1) / 2, z: R.z };
+      addStar(c, label, prev, `${b}.${k}`);
+      own.push(c);
+      placed.push({ b, p: c });
+      return c;
+    };
+
+    // the name: the nearest free spot above the constellation, from its top-left corner (below it if
+    // there's no room above), and clearly nearer its own stars than any other constellation's; null
+    // if it won't fit
+    const placeName = (force: boolean): Vec3 | null => {
+      const xs = own.map((p) => p.x);
+      const ys = own.map((p) => p.y);
+      const zc = own.reduce((s, p) => s + p.z, 0) / own.length;
+      const x0 = Math.min(...xs) - 20;
+      const x1 = Math.max(...xs) - 20;
+      for (const up of [true, false]) {
+        for (let dy = 26; dy <= 80; dy += 6) {
+          for (let x = x0; x <= x1; x += 10) {
+            const c = { x, y: up ? Math.max(...ys) + dy : Math.min(...ys) - dy, z: zc };
+            const mine = Math.min(...own.map((p) => dist(c, p)));
+            if (placed.some((q) => q.b !== b && dist(c, q.p) * 0.75 <= mine)) continue;
+            if (fitsTag(c, 0, shape.title)) {
+              addTag(c, 0, shape.title);
+              return c;
+            }
+          }
+        }
+      }
+      if (!force) return null;
+      const c = { x: Math.min(...xs), y: Math.max(...ys) + 40, z: zc };
+      addTag(c, 0, shape.title);
+      return c;
+    };
+
+    // the constellation, star by star, then the locked star and the name; stuck, or come out in
+    // too thin a line, it starts over
+    let stars: Vec3[] = [];
+    let locked: Vec3 = planet;
+    let name: Vec3 = planet;
+    for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+      const force = attempt === ATTEMPTS - 1;
+      const sn = snapshot();
+      own.length = 0;
+      stars = [];
+      for (const label of shape.skills) {
+        const c = place(label, false, force);
+        if (!c) break;
+        stars.push(c);
+      }
+      const spread = (v: number[]) => Math.max(...v) - Math.min(...v);
+      const sx = spread(stars.map((p) => p.x));
+      const sy = spread(stars.map((p) => p.y));
+      const wide = stars.length < 3 || (sx >= SPREAD && sy >= SPREAD && Math.min(sx, sy) / Math.max(sx, sy) >= 0.45);
+      const l = stars.length === shape.skills.length && (wide || force) ? place(null, true, force) : null;
+      const nm = l ? placeName(force) : null;
+      if (l && nm) {
+        locked = l;
+        name = nm;
+        break;
+      }
+      restore(sn);
+    }
+    const n = stars.length;
+    const sizes = stars.map((_, k) => (n > 1 ? 1.5 - (0.75 * k) / (n - 1) : 1.5) + j(0.05));
+
+    // the item dots: faint, around the constellation, off every label and star
+    const items = Array.from({ length: shape.items }, (_, i) => {
+      let spot: Vec3 | null = null;
+      for (let t = 0; t < TRIES * 2 && !spot; t++) {
+        const c = { x: R.x0 - 30 + r() * (R.x1 - R.x0 + 60), y: R.y0 - 30 + r() * (R.y1 - R.y0 + 60), z: R.z + j(40) };
+        if (placed.some((q) => q.b !== b && dist(c, q.p) < GAP * 0.6)) continue;
+        const ok = boards.every((B) => {
+          const d = dotBox(project(c, cam, B.vp), 5);
+          return onBoard(d, B.vp) && !B.text.some((o) => overlaps(d, o)) && !B.dots.some((o) => overlaps(d, o.box));
+        });
+        if (ok) spot = c;
+      }
+      const c = spot ?? { x: (R.x0 + R.x1) / 2, y: R.y1, z: R.z };
+      boards.forEach((B) => B.dots.push({ id: `${b}.item${i}`, box: dotBox(project(c, cam, B.vp), 5) }));
+      return c;
+    });
+
+    const br = { title: shape.title, names: shape.skills, stars, sizes, locked, items, name };
+    done.push(br);
+    return br;
+  });
+  const field = FIELD.map((l) => Array.from({ length: l.n }, () => ({ x: j(1300), y: j(920), z: l.z + j(30) })));
+  return { planet, branches, field };
 }
 
 // ---------- camera ----------
@@ -115,7 +366,7 @@ export const overviewPose = (): Pose => ({ tx: 0, ty: 0, tz: 0, yaw: 0, pitch: 0
 
 // the phones' mini sky: the whole map tipped toward the viewer, turned to `yaw`. Tipped, what
 // swings to the front drops, so the aim sits a little low and the zoom leaves room for a full turn.
-export const miniPose = (yaw: number): Pose => ({ ...overviewPose(), ty: -65, yaw, pitch: 0.35, zoom: 0.62 });
+export const miniPose = (yaw: number): Pose => ({ ...overviewPose(), ty: -35, yaw, pitch: 0.35, zoom: 0.8 });
 
 // the card goes on the side away from what it's about
 export const cardSide = (x: number, vp: Viewport): Side => (x < vp.w / 2 ? "right" : "left");
@@ -192,6 +443,9 @@ export type Paint = {
   synergy?: { from: readonly [number, number]; to: readonly [number, number] };
   glow?: (color: string) => CanvasImageSource | null;
   names?: boolean; // write the constellation names on the canvas (the mini sky; the map uses HTML)
+  // where the background stars may go, in board px (default: the board). On desktop the canvas
+  // covers the whole full-screen sky, beyond the constellations' board.
+  bounds?: { x0: number; y0: number; x1: number; y1: number };
 };
 
 const TAU = Math.PI * 2;
@@ -229,6 +483,7 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
 
   // background stars, three layers deep
   const pa = appearPlanet(p.reveal);
+  const B = p.bounds ?? { x0: 0, y0: 0, x1: vp.w, y1: vp.h };
   if (pa > 0) {
     ctx.fillStyle = DUST;
     sky.field.forEach((layer, li) => {
@@ -236,29 +491,24 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
       const size = 0.8 + li * 0.35;
       for (const v of layer) {
         const s = P(v);
-        if (s.x > -4 && s.y > -4 && s.x < vp.w + 4 && s.y < vp.h + 4) ctx.fillRect(s.x, s.y, size, size);
+        if (s.x > B.x0 - 4 && s.y > B.y0 - 4 && s.x < B.x1 + 4 && s.y < B.y1 + 4) ctx.fillRect(s.x, s.y, size, size);
       }
     });
   }
 
-  // each constellation: the trunk from the planet, the links in learning order (dashed to the
-  // locked star, brighter around a hovered star), and its item dots
+  // each constellation: faint lines in learning order (dashed to the locked star, brighter around a
+  // hovered star), and its item dots
   const planet = P(sky.planet);
   sky.branches.forEach((br, b) => {
     const n = br.stars.length + 1;
     const ba = branchAlpha(p, b);
     const show = (k: number) => appear(p.reveal, b, k, nB, n) * ba;
     const pts = [...br.stars, br.locked].map(P);
-    if (show(0) > 0) {
-      ctx.globalAlpha = 0.18 * show(0);
-      ctx.strokeStyle = LAV;
-      line(planet, pts[0]);
-    }
     ctx.strokeStyle = p.colors[b];
     for (let k = 1; k < n; k++) {
       if (show(k) <= 0) continue;
       const lit = p.hover?.b === b && (p.hover.s === k || p.hover.s === k - 1);
-      ctx.globalAlpha = (lit ? 0.85 : 0.45) * show(k);
+      ctx.globalAlpha = (lit ? 0.75 : 0.3) * show(k);
       ctx.setLineDash(k === n - 1 ? [4, 4] : []);
       line(pts[k - 1], pts[k]);
     }
@@ -295,7 +545,8 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
     }
   }
 
-  // the stars: a soft glow, then a crisp core (bigger when hovered or open); the locked star hollow
+  // the stars: a soft glow, then a crisp core, at the star's size (bigger when hovered or open); the
+  // locked star hollow
   sky.branches.forEach((br, b) => {
     const n = br.stars.length + 1;
     const ba = branchAlpha(p, b);
@@ -307,7 +558,7 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
       const on = Math.max(p.hover?.b === b && p.hover.s === k ? 1 : 0, p.picked?.b === b && p.picked.s === k ? p.dim : 0);
       const twinkle = p.still ? 1 : 0.9 + 0.1 * Math.sin(p.time * 1.6 + b * 1.3 + k * 2.1);
       const depth = 0.75 + 0.25 * Math.max(-1, Math.min(1, s.depth / 80));
-      const r = Math.min(2.2, s.scale) * (1 + 0.35 * on);
+      const r = Math.min(2.2, s.scale) * (br.sizes[k] ?? 1) * (1 + 0.35 * on);
       if (glow) {
         const g = 26 * r;
         ctx.globalAlpha = a * twinkle * depth * (0.75 + 0.25 * on);
@@ -351,11 +602,16 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
     sky.branches.forEach((br, b) => {
       const a = 0.8 * appear(p.reveal, b, 0, nB, br.stars.length + 1) * branchAlpha(p, b);
       if (a <= 0) return;
-      const s = P(br.name);
+      // (at this scale, just outside the constellation as it turns, on the side away from the
+      // planet: from its leftmost star, kept inside the canvas)
+      const pts = [...br.stars, br.locked].map(P);
+      const ys = pts.map((q) => q.y);
+      const below = ys.reduce((sum, v) => sum + v, 0) / ys.length > planet.y;
+      const text = br.title.toUpperCase();
+      const x = Math.min(Math.max(Math.min(...pts.map((q) => q.x)), 8), vp.w - 8 - text.length * 6.2);
       ctx.globalAlpha = a;
       ctx.fillStyle = p.colors[b];
-      // lifted clear of the first star: at the mini sky's scale the anchor alone sits almost on it
-      ctx.fillText(br.title.toUpperCase(), s.x, s.y - 10);
+      ctx.fillText(text, x, below ? Math.max(...ys) + 12 : Math.min(...ys) - 12);
     });
   }
   ctx.restore();
