@@ -1,0 +1,494 @@
+/* 04 — the Skills star map (docs/superpowers/specs/2026-09-30-skill-constellation-design.md) */
+.map {
+  position: relative;
+  height: clamp(520px, 42vw, 680px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: radial-gradient(ellipse at 50% 50%, rgba(28, 24, 41, 0.7), rgba(6, 6, 10, 0.85) 70%);
+  user-select: none;
+  touch-action: pan-y; /* page scrolling passes straight through */
+}
+.canvas,
+.leader,
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.canvas {
+  display: block;
+}
+.leader {
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+.leader line {
+  stroke: var(--collide);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0;
+}
+.layer {
+  z-index: 2;
+  pointer-events: none;
+}
+.layer div {
+  pointer-events: none;
+}
+.sideArt {
+  --side: var(--art);
+}
+.sideWeb {
+  --side: var(--web);
+}
+.sideCollide {
+  --side: var(--collide);
+}
+
+/* a star (and the planet): a 0×0 button moved to its projected spot every frame, its hit area
+   centred on the spot and its label to the right */
+.star,
+.planet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+}
+.star:focus-visible,
+.planet:focus-visible {
+  outline: none;
+}
+.hit {
+  position: absolute;
+  left: -13px;
+  top: -13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+.planet .hit {
+  left: -20px;
+  top: -20px;
+  width: 40px;
+  height: 40px;
+}
+.star:focus-visible .hit,
+.planet:focus-visible .hit {
+  outline: 2px solid var(--side, var(--lav));
+  outline-offset: 2px;
+}
+/* the planet gives nothing away: a soft pulse and a "?" on hover */
+.planet:hover .hit {
+  animation: pulse 1.6s ease-out infinite;
+}
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 0 0 rgba(185, 178, 207, 0.45);
+  }
+  to {
+    box-shadow: 0 0 0 16px rgba(185, 178, 207, 0);
+  }
+}
+.planetHint {
+  position: absolute;
+  left: 22px;
+  top: -30px;
+  padding: 2px 6px;
+  border: 1px solid var(--line-2);
+  background: rgba(10, 10, 12, 0.9);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--lav);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.planet:hover .planetHint,
+.planet:focus-visible .planetHint {
+  opacity: 1;
+}
+.label {
+  position: absolute;
+  left: 14px;
+  top: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text);
+  text-shadow:
+    0 0 10px rgba(6, 6, 10, 0.95),
+    0 0 2px rgba(6, 6, 10, 0.9);
+}
+.map[data-small] .label {
+  font-size: 12px;
+  line-height: 17px;
+}
+.used {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--side);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.star:hover .used,
+.star:focus-visible .used,
+.starOn .used {
+  opacity: 1;
+}
+.starOn .label {
+  color: var(--text-strong);
+}
+
+/* anchors: 0×0 spots moved every frame; what's inside sits around the spot */
+.anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.name,
+.syn {
+  position: absolute;
+  top: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.name {
+  left: 0;
+  color: var(--side);
+}
+.syn {
+  left: 8px;
+  color: var(--collide);
+}
+/* locked stars and item dots: an invisible hover spot with a game-item tooltip */
+.tip {
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: help;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  padding: 5px 8px;
+  border: 1px solid var(--line-2);
+  background: rgba(10, 10, 12, 0.94);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.anchor[data-below="1"] .tip::after {
+  top: calc(100% + 4px);
+  bottom: auto;
+}
+.tip:hover::after {
+  opacity: 1;
+}
+
+/* ---------- the HUD card ---------- */
+.card {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  width: 320px;
+  max-height: calc(100% - 32px);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(14, 13, 20, 0.78);
+  backdrop-filter: blur(20px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 20px 60px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(var(--from), -50%);
+  transition:
+    opacity 0.3s,
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    visibility 0s linear 0.45s;
+}
+.cardRight {
+  right: 24px;
+  --from: 28px;
+}
+.cardLeft {
+  left: 24px;
+  --from: -28px;
+}
+.cardOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0, -50%);
+  transition:
+    opacity 0.3s,
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    visibility 0s;
+}
+.cardInner {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.cardHead {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 28px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--side, var(--collide));
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.cardHead button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.cardHead button:hover {
+  border-color: var(--side, var(--lav));
+}
+/* the body scrolls if a write-up is long; the head and the next quest stay in view */
+.cardBody {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: cardIn 0.35s ease-out;
+}
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.05;
+}
+.cardLogo {
+  flex: none;
+  font-size: 28px;
+  color: var(--side, var(--lav));
+}
+.cardBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cardBlock p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--soft);
+}
+.cardLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cardBlock > span,
+.cardLinks > span,
+.cardNext span {
+  flex-basis: 100%;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.cardLinks a {
+  min-height: 34px;
+  font-size: 11px;
+}
+.cardItems {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cardItems li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.itemLogo {
+  font-size: 12px;
+  color: var(--side, var(--lav));
+}
+.cardNext {
+  flex: none;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--line-2);
+}
+.cardNext strong {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+/* the player card */
+.playerName {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--text-strong);
+}
+.playerReal {
+  font-size: 16px;
+  color: var(--text);
+}
+.playerAka {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--soft);
+}
+.playerAka b {
+  font-weight: inherit;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.playerFacts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line-2);
+  background: var(--line-2);
+}
+.playerFacts div {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(10, 10, 12, 0.6);
+}
+.playerFacts dt {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.playerFacts dd {
+  margin: 0;
+  font-size: 13px;
+}
+.encrypted {
+  color: var(--collide);
+  opacity: 0.8;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- the phones' mini sky ---------- */
+.mini {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: radial-gradient(ellipse at 50% 50%, rgba(28, 24, 41, 0.7), rgba(6, 6, 10, 0.85) 70%);
+}
+.mini canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .map {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardOpen {
+    transition:
+      opacity 0.2s,
+      visibility 0s;
+  }
+  .cardBody {
+    animation: none;
+  }
+  .planet:hover .hit {
+    animation: none;
+  }
+}

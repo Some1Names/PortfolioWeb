@@ -20,6 +20,9 @@ export type Branch = {
   nextQuest: string; // suggestion shown on the locked node
 };
 
+// the player class shown in the stats bar and on the star map's player card
+export const playerClass = "Web dev / Motion";
+
 export const branches: Branch[] = [
   {
     name: "Frontend",

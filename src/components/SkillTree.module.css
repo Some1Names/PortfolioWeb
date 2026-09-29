@@ -1,6 +1,6 @@
 .skills {
   position: relative;
-  /* clip, not hidden: hidden makes this a scroll container and breaks the sticky mobile card */
+  /* clip, not hidden: hidden makes this a scroll container and breaks the sticky phone card */
   overflow: clip;
   padding: 140px var(--gutter) 120px;
   display: flex;
@@ -23,7 +23,8 @@
 .grid {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(185, 178, 207, 0.05) 1px, transparent 1px),
+  background-image:
+    linear-gradient(rgba(185, 178, 207, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(185, 178, 207, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
@@ -58,16 +59,24 @@
   align-items: center;
   gap: 8px;
 }
-.legendOpen,
-.legendLocked {
-  width: 12px;
-  height: 12px;
-  border: 1px solid var(--line-3);
-  background: var(--card);
+/* the legend's marks: a star, a hollow locked star, an item dot */
+.legendStar {
+  font-style: normal;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--text-strong);
 }
 .legendLocked {
-  border-style: dashed;
-  background: transparent;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--line-3);
+  border-radius: 50%;
+}
+.legendItem {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--soft);
 }
 .hint {
   color: var(--lav);
@@ -120,275 +129,137 @@
   text-transform: none;
 }
 
-/* ---------- board: tree + details panel ---------- */
-.board {
+/* ---------- phones (and anywhere the star map can't draw): a list per branch ---------- */
+.mobile {
+  display: none;
+}
+/* the fallback: the star map couldn't get a canvas */
+.listMode .mobile {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  background: rgba(10, 10, 12, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mBranch {
+  background: rgba(10, 10, 12, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
 }
-
-/* ---------- desktop tree ---------- */
-/* When a branch has more than 4 skills the tree is drawn wider than its frame and the frame
-   scrolls sideways. Text scales with the frame (cqi), so it shrinks in step with the nodes and
-   stays the size it has on a 4-column tree. */
-.treeWrap {
+.mHead {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--side, var(--lav));
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+/* a branch's items under its heading, named (no hover on phones) */
+.mItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.mItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.mItemLogo {
+  font-size: 12px;
+  color: var(--side, var(--lav));
+}
+.mList {
   position: relative;
-  min-width: 0;
+  padding: 8px 14px;
 }
-.treeScroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  container-type: inline-size;
-}
-/* the site's violet scrollbar (globals.css), a little slimmer under the tree */
-.treeScroll::-webkit-scrollbar {
-  height: 10px;
-}
-.tree {
-  position: relative;
-  width: 100%;
-}
-/* more to the right: fade the edge, with a button to scroll there */
-.treeMore::after {
+.mList::before {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 80px;
-  background: linear-gradient(to right, transparent, rgba(10, 10, 12, 0.85));
-  pointer-events: none;
+  left: 19px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: var(--line-3);
 }
-.treeScrollBtn {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  right: 14px;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  transform: translateY(-50%);
-  border: 1px solid var(--line-3);
-  background: rgba(18, 18, 22, 0.9);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-.treeScrollBtn:hover {
-  border-color: var(--collide);
-  color: var(--text-strong);
-}
-.svg {
-  position: absolute;
-  inset: 0;
+.mNode {
+  position: relative;
   width: 100%;
-  height: 100%;
-  fill: none;
-}
-.line {
-  stroke: var(--line-3);
-  stroke-width: 1;
-}
-.dashed {
-  stroke: var(--line-3);
-  stroke-width: 1;
-  stroke-dasharray: 4 4;
-}
-.synergy {
-  stroke: var(--collide);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 3;
-}
-.synLabel,
-.pathLabel,
-.branchLabel {
-  position: absolute;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.synLabel {
-  color: var(--collide);
-}
-.pathLabel {
-  color: var(--muted);
-  letter-spacing: 2px;
-}
-.branchLabel {
-  z-index: 3; /* its item tooltips go over the nodes */
   display: flex;
   align-items: center;
-  color: var(--side, var(--soft));
-}
-/* a branch's items: libraries shipped with, as small logo chips beside its label */
-.items {
-  display: flex;
-  gap: 4px;
-  margin-left: 12px;
-}
-.item {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border: 1px solid var(--line-2);
-  background: var(--card);
-  color: #cfcbda;
-  transition:
-    border-color 0.2s,
-    color 0.2s;
-}
-.item:hover {
-  border-color: var(--side, var(--lav));
-  color: var(--side, var(--lav));
-}
-.itemLogo {
-  font-size: 12px;
-}
-/* its name and where it was used, on hover, like a game item's tooltip */
-.item::after {
-  content: attr(data-tip);
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 6px);
-  padding: 5px 8px;
-  border: 1px solid var(--line-2);
-  background: rgba(10, 10, 12, 0.94);
-  color: var(--text);
-  letter-spacing: 1px;
-  white-space: nowrap;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
-}
-.item:hover::after {
-  opacity: 1;
-}
-
-.root {
-  position: absolute;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: var(--text);
-  color: var(--bg);
-  font-family: var(--mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-}
-.root strong {
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(24px, 3.2cqi, 34px);
-  line-height: 1;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.node {
-  position: absolute;
-  /* padding shrinks with the canvas too, so two-line names + a two-line "used in" still fit at ~1200px */
-  padding: clamp(8px, 1.15cqi, 12px) clamp(10px, 1.35cqi, 14px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  text-align: left;
-  border: 1px solid var(--line-2);
-  background: var(--card);
+  gap: 12px;
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
   color: var(--text);
   font: inherit;
+  text-align: left;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
-.node:hover {
-  border-color: var(--side, var(--lav));
-  transform: translateY(-2px);
+.mNode i {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border: 1px solid var(--text);
+  background: var(--card);
 }
-.nodeActive {
+.mNode[aria-pressed="true"] i {
+  background: var(--collide);
   border-color: var(--collide);
-  background: #1a1824;
-  box-shadow: 0 0 0 1px var(--collide), 0 0 40px rgba(154, 107, 255, 0.35);
 }
-.skillName {
+.mNode > span {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5em;
-  font-size: clamp(12px, 1.54cqi, 16px);
-  line-height: 1.2;
+  gap: 10px;
+  font-size: 14px;
 }
-/* logos stay neutral and take the branch colour on hover / when selected */
-.nodeLogo {
-  font-size: 1.25em;
+.mLogo {
+  font-size: 18px;
   color: var(--soft);
-  transition: color 0.2s;
 }
-.node:hover .nodeLogo,
-.nodeActive .nodeLogo {
-  color: var(--side, var(--lav));
-}
-.used {
+.mNode small {
   font-family: var(--mono);
   font-size: 10px;
-  line-height: 1.3;
   color: var(--lav);
-  letter-spacing: 1px;
   text-transform: uppercase;
 }
-.stub {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed var(--side, var(--line-3));
-  background: rgba(10, 10, 12, 0.4);
-  color: var(--side, var(--muted));
-  font-family: var(--mono);
-  font-size: 11px;
+.mLocked {
+  color: var(--muted);
+  cursor: default;
+}
+.mLocked i {
+  border: 1px dashed var(--line-3);
+  background: transparent;
+}
+.mLocked small {
+  color: var(--muted);
 }
 
-/* ---------- details panel ---------- */
+/* ---------- the list's details card (sticky on phones) ---------- */
 .panel {
   position: relative;
-  padding: 24px 28px;
-  display: flex;
+  display: none;
+  padding: 18px 20px;
   flex-direction: column;
-  gap: 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.02);
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(18, 18, 22, 0.85);
+  backdrop-filter: blur(24px) saturate(120%);
 }
-/* Beside the tree, the tree sets the board's height: the panel fills it but never stretches it,
-   so picking a skill with a longer write-up doesn't shift the page. It gets a floor, though, for
-   narrow desktops where the (compact) tree is shorter than the longest write-up needs; the tree
-   then sits centred beside it. Tighter spacing where it's narrow. */
-@media (min-width: 1200px) {
-  .panel {
-    height: 0;
-    min-height: max(100%, 490px);
-    overflow-y: auto;
-  }
-  .treeWrap {
-    align-self: center;
-  }
-}
-@media (min-width: 1200px) and (max-width: 1399px) {
-  .panel {
-    padding: 20px 24px;
-    gap: 14px;
-  }
+.listMode .panel {
+  display: flex;
 }
 .panelHead {
   display: flex;
@@ -401,9 +272,7 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-/* close only makes sense for the mobile card; on desktop the panel is permanent */
 .panelHead button {
-  display: none;
   width: 32px;
   height: 32px;
   background: transparent;
@@ -429,11 +298,11 @@
   gap: 14px;
   font-family: var(--display);
   font-weight: 400;
-  font-size: 40px;
+  font-size: 30px;
   line-height: 1.05;
 }
 .panelLogo {
-  font-size: 34px;
+  font-size: 30px;
   color: var(--side, var(--lav));
 }
 .panelText {
@@ -449,9 +318,11 @@
 }
 .panelLinks {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  flex-wrap: wrap;
   gap: 8px;
+}
+.panelLinks span {
+  flex-basis: 100%;
 }
 .panelWhy span,
 .panelLinks span,
@@ -463,8 +334,11 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-/* the branch's items in the card: compact chips (where each was used shows on hover), so the
-   card still fits beside the tree with its next quest in view */
+.panelLinks a {
+  justify-content: flex-start;
+  min-height: 40px;
+  font-size: 11px;
+}
 .panelItems {
   display: flex;
   flex-direction: column;
@@ -503,21 +377,7 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-/* beside the tree (1200px and up) the card is too short to list the items as well: they're beside
-   each branch's label in the tree, named on hover. Below that the card sits under the tree and lists
-   them, for tablets that can't hover. (After the rules above, so it wins.) */
-@media (min-width: 1200px) {
-  .panelItems {
-    display: none;
-  }
-}
-.panelLinks a {
-  justify-content: flex-start;
-  min-height: 40px;
-  font-size: 11px;
-}
 .panelNext {
-  margin-top: auto;
   padding-top: 16px;
   display: flex;
   flex-direction: column;
@@ -531,6 +391,9 @@
   color: var(--soft);
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+.listMode .panelClosed {
+  display: none;
 }
 
 /* ---------- achievements: certificates, as unlocked cards in a framed list ---------- */
@@ -571,7 +434,6 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
-/* ---------- achievements: a certificate thumbnail + what it is ---------- */
 .achList {
   padding: 12px;
 }
@@ -585,7 +447,9 @@
   background: var(--card);
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 .ach:hover {
   border-color: var(--side, var(--lav));
@@ -636,49 +500,6 @@
   color: var(--text-strong);
 }
 
-/* ---------- mobile list ---------- */
-.mobile {
-  display: none;
-}
-/* phones: a branch's items under its heading, named (no hover there) */
-.mItems {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.mItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border: 1px solid var(--line-2);
-  background: var(--card);
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--soft);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.mItemLogo {
-  font-size: 12px;
-  color: var(--side, var(--lav));
-}
-
-@media (max-width: 1199px) {
-  .board {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .panel {
-    border-left: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  .panelNext {
-    margin-top: 0;
-  }
-}
-
 @media (max-width: 1100px) {
   .stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -696,13 +517,6 @@
   .legend {
     display: none;
   }
-  /* the board dissolves: tree hides, panel becomes a sticky card after the list */
-  .board {
-    display: contents;
-  }
-  .treeWrap {
-    display: none;
-  }
   .mobile {
     order: 1;
     position: relative;
@@ -714,11 +528,7 @@
     order: 2;
     position: sticky;
     bottom: 12px;
-    padding: 18px 20px;
-    gap: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(18, 18, 22, 0.85);
-    backdrop-filter: blur(24px) saturate(120%);
+    display: flex;
   }
   .panelClosed {
     display: none;
@@ -727,107 +537,13 @@
   .panelItems {
     display: none;
   }
-  .panelHead button {
-    display: block;
-  }
-  .panelTitle {
-    font-size: 30px;
-  }
-  .panelLinks {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .panelLinks span {
-    flex-basis: 100%;
-  }
   .panelNext {
     display: none;
-  }
-  .mBranch {
-    background: rgba(10, 10, 12, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px);
-  }
-  .mHead {
-    padding: 10px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--side, var(--lav));
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-  }
-  .mList {
-    position: relative;
-    padding: 8px 14px;
-  }
-  .mList::before {
-    content: "";
-    position: absolute;
-    left: 19px;
-    top: 24px;
-    bottom: 24px;
-    width: 1px;
-    background: var(--line-3);
-  }
-  .mNode {
-    position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 44px;
-    padding: 0;
-    background: none;
-    border: 0;
-    color: var(--text);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
-  .mNode i {
-    width: 11px;
-    height: 11px;
-    flex-shrink: 0;
-    border: 1px solid var(--text);
-    background: var(--card);
-  }
-  .mNode[aria-pressed="true"] i {
-    background: var(--collide);
-    border-color: var(--collide);
-  }
-  .mNode > span {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-  }
-  .mLogo {
-    font-size: 18px;
-    color: var(--soft);
-  }
-  .mNode small {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--lav);
-    text-transform: uppercase;
-  }
-  .mLocked {
-    color: var(--muted);
-    cursor: default;
-  }
-  .mLocked i {
-    border: 1px dashed var(--line-3);
-    background: transparent;
-  }
-  .mLocked small {
-    color: var(--muted);
   }
   .stats div {
     padding: 12px;
   }
-  /* after the list and the sticky card, so the card never sits on top of it */
+  /* after the list and the sticky card, so the card never sits on top of them */
   .achievements {
     order: 3;
   }
