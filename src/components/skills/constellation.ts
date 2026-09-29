@@ -169,3 +169,255 @@ export function planetPose(vp: Viewport): { pose: Pose; side: Side } {
   const k = fit(vp) * zoom;
   return { side: "right", pose: { tx: -(freeCx - vp.w / 2) / k, ty: 0, tz: 0, yaw: 0.08, pitch: -0.05, zoom } };
 }
+
+// ---------- drawing ----------
+// What drawSky needs for one frame. `focus` is the constellation that stays lit while the others
+// dim (-1 = the planet, which dims them all; -2 = none).
+export type Paint = {
+  sky: Sky;
+  pose: Pose;
+  vp: Viewport;
+  colors: string[]; // each branch's colour, as hex
+  reveal: number; // the entrance, 0 → 1
+  dim: number; // 0 → 1: how far the unlit constellations have faded
+  focus: number;
+  hover: { b: number; s: number } | null;
+  picked: { b: number; s: number } | null;
+  time: number; // seconds, for the twinkle and the planet's glint
+  still: boolean; // reduced motion: no twinkle, no glint
+  synergy?: { from: readonly [number, number]; to: readonly [number, number] };
+  glow?: (color: string) => CanvasImageSource | null;
+  names?: boolean; // write the constellation names on the canvas (the mini sky; the map uses HTML)
+};
+
+const TAU = Math.PI * 2;
+const INK = "#f2f0f7"; // --text-strong
+const DUST = "#cfcbe0"; // the background stars
+const LAV = "#b9b2cf"; // --lav
+const VIOLET = "#9a6bff"; // --collide
+
+// the entrance: the planet first, then each constellation star by star (all in by reveal = 1)
+export const appearPlanet = (reveal: number) => clamp01(reveal / 0.12);
+export function appear(reveal: number, b: number, k: number, branches: number, stars: number) {
+  const start = 0.14 + ((b + k / stars) / branches) * 0.72;
+  return clamp01((reveal - start) / 0.12);
+}
+// a constellation's brightness: full, or faded while another is lit
+export const branchAlpha = (p: Pick<Paint, "dim" | "focus">, b: number) => (p.focus === b ? 1 : 1 - 0.75 * p.dim);
+
+export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
+  const { sky, vp } = p;
+  const P = (v: Vec3) => project(v, p.pose, vp);
+  const nB = sky.branches.length;
+  const line = (a: { x: number; y: number }, b: { x: number; y: number }) => {
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  };
+  const disc = (x: number, y: number, r: number) => {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, TAU);
+  };
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineWidth = 1;
+
+  // background stars, three layers deep
+  const pa = appearPlanet(p.reveal);
+  if (pa > 0) {
+    ctx.fillStyle = DUST;
+    sky.field.forEach((layer, li) => {
+      ctx.globalAlpha = (0.16 + li * 0.12) * pa;
+      const size = 0.8 + li * 0.35;
+      for (const v of layer) {
+        const s = P(v);
+        if (s.x > -4 && s.y > -4 && s.x < vp.w + 4 && s.y < vp.h + 4) ctx.fillRect(s.x, s.y, size, size);
+      }
+    });
+  }
+
+  // each constellation: the trunk from the planet, the links in learning order (dashed to the
+  // locked star, brighter around a hovered star), and its item dots
+  const planet = P(sky.planet);
+  sky.branches.forEach((br, b) => {
+    const n = br.stars.length + 1;
+    const ba = branchAlpha(p, b);
+    const show = (k: number) => appear(p.reveal, b, k, nB, n) * ba;
+    const pts = [...br.stars, br.locked].map(P);
+    if (show(0) > 0) {
+      ctx.globalAlpha = 0.18 * show(0);
+      ctx.strokeStyle = LAV;
+      line(planet, pts[0]);
+    }
+    ctx.strokeStyle = p.colors[b];
+    for (let k = 1; k < n; k++) {
+      if (show(k) <= 0) continue;
+      const lit = p.hover?.b === b && (p.hover.s === k || p.hover.s === k - 1);
+      ctx.globalAlpha = (lit ? 0.85 : 0.45) * show(k);
+      ctx.setLineDash(k === n - 1 ? [4, 4] : []);
+      line(pts[k - 1], pts[k]);
+    }
+    ctx.setLineDash([]);
+    if (show(n - 1) > 0) {
+      ctx.globalAlpha = 0.5 * show(n - 1);
+      ctx.fillStyle = p.colors[b];
+      for (const v of br.items) {
+        const s = P(v);
+        disc(s.x, s.y, 1.5 * Math.min(2, s.scale));
+        ctx.fill();
+      }
+    }
+  });
+
+  // the synergy link, dashed violet
+  if (p.synergy) {
+    const [fb, fs] = p.synergy.from;
+    const [tb, ts] = p.synergy.to;
+    const from = sky.branches[fb]?.stars[fs];
+    const to = sky.branches[tb]?.stars[ts];
+    if (from && to) {
+      const a =
+        0.7 *
+        Math.min(appear(p.reveal, fb, fs, nB, sky.branches[fb].stars.length + 1), appear(p.reveal, tb, ts, nB, sky.branches[tb].stars.length + 1)) *
+        Math.min(branchAlpha(p, fb), branchAlpha(p, tb));
+      if (a > 0) {
+        ctx.globalAlpha = a;
+        ctx.strokeStyle = VIOLET;
+        ctx.setLineDash([3, 4]);
+        line(P(from), P(to));
+        ctx.setLineDash([]);
+      }
+    }
+  }
+
+  // the stars: a soft glow, then a crisp core (bigger when hovered or open); the locked star hollow
+  sky.branches.forEach((br, b) => {
+    const n = br.stars.length + 1;
+    const ba = branchAlpha(p, b);
+    const glow = p.glow?.(p.colors[b]) ?? null;
+    br.stars.forEach((v, k) => {
+      const a = appear(p.reveal, b, k, nB, n) * ba;
+      if (a <= 0) return;
+      const s = P(v);
+      const on = Math.max(p.hover?.b === b && p.hover.s === k ? 1 : 0, p.picked?.b === b && p.picked.s === k ? p.dim : 0);
+      const twinkle = p.still ? 1 : 0.9 + 0.1 * Math.sin(p.time * 1.6 + b * 1.3 + k * 2.1);
+      const depth = 0.75 + 0.25 * Math.max(-1, Math.min(1, s.depth / 80));
+      const r = Math.min(2.2, s.scale) * (1 + 0.35 * on);
+      if (glow) {
+        const g = 26 * r;
+        ctx.globalAlpha = a * twinkle * depth * (0.75 + 0.25 * on);
+        ctx.drawImage(glow, s.x - g / 2, s.y - g / 2, g, g);
+      }
+      ctx.globalAlpha = a * twinkle * depth;
+      ctx.fillStyle = INK;
+      disc(s.x, s.y, 2.6 * r);
+      ctx.fill();
+    });
+    const la = 0.5 * appear(p.reveal, b, n - 1, nB, n) * ba;
+    if (la > 0) {
+      const s = P(br.locked);
+      ctx.globalAlpha = la;
+      ctx.strokeStyle = p.colors[b];
+      disc(s.x, s.y, 4 * Math.min(2.2, s.scale));
+      ctx.stroke();
+    }
+  });
+
+  // the open star's target reticle
+  const pick = p.picked ? sky.branches[p.picked.b]?.stars[p.picked.s] : undefined;
+  if (pick && p.dim > 0) {
+    const s = P(pick);
+    const r = 13 * Math.min(2.2, s.scale);
+    ctx.globalAlpha = p.dim;
+    ctx.strokeStyle = VIOLET;
+    disc(s.x, s.y, r);
+    ctx.stroke();
+    for (let i = 0; i < 4; i++) {
+      const t = (i * TAU) / 4;
+      line({ x: s.x + Math.cos(t) * (r + 3), y: s.y + Math.sin(t) * (r + 3) }, { x: s.x + Math.cos(t) * (r + 8), y: s.y + Math.sin(t) * (r + 8) });
+    }
+  }
+
+  if (pa > 0) drawPlanet(ctx, planet, pa, p);
+
+  if (p.names) {
+    ctx.font = "10px ui-monospace, monospace";
+    ctx.textBaseline = "middle";
+    sky.branches.forEach((br, b) => {
+      const a = 0.8 * appear(p.reveal, b, 0, nB, br.stars.length + 1) * branchAlpha(p, b);
+      if (a <= 0) return;
+      const s = P(br.name);
+      ctx.globalAlpha = a;
+      ctx.fillStyle = p.colors[b];
+      ctx.fillText(br.title.toUpperCase(), s.x, s.y);
+    });
+  }
+  ctx.restore();
+}
+
+// the planet: a lavender disc inside a thin tilted ring (back half behind it, front half over it),
+// with a glint going round the ring's front once every 40s
+function drawPlanet(ctx: CanvasRenderingContext2D, s: Screen, a: number, p: Paint) {
+  const r = 11 * Math.min(2.6, s.scale);
+  const tilt = -0.35;
+  const ring = (from: number, to: number) => {
+    ctx.beginPath();
+    ctx.ellipse(s.x, s.y, r * 2.1, r * 0.55, tilt, from, to);
+    ctx.stroke();
+  };
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = LAV;
+  ctx.globalAlpha = 0.5 * a;
+  ring(Math.PI, TAU);
+  const glow = p.glow?.(LAV) ?? null;
+  if (glow) {
+    const g = r * 7;
+    ctx.globalAlpha = 0.6 * a;
+    ctx.drawImage(glow, s.x - g / 2, s.y - g / 2, g, g);
+  }
+  const shade = ctx.createRadialGradient(s.x - r * 0.35, s.y - r * 0.35, r * 0.1, s.x, s.y, r);
+  shade.addColorStop(0, "#efeaf8");
+  shade.addColorStop(1, "#6e5aa8");
+  ctx.globalAlpha = a;
+  ctx.fillStyle = shade;
+  ctx.beginPath();
+  ctx.arc(s.x, s.y, r, 0, TAU);
+  ctx.fill();
+  ctx.globalAlpha = 0.8 * a;
+  ring(0, Math.PI);
+  if (!p.still) {
+    const t = ((p.time / 40) * TAU) % TAU;
+    if (t < Math.PI) {
+      const ex = r * 2.1 * Math.cos(t);
+      const ey = r * 0.55 * Math.sin(t);
+      ctx.globalAlpha = a;
+      ctx.fillStyle = INK;
+      ctx.beginPath();
+      ctx.arc(s.x + ex * Math.cos(tilt) - ey * Math.sin(tilt), s.y + ex * Math.sin(tilt) + ey * Math.cos(tilt), 1.6, 0, TAU);
+      ctx.fill();
+    }
+  }
+  ctx.lineWidth = 1;
+}
+
+// a soft round glow in a colour, drawn once per colour and reused
+export function makeGlow(doc: Document) {
+  const cache = new Map<string, HTMLCanvasElement | null>();
+  return (color: string): CanvasImageSource | null => {
+    if (cache.has(color)) return cache.get(color) ?? null;
+    const c = doc.createElement("canvas");
+    c.width = c.height = 64;
+    const g = c.getContext("2d");
+    if (g) {
+      const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, `${color}cc`);
+      grad.addColorStop(0.3, `${color}44`);
+      grad.addColorStop(1, `${color}00`);
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 64, 64);
+    }
+    cache.set(color, g ? c : null);
+    return g ? c : null;
+  };
+}
