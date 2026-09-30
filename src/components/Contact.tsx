@@ -57,6 +57,11 @@ export default function Contact() {
         05
       </div>
 
+      {/* on desktop the section fits one screen: the label and the toast share the top row, the
+          headline sits beside the ways to reach me, and the colophon, barcode and footer close it in
+          one row (on phones these wrappers step aside and everything stacks as before) */}
+      <div className={styles.top}>
+      <ModuleLabel n="05" text="Contact" />
       <div className={`${styles.toast} glass`} role="status">
         <div className={styles.toastIcon}>★</div>
         <div className={styles.toastText}>
@@ -65,8 +70,9 @@ export default function Contact() {
           <em>+100 XP</em>
         </div>
       </div>
+      </div>
 
-      <ModuleLabel n="05" text="Contact" />
+      <div className={styles.body}>
       <h2 className={styles.headline}>
         <span className={styles.mask}>
           <span className={styles.line}>Let’s build</span>
@@ -94,9 +100,11 @@ export default function Contact() {
           ))}
         </div>
       </div>
+      </div>
 
       <Seam direction="horizontal" className={styles.seam} />
 
+      <div className={styles.close}>
       <div className={styles.end}>
         <p className={styles.colophon}>
           End of {site.volume}: designed and coded by hand; imagery generated with AI.
@@ -115,6 +123,7 @@ export default function Contact() {
         <span>Built with Next.js + Lenis</span>
         <a href="#top">Back to top ↑</a>
       </footer>
+      </div>
       <EndBand className={styles.endPlace} />
     </section>
   );

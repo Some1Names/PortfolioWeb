@@ -248,6 +248,87 @@
   }
 }
 
+/* ---------- desktop: the whole section fits one screen ----------
+   The label and the toast share the top row; the headline sits beside the emails and links; the
+   colophon, barcode and footer close it in one row above the end band. Spacing and card heights
+   give a little on shorter screens (down to about 650px tall). */
+@media (min-width: 901px) {
+  .contact {
+    padding-top: clamp(56px, 9.5svh, 104px);
+    gap: clamp(14px, 2.8svh, 36px);
+  }
+  .top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .toast {
+    position: relative;
+    top: auto;
+    right: auto;
+  }
+  .toastText {
+    padding: clamp(8px, 1.6svh, 14px) 18px;
+  }
+  /* centred in the room between the top row and the closing line */
+  .body {
+    position: relative;
+    margin-block: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 4vw, 72px);
+  }
+  /* sized so "something.", the wider line, fits its column */
+  .headline {
+    font-size: clamp(56px, min(8.9vw, 17svh), 150px);
+  }
+  /* the outline 05 behind the headline's right end, beside the cards */
+  .bigNum {
+    top: calc(clamp(56px, 9.5svh, 104px) + 8svh);
+    right: calc(var(--gutter) + (100% - 2 * var(--gutter) - clamp(32px, 4vw, 72px)) / 2.3 + clamp(32px, 4vw, 72px) - 24px);
+    font-size: clamp(160px, 28svh, 260px);
+  }
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .email {
+    padding: clamp(12px, 2.2svh, 24px) 28px;
+  }
+  .links a {
+    min-height: clamp(40px, 5.6svh, 56px);
+  }
+  .close {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+  }
+  .end {
+    flex: 1;
+  }
+  .colophon {
+    max-width: 640px;
+  }
+  .footer {
+    margin-top: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+/* on phones the wrappers step aside: everything stacks, in the order set above */
+@media (max-width: 900px) {
+  .top,
+  .body,
+  .close {
+    display: contents;
+  }
+}
+
 /* the end band (motifs/EndBand) runs full width at the very end of the issue */
 .endPlace {
   margin: 0 calc(var(--gutter) * -1) -40px;
