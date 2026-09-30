@@ -85,7 +85,9 @@ export default function SkillTree() {
         </div>
       </header>
 
-      {/* the stats bar and the star map share one sky, full screen on 901px and up */}
+      {/* the stats bar and the star map share one sky, full screen on 901px and up (the map locks
+          it in place for a while: the stage is what's pinned, its wrapper takes it edge to edge) */}
+      <div className={styles.bleed}>
       <div className={styles.stage} data-part="stage">
       <div className={`${styles.stats} glass`}>
         <div>
@@ -121,6 +123,7 @@ export default function SkillTree() {
       </div>
 
       {!listMode && <ConstellationMap onUnavailable={() => setListMode(true)} />}
+      </div>
       </div>
 
       {/* ---------- phones (and the fallback): one list per branch ---------- */}

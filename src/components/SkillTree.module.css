@@ -154,24 +154,37 @@
   flex-direction: column;
 }
 @media (min-width: 901px) {
+  /* edge to edge (a wrapper, since the stage itself gets pinned, and a pinned element with
+     negative margins comes out that much narrower) */
+  .bleed {
+    margin: 0 calc(-1 * var(--gutter));
+  }
   .stage {
     min-height: 100svh;
-    margin: 0 calc(-1 * var(--gutter));
     padding: 48px var(--gutter) 24px;
     gap: 16px;
     overflow: clip;
+  }
+  /* the sky's dark: no edge line, it fades in from the heading above and out into Achievements
+     below (the canvas's stars fade the same way; the bottom fade stays under the lowest star) */
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background: radial-gradient(ellipse at 50% 58%, rgba(28, 24, 41, 0.6), rgba(6, 6, 10, 0.92) 72%);
-    box-shadow:
-      inset 0 1px rgba(255, 255, 255, 0.06),
-      inset 0 -1px rgba(255, 255, 255, 0.06);
+    mask-image: linear-gradient(to bottom, transparent, #000 120px, #000 calc(100% - 48px), transparent);
   }
   /* the fallback list: no sky */
+  .listMode .bleed {
+    margin: 0;
+  }
   .listMode .stage {
     min-height: 0;
-    margin: 0;
     padding: 0;
-    background: none;
-    box-shadow: none;
+  }
+  .listMode .stage::before {
+    display: none;
   }
 }
 

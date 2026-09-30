@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap, prefersReducedMotion } from "@/lib/gsap";
+import { gsap, prefersReducedMotion, ScrollTrigger } from "@/lib/gsap";
 import { branches, synergy } from "@/data/skills";
 import {
   appear,
   appearPlanet,
   branchAlpha,
+  clamp01,
   branchPose,
   drawSky,
   labelPx,
@@ -36,6 +37,10 @@ const HEX = { art: "#ff6ad5", web: "#5c8aff", collide: "#9a6bff" } as const; // 
 const SIDE = { art: styles.sideArt, web: styles.sideWeb, collide: styles.sideCollide };
 const COLORS = branches.map((b) => HEX[b.side]);
 const N = branches.length;
+// The lock: on 901px and up (with full motion) the sky pins as it fills the screen for LOCK screens
+// of scrolling; the first screen draws it in (DRAWN of the lock), the rest holds it.
+const LOCK = 1.5;
+const DRAWN = 1 / LOCK;
 
 type Star = { b: number; s: number };
 type Api = { open: (view: CardView, from: HTMLElement, keyboard: boolean) => void; close: () => void; hover: (star: Star | null) => void };
@@ -98,18 +103,22 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       visible: false,
       running: false,
       entered: still,
+      revealAll: false, // tabbed into before the scroll drew it: drawn in full, the scroll no longer undoes it
       dirty: true,
       opener: null as HTMLElement | null,
     };
     const poseFor = (focus: number) => (focus === -1 ? planetPose(st.vp) : branchPose(SKY, focus, st.vp));
 
     // (hidden also takes a button out of the Tab order: a star off the board or under the card
-    // can't take focus, which would scroll the board's contents or put the focus ring out of sight)
-    const place = (node: HTMLElement | null, x: number, y: number, alpha: number, scale = 1, hide = false) => {
+    // can't take focus, which would scroll the board's contents or put the focus ring out of sight.
+    // A star not drawn yet, though, stays in the Tab order, since tabbing to it draws the sky, but
+    // can't be clicked.)
+    const place = (node: HTMLElement | null, x: number, y: number, alpha: number, scale = 1, hide = false, focusable = false) => {
       if (!node) return;
       node.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
       node.style.opacity = alpha.toFixed(3);
-      node.style.visibility = hide || alpha < 0.03 ? "hidden" : "visible";
+      node.style.visibility = hide || (!focusable && alpha < 0.03) ? "hidden" : "visible";
+      if (focusable) node.style.pointerEvents = alpha < 0.03 ? "none" : "";
     };
 
     const draw = () => {
@@ -156,13 +165,13 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       // the HTML layer follows the drawing
       const P = (v: Vec3) => project(v, pose, st.vp);
       const pl = P(SKY.planet);
-      place(planetEl.current, pl.x, pl.y, appearPlanet(st.reveal), 1, away(pl));
+      place(planetEl.current, pl.x, pl.y, appearPlanet(st.reveal), 1, away(pl), true);
       SKY.branches.forEach((br, b) => {
         const n = br.stars.length + 1;
         const ba = branchAlpha(paint, b);
         br.stars.forEach((v, k) => {
           const s = P(v);
-          place(starEls.current[b][k], s.x, s.y, appear(st.reveal, b, k, N, n) * ba, labelScale(s.scale), away(s));
+          place(starEls.current[b][k], s.x, s.y, appear(st.reveal, b, k, N, n) * ba, labelScale(s.scale), away(s), true);
         });
         const last = appear(st.reveal, b, n - 1, N, n) * ba;
         const l = P(br.locked);
@@ -287,9 +296,40 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       },
     };
 
+    // the lock: the sky (this board's parent stage) pins, and the scroll draws it in
+    let scrolled = false; // the entrance follows the scroll, not the clock
+    const mm = gsap.matchMedia();
+    const stage = el.parentElement;
+    if (stage) {
+      mm.add("(min-width: 901px) and (prefers-reduced-motion: no-preference)", () => {
+        scrolled = true;
+        const lock = ScrollTrigger.create({
+          trigger: stage,
+          start: "top top",
+          end: `+=${LOCK * 100}%`,
+          pin: true,
+          onUpdate: (self) => {
+            if (st.revealAll) return;
+            st.reveal = clamp01(self.progress / DRAWN);
+            st.dirty = true;
+          },
+        });
+        if (!st.revealAll) st.reveal = clamp01(lock.progress / DRAWN);
+        return () => {
+          scrolled = false;
+        };
+      });
+    }
+    // tabbing in before the scroll has drawn the sky: draw it all now
+    const onFocus = () => {
+      if (st.revealAll || st.reveal >= 1) return;
+      st.revealAll = true;
+      gsap.to(st, { reveal: 1, duration: 0.4, ease: "power2.out", onUpdate: () => void (st.dirty = true) });
+    };
+
     const io = new IntersectionObserver(([entry]) => {
       st.visible = entry.isIntersecting;
-      if (st.visible && !st.entered) {
+      if (st.visible && !st.entered && !scrolled) {
         st.entered = true;
         gsap.to(st, { reveal: 1, duration: 1.6, ease: "none" });
       }
@@ -322,18 +362,21 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerleave", onLeave);
     el.addEventListener("click", onClick);
+    el.addEventListener("focusin", onFocus);
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", size);
     document.addEventListener("visibilitychange", update);
     return () => {
       ro.disconnect();
       io.disconnect();
+      mm.revert();
       gsap.ticker.remove(tick);
       gsap.killTweensOf(st.cam);
       gsap.killTweensOf(st);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
       el.removeEventListener("click", onClick);
+      el.removeEventListener("focusin", onFocus);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", size);
       document.removeEventListener("visibilitychange", update);

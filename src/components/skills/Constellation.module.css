@@ -16,12 +16,14 @@
   width: 100%;
   height: 100%;
 }
-/* sized and placed by ConstellationMap to cover the whole sky around the board */
+/* sized and placed by ConstellationMap to cover the whole sky around the board; fading in and out
+   at its edges with the sky's background (SkillTree's .stage::before) */
 .canvas {
   position: absolute;
   left: 0;
   top: 0;
   display: block;
+  mask-image: linear-gradient(to bottom, transparent, #000 120px, #000 calc(100% - 48px), transparent);
 }
 .leader {
   z-index: 1;
