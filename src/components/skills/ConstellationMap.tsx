@@ -277,7 +277,23 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       }
       st.dirty = true;
     };
+    // on phones there's no lock, so a tap can come with the sky only partly on screen: it comes into
+    // view, the sheet and the constellation framed above it (a sky taller than the screen, as on a
+    // phone on its side, lines up its bottom, where the sheet is)
+    let scrolling: gsap.core.Tween | null = null;
+    const bringIntoView = () => {
+      const r = el.parentElement?.getBoundingClientRect();
+      if (!r) return;
+      const vh = window.innerHeight;
+      const dy = r.height > vh ? r.bottom - vh : r.top < 0 ? r.top : Math.max(0, r.bottom - vh);
+      if (Math.abs(dy) < 2) return;
+      scrolling?.kill();
+      const y = { v: window.scrollY };
+      if (still) window.scrollTo(0, y.v + dy);
+      else scrolling = gsap.to(y, { v: y.v + dy, duration: 0.6, ease: "power2.inOut", onUpdate: () => window.scrollTo(0, y.v) });
+    };
     const open = (view: CardView, from: HTMLElement, keyboard: boolean) => {
+      if (layout === "tall") bringIntoView();
       st.opener = from;
       focusCard.current = keyboard;
       const focus = view.kind === "planet" ? -1 : view.b;
@@ -351,6 +367,12 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
         if (!st.revealAll) st.reveal = clamp01(lock.progress / DRAWN);
         return () => {
           scrolled = false;
+          // the lock gone (the window narrowed past 900px, a tablet turned) with the sky on screen and
+          // not yet drawn: it draws itself in, as it would have on arrival
+          if (st.visible && !st.revealAll && st.reveal < 1) {
+            st.entered = true;
+            gsap.to(st, { reveal: 1, duration: 1.6, ease: "none" });
+          }
         };
       });
     }
@@ -412,6 +434,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       gsap.ticker.remove(tick);
       gsap.killTweensOf(st.cam);
       gsap.killTweensOf(st);
+      scrolling?.kill();
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
       el.removeEventListener("click", onClick);

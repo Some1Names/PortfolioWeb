@@ -7,7 +7,7 @@
   flex: 1 1 auto;
   min-height: 480px;
   user-select: none;
-  touch-action: pan-y; /* page scrolling passes straight through */
+  touch-action: pan-y pinch-zoom; /* page scrolling and zooming pass straight through */
 }
 .leader,
 .layer {
@@ -545,5 +545,13 @@
   }
   .playerName {
     font-size: 52px;
+  }
+  /* phone-sized tap targets: the close and the project links */
+  .cardHead button {
+    width: 44px;
+    height: 44px;
+  }
+  .cardLinks a {
+    min-height: 44px;
   }
 }
