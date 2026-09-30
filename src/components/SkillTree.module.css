@@ -174,14 +174,14 @@
     background: radial-gradient(ellipse at 50% 58%, rgba(28, 24, 41, 0.6), rgba(6, 6, 10, 0.92) 72%);
     mask-image: linear-gradient(to bottom, transparent, #000 120px, #000 calc(100% - 48px), transparent);
   }
-  /* the map's key: along the sky's bottom-left, below the lowest stars (they keep 24px clear of
-     the board, which ends 24px above the sky's edge); lifted to stay on screen where the sky runs
-     taller than the screen */
+  /* the map's key: along the sky's bottom-right, below the lowest stars (they keep 24px clear of
+     the board, which ends 24px above the sky's edge); lifted further only where the sky runs more
+     than 12px taller than the screen, to stay in view while it's locked */
   .legend {
     position: absolute;
     z-index: 2;
-    left: var(--gutter);
-    bottom: max(20px, calc(100% - 100svh + 20px));
+    right: var(--gutter);
+    bottom: max(32px, calc(100% - 100svh + 20px));
     white-space: nowrap;
     pointer-events: none;
   }

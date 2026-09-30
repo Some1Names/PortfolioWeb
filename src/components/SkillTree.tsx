@@ -87,7 +87,7 @@ export default function SkillTree() {
       </div>
 
       {!listMode && <ConstellationMap onUnavailable={() => setListMode(true)} />}
-      {/* the map's key, along the sky's bottom-left */}
+      {/* the map's key, along the sky's bottom-right */}
       <div className={styles.legend}>
         <span>
           <i className={styles.legendStar} aria-hidden="true">
