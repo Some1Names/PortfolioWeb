@@ -83,10 +83,10 @@ export const about = {
   // cut-out (transparent background) that stands on the signature line against the page's left
   // edge, its cut bottom edge fading out.
   portrait: {
-    src: "",
-    mode: "screen" as "screen" | "alpha",
+    src: "/art/about-portrait.png",
+    mode: "alpha" as "screen" | "alpha",
     fig: "Fig. 02 — Portrait",
-    alt: "Portrait of Uefa",
+    alt: "Uefa, smiling, drawn in a halftone dot pattern",
   },
   body: [
     `I'm ${site.realName}, ${site.name} to most people: an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.`,
