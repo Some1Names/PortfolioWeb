@@ -45,7 +45,6 @@
   letter-spacing: -2px;
 }
 .legend {
-  margin-bottom: 24px;
   display: flex;
   gap: 20px;
   font-family: var(--mono);
@@ -175,7 +174,21 @@
     background: radial-gradient(ellipse at 50% 58%, rgba(28, 24, 41, 0.6), rgba(6, 6, 10, 0.92) 72%);
     mask-image: linear-gradient(to bottom, transparent, #000 120px, #000 calc(100% - 48px), transparent);
   }
-  /* the fallback list: no sky */
+  /* the map's key: along the sky's bottom-left, below the lowest stars (they keep 24px clear of
+     the board, which ends 24px above the sky's edge); lifted to stay on screen where the sky runs
+     taller than the screen */
+  .legend {
+    position: absolute;
+    z-index: 2;
+    left: var(--gutter);
+    bottom: max(6px, calc(100% - 100svh + 6px));
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  /* the fallback list: no sky, no stars to explain */
+  .listMode .legend {
+    display: none;
+  }
   .listMode .bleed {
     margin: 0;
   }

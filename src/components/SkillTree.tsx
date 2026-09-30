@@ -47,42 +47,6 @@ export default function SkillTree() {
           <ModuleLabel n="04" text="Skill tree" />
           <h2>Skills</h2>
         </div>
-        <div className={styles.legend}>
-          <span>
-            <i className={styles.legendStar} aria-hidden="true">
-              ✦
-            </i>
-            Skill
-          </span>
-          <span>
-            <i className={styles.legendLocked} />
-            Locked
-          </span>
-          <span>
-            <i className={styles.legendItem} />
-            Item
-          </span>
-          <span>
-            <i className={styles.legendSize} aria-hidden="true">
-              <b />
-              <b />
-            </i>
-            Bigger = learned earlier
-          </span>
-          <span>
-            <i className={`${styles.legendSide} ${styles.sideArt}`} />
-            Art
-          </span>
-          <span>
-            <i className={`${styles.legendSide} ${styles.sideWeb}`} />
-            Web
-          </span>
-          <span>
-            <i className={`${styles.legendSide} ${styles.sideCollide}`} />
-            Collide
-          </span>
-          <span className={styles.hint}>Click a star</span>
-        </div>
       </header>
 
       {/* the stats bar and the star map share one sky, full screen on 901px and up (the map locks
@@ -123,6 +87,43 @@ export default function SkillTree() {
       </div>
 
       {!listMode && <ConstellationMap onUnavailable={() => setListMode(true)} />}
+      {/* the map's key, along the sky's bottom-left */}
+      <div className={styles.legend}>
+        <span>
+          <i className={styles.legendStar} aria-hidden="true">
+            ✦
+          </i>
+          Skill
+        </span>
+        <span>
+          <i className={styles.legendLocked} />
+          Locked
+        </span>
+        <span>
+          <i className={styles.legendItem} />
+          Item
+        </span>
+        <span>
+          <i className={styles.legendSize} aria-hidden="true">
+            <b />
+            <b />
+          </i>
+          Bigger = learned earlier
+        </span>
+        <span>
+          <i className={`${styles.legendSide} ${styles.sideArt}`} />
+          Art
+        </span>
+        <span>
+          <i className={`${styles.legendSide} ${styles.sideWeb}`} />
+          Web
+        </span>
+        <span>
+          <i className={`${styles.legendSide} ${styles.sideCollide}`} />
+          Collide
+        </span>
+        <span className={styles.hint}>Click a star</span>
+      </div>
       </div>
       </div>
 
