@@ -6,7 +6,8 @@
   display: grid;
   grid-template-columns: 5fr 1fr 6fr;
   gap: 24px;
-  background: radial-gradient(ellipse at 20% 50%, #1c1829 0%, #0f0e13 55%, var(--bg) 85%);
+  /* near-black, with the faintest lift behind the portrait (so its white dots stand out) */
+  background: radial-gradient(ellipse at 20% 50%, #121018 0%, #0c0b0f 55%, var(--bg) 85%);
   border-top: 1px solid var(--line);
 }
 .glow {
@@ -18,7 +19,7 @@
   border-radius: 50%;
   background: var(--accent);
   filter: blur(150px);
-  opacity: 0.28;
+  opacity: 0.1;
 }
 /* web page: grid only behind the text column */
 .grid {
@@ -75,6 +76,7 @@
   margin: 32px 0 0 var(--px);
   width: var(--pw);
   aspect-ratio: var(--ratio);
+  background: #050506; /* the selection filled near-black: white dots on black, like a print */
 }
 .stillPic .stillFoot {
   position: relative;
