@@ -42,6 +42,7 @@
   grid-row: 1;
   margin: 0;
   height: var(--still-h);
+  container-type: size; /* the picture sizes itself to this box */
 }
 /* a picture on black: the screen blend drops the black. It sits on the figure, not the image:
    GSAP's entrance leaves a transform here, which isolates anything inside, so a blend on the
@@ -49,15 +50,70 @@
 .stillScreen {
   mix-blend-mode: screen;
 }
+/* the picture, in its own shape (--ratio, width ÷ height): as big as the portrait column allows
+   (the figure spans it, the 24px gap and the seam's 1fr column, so 5/6 of what's left; up to 40px
+   above the figure), standing just above the name block at the bottom-left, inside the page margin */
+.pic {
+  position: absolute;
+  left: 0;
+  bottom: 56px;
+  width: min(calc((100cqw - 24px) * 5 / 6), calc((100cqh - 16px) * var(--ratio)));
+  aspect-ratio: var(--ratio);
+}
 .art {
   position: absolute;
-  inset: -40px -12% 64px -4%;
+  inset: 0;
 }
-/* a cut-out stands on the bottom of the figure, inside the page margin (a cut edge in the picture
-   dissolves in its own dots); its cut bottom edge fades out under the signature */
+/* a cut-out's cut bottom edge fades out (a cut side edge dissolves in its own dots) */
 .stillAlpha .art {
-  inset: -40px 0 0;
   mask-image: linear-gradient(to top, transparent, #000 24%);
+}
+/* a Photoshop selection being transformed: marching ants crawling round the picture's edge, and
+   square handles at its corners and edge midpoints */
+.frame {
+  --ant: rgba(242, 240, 247, 0.85);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, var(--ant) 50%, transparent 0) 0 0 / 12px 1px repeat-x,
+    linear-gradient(90deg, var(--ant) 50%, transparent 0) 0 100% / 12px 1px repeat-x,
+    linear-gradient(0deg, var(--ant) 50%, transparent 0) 0 0 / 1px 12px repeat-y,
+    linear-gradient(0deg, var(--ant) 50%, transparent 0) 100% 0 / 1px 12px repeat-y;
+  animation: ants 1.2s linear infinite;
+}
+@keyframes ants {
+  to {
+    background-position:
+      12px 0,
+      -12px 100%,
+      0 -12px,
+      100% 12px;
+  }
+}
+.handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border: 1px solid var(--text-strong);
+  background: var(--bg-solid);
+}
+/* the figure's name, like a layer's name tab over the selection's top-left corner (clear of its
+   handles at any width), in the HUD tags' cut-corner style */
+.layer {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  padding: 5px 12px 5px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #0a0a0c;
+  background: var(--collide);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
 }
 .stillFoot {
   position: absolute;
@@ -206,27 +262,34 @@
     flex-direction: column;
     padding: 72px var(--gutter) 56px;
   }
-  /* phones: the picture sits above the text, so it scrolls like everything else (as wide as the
-     page: its contents are all absolutely placed, so left to itself it would shrink to nothing) */
+  /* phones: the picture sits above the text as wide as the page, in the flow (room above it for
+     its name tab), then the name block under it; it scrolls like everything else */
   .still {
     position: relative;
     top: auto;
     align-self: stretch;
-    height: 420px;
+    height: auto;
+    padding-top: 44px;
     order: 2;
+    container-type: normal;
+  }
+  .pic {
+    position: relative;
+    display: block;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+  }
+  .stillFoot {
+    position: relative;
+    margin-top: 14px;
   }
   /* no picture: just the name, a.k.a. and school */
   .stillBare {
-    height: auto;
+    padding-top: 0;
   }
   .stillBare .stillFoot {
-    position: relative;
-  }
-  .art {
-    inset: 0 0 48px;
-  }
-  .stillAlpha .art {
-    inset: 0;
+    margin-top: 0;
   }
   .seam {
     order: 2;
@@ -266,5 +329,11 @@
   }
   .aka b {
     letter-spacing: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame {
+    animation: none;
   }
 }

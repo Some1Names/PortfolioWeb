@@ -87,6 +87,7 @@ export const about = {
     mode: "alpha" as "screen" | "alpha",
     fig: "Fig. 02 — Portrait",
     alt: "Uefa, smiling, drawn in a halftone dot pattern",
+    ratio: 1080 / 1134, // the picture's width ÷ height (its frame hugs it)
   },
   body: [
     `I'm ${site.realName}, ${site.name} to most people: an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.`,

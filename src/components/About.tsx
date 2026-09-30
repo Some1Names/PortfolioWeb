@@ -4,7 +4,6 @@ import { Fragment, useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { about, site, manifesto } from "@/data/site";
 import Cutout from "./motifs/Cutout";
-import Tag from "./hud/Tag";
 import Seam from "./motifs/Seam";
 import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
@@ -35,7 +34,7 @@ export default function About() {
         { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: root.current, start: "top 70%" } },
       );
       // the picture drifts slowly, like it's floating
-      gsap.to(`.${styles.art}`, { y: -8, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1 });
+      gsap.to(`.${styles.pic}`, { y: -8, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.from(`.${styles.seam}`, {
         scaleX: 0,
         scaleY: 0,
@@ -62,6 +61,8 @@ export default function About() {
   const art = about.portrait;
   // no picture set (src ""): the name, a.k.a. and school stand on their own
   const hasArt = art.src !== "";
+  // the frame's handles: the corners and the edge midpoints (% of the picture)
+  const handles = [[0, 0], [50, 0], [100, 0], [100, 50], [100, 100], [50, 100], [0, 100], [0, 50]];
 
   return (
     <section id="about" ref={root} className={styles.about}>
@@ -71,19 +72,19 @@ export default function About() {
 
       <figure className={`${styles.still} ${!hasArt ? styles.stillBare : art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}>
         {hasArt && (
-          <>
-            <Cutout
-              src={art.src}
-              alt={art.alt}
-              mode={art.mode}
-              sizes="(max-width: 900px) 100vw, 45vw"
-              // a cut-out stands in the bottom-left corner, inside the page margin
-              position={art.mode === "alpha" ? "0% 100%" : undefined}
-              className={styles.art}
-            />
-            {/* starts left of centre so the label (~225px) stays clear of the text column down to 901px */}
-            <Tag label={art.fig} x={48} y={88} to={{ x: 40, y: 60 }} side="collide" phone={{ x: 0, y: 2 }} />
-          </>
+          // the picture in its own shape, with a Photoshop selection being transformed around it:
+          // marching ants, square handles, and the figure's name over its corner like a layer's
+          <span className={styles.pic} style={{ "--ratio": art.ratio } as React.CSSProperties}>
+            <Cutout src={art.src} alt={art.alt} mode={art.mode} sizes="(max-width: 900px) 100vw, 45vw" className={styles.art} />
+            <span className={styles.frame} data-part="frame" aria-hidden="true">
+              {handles.map(([x, y]) => (
+                <i key={`${x}-${y}`} className={styles.handle} style={{ left: `${x}%`, top: `${y}%` }} data-part="handle" />
+              ))}
+            </span>
+            <span className={styles.layer} data-part="label">
+              {art.fig}
+            </span>
+          </span>
         )}
         {/* the name, then the other names you go by (in their own capitals) over the school. Each
             name keeps its dot and never splits, so a narrow screen breaks between names, before a dot */}
