@@ -213,12 +213,21 @@
     flex-direction: column;
     padding: 72px var(--gutter) 56px;
   }
-  /* phones: the picture sits above the text, so it scrolls like everything else */
+  /* phones: the picture sits above the text, so it scrolls like everything else (as wide as the
+     page: its contents are all absolutely placed, so left to itself it would shrink to nothing) */
   .still {
     position: relative;
     top: auto;
+    align-self: stretch;
     height: 420px;
     order: 2;
+  }
+  /* no picture: just the name, a.k.a. and school */
+  .stillBare {
+    height: auto;
+  }
+  .stillBare .stillFoot {
+    position: relative;
   }
   .art {
     inset: 0 0 48px;

@@ -385,12 +385,13 @@
     --name-size: clamp(120px, 40vw, 180px);
     top: 244px;
   }
+  /* the status card floats inside the page margins */
   .hero .card {
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 24px;
     width: auto;
-    padding: 18px var(--gutter);
+    padding: 18px 20px;
     align-items: center;
   }
 }

@@ -51,7 +51,7 @@ export default function Timeline() {
   return (
     <section id="timeline" ref={root} className={styles.timeline}>
       <Crosshairs />
-      <header className="section-head">
+      <header className={`section-head ${styles.head}`}>
         <div>
           <ModuleLabel n="03" text="Timeline · Quest log" />
           <h2>So far</h2>

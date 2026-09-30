@@ -132,6 +132,13 @@
   .stamp {
     margin-bottom: 10px;
   }
+  /* phones: the label and "So far" get the full width (each on one line), the stamp under them
+     (doubled class beats the global .section-head row layout) */
+  .head.head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
   .row {
     grid-template-columns: 76px 24px minmax(0, 1fr);
     grid-template-rows: auto auto;

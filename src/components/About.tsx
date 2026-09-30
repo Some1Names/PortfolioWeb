@@ -60,6 +60,8 @@ export default function About() {
   const credo = manifesto.lines.slice(0, -1).join(" ");
   const credoEnd = manifesto.lines[manifesto.lines.length - 1];
   const art = about.portrait;
+  // no picture set (src ""): the name, a.k.a. and school stand on their own
+  const hasArt = art.src !== "";
 
   return (
     <section id="about" ref={root} className={styles.about}>
@@ -68,18 +70,22 @@ export default function About() {
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />
 
-      <figure className={`${styles.still} ${art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}>
-        <Cutout
-          src={art.src}
-          alt={art.alt}
-          mode={art.mode}
-          sizes="(max-width: 900px) 100vw, 45vw"
-          // a cut-out stands in the bottom-left corner, against the page edge
-          position={art.mode === "alpha" ? "0% 100%" : undefined}
-          className={styles.art}
-        />
-        {/* starts left of centre so the label (~225px) stays clear of the text column down to 901px */}
-        <Tag label={art.fig} x={48} y={88} to={{ x: 40, y: 60 }} side="collide" phone={{ x: 0, y: 2 }} />
+      <figure className={`${styles.still} ${!hasArt ? styles.stillBare : art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}>
+        {hasArt && (
+          <>
+            <Cutout
+              src={art.src}
+              alt={art.alt}
+              mode={art.mode}
+              sizes="(max-width: 900px) 100vw, 45vw"
+              // a cut-out stands in the bottom-left corner, against the page edge
+              position={art.mode === "alpha" ? "0% 100%" : undefined}
+              className={styles.art}
+            />
+            {/* starts left of centre so the label (~225px) stays clear of the text column down to 901px */}
+            <Tag label={art.fig} x={48} y={88} to={{ x: 40, y: 60 }} side="collide" phone={{ x: 0, y: 2 }} />
+          </>
+        )}
         {/* the name, then the other names you go by (in their own capitals) over the school. Each
             name keeps its dot and never splits, so a narrow screen breaks between names, before a dot */}
         <figcaption className={styles.stillFoot}>

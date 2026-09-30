@@ -78,15 +78,15 @@ export const site = {
 export const about = {
   statement: "I build web things that feel like something.",
   highlight: "feel",
-  // the image beside About: a photo of you, or a stand-in until then (floats free, no card).
-  // Keep "AI" in fig while it's generated. mode "screen": a picture on pure black, the black
-  // blends away. mode "alpha": a cut-out (transparent background) that stands on the signature
-  // line against the page's left edge, its cut bottom edge fading out.
+  // the image beside About: a photo of you, or "" for none (then the name, a.k.a. and school stand
+  // on their own). mode "screen": a picture on pure black, the black blends away. mode "alpha": a
+  // cut-out (transparent background) that stands on the signature line against the page's left
+  // edge, its cut bottom edge fading out.
   portrait: {
-    src: "/art/about.webp",
+    src: "",
     mode: "screen" as "screen" | "alpha",
-    fig: "Fig. 02 — Still life · AI",
-    alt: "AI-generated image: an orchid made of polished chrome, dripping, on black",
+    fig: "Fig. 02 — Portrait",
+    alt: "Portrait of Uefa",
   },
   body: [
     `I'm ${site.realName}, ${site.name} to most people: an Applied Computer Science (ACS) student at KMUTT in Thailand. Games tucked inside an event site, a manga reader I'd actually want to use, interfaces with a strong visual identity: that's the kind of work I chase.`,
