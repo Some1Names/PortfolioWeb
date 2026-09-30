@@ -65,7 +65,8 @@
 .stillPic .pic,
 .stillPic .stillFoot {
   --side: calc((100cqw - 24px) * 11 / 12);
-  --pw: min(calc(var(--side) - 64px), calc((100vh - 228px) * var(--ratio)));
+  /* (at 90% of the most that fits, so it keeps some air) */
+  --pw: calc(min(calc(var(--side) - 64px), calc((100vh - 228px) * var(--ratio))) * 0.9);
   --px: calc((var(--side) - var(--pw)) / 2);
 }
 .pic {
