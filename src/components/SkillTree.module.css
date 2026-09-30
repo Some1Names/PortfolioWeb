@@ -181,7 +181,7 @@
     position: absolute;
     z-index: 2;
     left: var(--gutter);
-    bottom: max(6px, calc(100% - 100svh + 6px));
+    bottom: max(20px, calc(100% - 100svh + 20px));
     white-space: nowrap;
     pointer-events: none;
   }
