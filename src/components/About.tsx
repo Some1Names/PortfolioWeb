@@ -70,11 +70,14 @@ export default function About() {
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />
 
-      <figure className={`${styles.still} ${!hasArt ? styles.stillBare : art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}>
+      <figure
+        className={`${styles.still} ${!hasArt ? styles.stillBare : `${styles.stillPic} ${art.mode === "screen" ? styles.stillScreen : styles.stillAlpha}`}`}
+        style={hasArt ? ({ "--ratio": art.ratio } as React.CSSProperties) : undefined}
+      >
         {hasArt && (
           // the picture in its own shape, with a Photoshop selection being transformed around it:
           // marching ants, square handles, and the figure's name over its corner like a layer's
-          <span className={styles.pic} style={{ "--ratio": art.ratio } as React.CSSProperties}>
+          <span className={styles.pic}>
             <Cutout src={art.src} alt={art.alt} mode={art.mode} sizes="(max-width: 900px) 100vw, 45vw" className={styles.art} />
             <span className={styles.frame} data-part="frame" aria-hidden="true">
               {handles.map(([x, y]) => (

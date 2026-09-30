@@ -50,16 +50,36 @@
 .stillScreen {
   mix-blend-mode: screen;
 }
-/* the picture, in its own shape (--ratio, width ÷ height): as big as the portrait column allows
-   (the figure spans it, the 24px gap and the seam's 1fr column, so 5/6 of what's left, less its
-   32px inset; up to 40px above the figure), standing ~28px above the name block, 32px in from the
-   page margin */
+/* with a picture, the name tab, the picture (in its own shape: --ratio, width ÷ height) and the
+   name block are one group: centred on the left side, between the page margin and the seam less a
+   24px gap (11/12 of the figure, which spans 5fr, the gap and the seam's 1fr column), with at least
+   32px of air either side; centred top to bottom on the figure (the grid centres them, with 32px
+   above the picture for the tab). As big as that allows, and up to the screen's height less 60px
+   top and bottom: the group may reach past the figure, which stays 640px at most so the text beside
+   it can scroll by while it's stuck. */
+.stillPic {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+}
+.stillPic .pic,
+.stillPic .stillFoot {
+  --side: calc((100cqw - 24px) * 11 / 12);
+  --pw: min(calc(var(--side) - 64px), calc((100vh - 228px) * var(--ratio)));
+  --px: calc((var(--side) - var(--pw)) / 2);
+}
 .pic {
-  position: absolute;
-  left: 32px;
-  bottom: 68px;
-  width: min(calc((100cqw - 24px) * 5 / 6 - 32px), calc((100cqh - 28px) * var(--ratio)));
+  position: relative;
+  display: block;
+  margin: 32px 0 0 var(--px);
+  width: var(--pw);
   aspect-ratio: var(--ratio);
+}
+.stillPic .stillFoot {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  margin: 29px 0 0 var(--px);
 }
 .art {
   position: absolute;
@@ -118,7 +138,7 @@
 }
 .stillFoot {
   position: absolute;
-  left: 32px; /* under the picture */
+  left: 0;
   bottom: 0;
   display: flex;
   align-items: baseline;
@@ -274,17 +294,18 @@
     order: 2;
     container-type: normal;
   }
-  .pic {
-    position: relative;
+  .stillPic {
     display: block;
-    left: auto;
-    bottom: auto;
+  }
+  .pic {
+    margin: 0;
     width: 100%;
   }
-  .stillFoot {
+  .stillFoot,
+  .stillPic .stillFoot {
     position: relative;
     left: 0;
-    margin-top: 28px;
+    margin: 28px 0 0;
   }
   /* no picture: just the name, a.k.a. and school */
   .stillBare {
