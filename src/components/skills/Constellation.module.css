@@ -521,3 +521,29 @@
     transition: none;
   }
 }
+/* phones: the card is a sheet up from the board's bottom edge, at most 55% of its height (SHEET in
+   constellation.ts), the framed constellation above it; its body scrolls, its head and next quest
+   stay in view */
+@media (max-width: 900px) {
+  .card,
+  .cardRight,
+  .cardLeft {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-height: 55%;
+    padding: 16px 18px;
+    transform: translateY(100%);
+  }
+  .cardOpen {
+    transform: translateY(0);
+  }
+  .cardTitle {
+    font-size: 28px;
+  }
+  .playerName {
+    font-size: 52px;
+  }
+}

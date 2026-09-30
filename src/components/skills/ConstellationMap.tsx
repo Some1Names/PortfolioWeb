@@ -363,6 +363,8 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
 
     const io = new IntersectionObserver(([entry]) => {
       st.visible = entry.isIntersecting;
+      // on phones, a sheet left open closes as the sky scrolls away (focus and the page stay put)
+      if (!st.visible && layout === "tall") close(false);
       if (st.visible && !st.entered && !scrolled) {
         st.entered = true;
         gsap.to(st, { reveal: 1, duration: 1.6, ease: "none" });
