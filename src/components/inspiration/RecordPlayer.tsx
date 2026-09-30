@@ -8,6 +8,9 @@ import Turntable from "./Turntable";
 import Threads from "../reactbits/Threads";
 import styles from "./RecordPlayer.module.css";
 
+// the previews are mastered loud: they play at 35% (the element keeps it as the track changes)
+const VOLUME = 0.35;
+
 // The music section: a turntable (left) and the record library (right). It plays Apple Music's
 // 30-second previews; nothing plays until someone presses play or picks a track. When a clip
 // ends the next one starts, stopping after the last unless repeat is on. A clip that won't load
@@ -44,6 +47,10 @@ export default function RecordPlayer({
   useEffect(() => {
     onDeck?.(track.title, s.playing);
   }, [track.title, s.playing, onDeck]);
+
+  useEffect(() => {
+    if (audio.current) audio.current.volume = VOLUME;
+  }, []);
 
   // a clip (re)starts: from the top
   useEffect(() => {
