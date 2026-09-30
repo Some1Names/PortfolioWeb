@@ -20,6 +20,8 @@ const orangeAvenueOutline = localFont({
 });
 
 export const metadata: Metadata = {
+  // the live domain: link previews (the Open Graph and Twitter images) point here
+  metadataBase: new URL("https://yafuu.xyz"),
   title: "Uefa — Portfolio Vol. 01",
   description:
     "Applied Computer Science (ACS) student at KMUTT building web applications in Next.js and TypeScript, with a focus on motion and visual systems.",
