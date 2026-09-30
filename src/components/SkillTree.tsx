@@ -9,7 +9,6 @@ import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Crosshairs from "./hud/Crosshairs";
 import ConstellationMap from "./skills/ConstellationMap";
-import MiniSky from "./skills/MiniSky";
 import styles from "./SkillTree.module.css";
 
 // sets --side for everything inside a branch: pink, blue or violet
@@ -18,9 +17,10 @@ const SIDE = { art: styles.sideArt, web: styles.sideWeb, collide: styles.sideCol
 type Picked = { b: number; s: number };
 const DEFAULT_PICK: Picked = { b: 0, s: 3 };
 
-// 04 — Skill tree. On 901px and up the skills are a 3D star map (skills/ConstellationMap, with its
-// own HUD card) filling the screen, the stats bar floating on its sky. On phones, and anywhere the map can't get a canvas, they're a list per branch with
-// a sticky details card. The stats bar and Achievements frame both.
+// 04 — Skill tree. The skills are a 3D star map (skills/ConstellationMap, with its own HUD card)
+// filling the screen, the stats bar floating on its sky: wide on desktop, tall on phones (icons only,
+// the card a sheet). Where the map can't get a canvas, they're a list per branch with a sticky
+// details card. Achievements follow.
 export default function SkillTree() {
   // the list's card: which skill it shows (null = closed)
   const [picked, setPicked] = useState<Picked | null>(DEFAULT_PICK);
@@ -127,9 +127,8 @@ export default function SkillTree() {
       </div>
       </div>
 
-      {/* ---------- phones (and the fallback): one list per branch ---------- */}
+      {/* ---------- the fallback (no canvas): one list per branch ---------- */}
       <div className={styles.mobile}>
-        {!listMode && <MiniSky />}
         {branches.map((br, b) => (
           <div key={br.name} className={`${styles.mBranch} ${SIDE[br.side]}`}>
             <div className={styles.mHead}>Branch / {br.name}</div>

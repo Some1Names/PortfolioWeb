@@ -144,36 +144,44 @@
   text-transform: none;
 }
 
-/* the stats bar and the star map share one sky: on 901px and up it runs edge to edge and is at
-   least the screen's height, so arriving at it fills the screen (the map takes the space left under
-   the stats bar, never less than 480px) */
+/* the stats bar and the star map share one sky: edge to edge and at least the screen's height, so
+   arriving at it fills the screen (the map takes the space left under the stats bar) */
 .stage {
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 100svh;
+  padding: 48px var(--gutter) 24px;
+  gap: 16px;
+  overflow: clip;
+}
+/* edge to edge (a wrapper, since on desktop the stage itself gets pinned, and a pinned element with
+   negative margins comes out that much narrower) */
+.bleed {
+  margin: 0 calc(-1 * var(--gutter));
+}
+/* the sky's dark: no edge line, it fades in from the heading above and out into Achievements
+   below (the canvas's stars fade the same way; the bottom fade stays under the lowest star) */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 58%, rgba(28, 24, 41, 0.6), rgba(6, 6, 10, 0.92) 72%);
+  mask-image: linear-gradient(to bottom, transparent, #000 120px, #000 calc(100% - 48px), transparent);
+}
+/* the fallback list: no sky */
+.listMode .bleed {
+  margin: 0;
+}
+.listMode .stage {
+  min-height: 0;
+  padding: 0;
+}
+.listMode .stage::before {
+  display: none;
 }
 @media (min-width: 901px) {
-  /* edge to edge (a wrapper, since the stage itself gets pinned, and a pinned element with
-     negative margins comes out that much narrower) */
-  .bleed {
-    margin: 0 calc(-1 * var(--gutter));
-  }
-  .stage {
-    min-height: 100svh;
-    padding: 48px var(--gutter) 24px;
-    gap: 16px;
-    overflow: clip;
-  }
-  /* the sky's dark: no edge line, it fades in from the heading above and out into Achievements
-     below (the canvas's stars fade the same way; the bottom fade stays under the lowest star) */
-  .stage::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(ellipse at 50% 58%, rgba(28, 24, 41, 0.6), rgba(6, 6, 10, 0.92) 72%);
-    mask-image: linear-gradient(to bottom, transparent, #000 120px, #000 calc(100% - 48px), transparent);
-  }
   /* the map's key: along the sky's bottom-right, below the lowest stars (they keep 24px clear of
      the board, which ends 24px above the sky's edge); lifted further only where the sky runs more
      than 12px taller than the screen, to stay in view while it's locked */
@@ -185,23 +193,13 @@
     white-space: nowrap;
     pointer-events: none;
   }
-  /* the fallback list: no sky, no stars to explain */
+  /* the fallback list: no stars to explain */
   .listMode .legend {
-    display: none;
-  }
-  .listMode .bleed {
-    margin: 0;
-  }
-  .listMode .stage {
-    min-height: 0;
-    padding: 0;
-  }
-  .listMode .stage::before {
     display: none;
   }
 }
 
-/* ---------- phones (and anywhere the star map can't draw): a list per branch ---------- */
+/* ---------- the fallback (anywhere the star map can't draw): a list per branch ---------- */
 .mobile {
   display: none;
 }
@@ -589,18 +587,19 @@
   .legend {
     display: none;
   }
-  .mobile {
-    order: 1;
-    position: relative;
-    display: flex;
-    flex-direction: column;
+  /* the sky under the nav, with less air */
+  .stage {
+    padding: 44px var(--gutter) 16px;
     gap: 12px;
   }
-  .panel {
+  /* the fallback list and its sticky card */
+  .listMode .mobile {
+    order: 1;
+  }
+  .listMode .panel {
     order: 2;
     position: sticky;
     bottom: 12px;
-    display: flex;
   }
   .panelClosed {
     display: none;

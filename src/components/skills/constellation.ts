@@ -57,10 +57,10 @@ export const REF_BOARDS: Viewport[] = [
 // 768×1024 windows (the tightest first). On each, every icon (its tap target), locked star and name
 // is on the board and clear of the others and of every line. (Measured in the browser in Task 3.)
 export const REF_TALL: Viewport[] = [
-  { w: 327, h: 518 },
-  { w: 342, h: 695 },
-  { w: 382, h: 783 },
-  { w: 720, h: 875 },
+  { w: 327, h: 514 },
+  { w: 342, h: 691 },
+  { w: 382, h: 779 },
+  { w: 720, h: 871 },
 ];
 
 // Each branch's patch of sky, in data order: Frontend above the planet, Motion & 3D right, Data
@@ -444,10 +444,6 @@ export function project(p: Vec3, cam: Pose, vp: Viewport, world: Viewport = WORL
 
 export const overviewPose = (): Pose => ({ tx: 0, ty: 0, tz: 0, yaw: 0, pitch: 0, zoom: 1 });
 
-// the phones' mini sky: the whole map tipped toward the viewer, turned to `yaw`. Tipped, what
-// swings to the front drops, so the aim sits a little low and the zoom leaves room for a full turn.
-export const miniPose = (yaw: number): Pose => ({ ...overviewPose(), ty: -35, yaw, pitch: 0.35, zoom: 0.8 });
-
 // the card goes on the side away from what it's about
 export const cardSide = (x: number, vp: Viewport): Side => (x < vp.w / 2 ? "right" : "left");
 
@@ -534,7 +530,6 @@ export type Paint = {
   still: boolean; // reduced motion: no twinkle, no glint
   synergy?: { from: readonly [number, number]; to: readonly [number, number] };
   glow?: (color: string) => CanvasImageSource | null;
-  names?: boolean; // write the constellation names on the canvas (the mini sky; the map uses HTML)
   // where the background stars may go, in board px (default: the board). On desktop the canvas
   // covers the whole full-screen sky, beyond the constellations' board.
   bounds?: { x0: number; y0: number; x1: number; y1: number };
@@ -684,24 +679,6 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
 
   if (pa > 0) drawPlanet(ctx, planet, pa, p);
 
-  if (p.names) {
-    ctx.font = "10px ui-monospace, monospace";
-    ctx.textBaseline = "middle";
-    sky.branches.forEach((br, b) => {
-      const a = 0.8 * appear(p.reveal, b, 0, nB, br.stars.length + 1) * branchAlpha(p, b);
-      if (a <= 0) return;
-      // (at this scale, just outside the constellation as it turns, on the side away from the
-      // planet: from its leftmost star, kept inside the canvas)
-      const pts = [...br.stars, br.locked].map(P);
-      const ys = pts.map((q) => q.y);
-      const below = ys.reduce((sum, v) => sum + v, 0) / ys.length > planet.y;
-      const text = br.title.toUpperCase();
-      const x = Math.min(Math.max(Math.min(...pts.map((q) => q.x)), 8), vp.w - 8 - text.length * 6.2);
-      ctx.globalAlpha = a;
-      ctx.fillStyle = p.colors[b];
-      ctx.fillText(text, x, below ? Math.max(...ys) + 12 : Math.min(...ys) - 12);
-    });
-  }
   ctx.restore();
 }
 

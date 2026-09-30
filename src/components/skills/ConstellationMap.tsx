@@ -85,8 +85,10 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       return;
     }
     const ctx: CanvasRenderingContext2D = maybe;
-    const SKY = getSky();
-    const layout: Layout = "wide";
+    // the arrangement: tall on phones and tablets up to 900px (icons only, the card a sheet), wide above
+    const tallQuery = window.matchMedia("(max-width: 900px)");
+    let layout: Layout = tallQuery.matches ? "tall" : "wide";
+    let SKY = getSky(layout);
     // each skill icon's size: its star's (learned earlier = bigger)
     const sizeIcons = () =>
       SKY.branches.forEach((br, b) =>
@@ -117,7 +119,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       dirty: true,
       opener: null as HTMLElement | null,
     };
-    const poseFor = (focus: number) => (focus === -1 ? planetPose(st.vp) : branchPose(SKY, focus, st.vp));
+    const poseFor = (focus: number) => (focus === -1 ? planetPose(st.vp, layout) : branchPose(SKY, focus, st.vp));
 
     // (hidden also takes a button out of the Tab order: a star off the board or under the card
     // can't take focus, which would scroll the board's contents or put the focus ring out of sight.
@@ -173,7 +175,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       drawSky(ctx, { ...paint, bounds: { x0: -st.off.x, y0: -st.off.y, x1: st.sky.w - st.off.x, y1: st.sky.h - st.off.y } });
 
       // the HTML layer follows the drawing
-      const P = (v: Vec3) => project(v, pose, st.vp);
+      const P = (v: Vec3) => project(v, pose, st.vp, SKY.world);
       const pl = P(SKY.planet);
       place(planetEl.current, pl.x, pl.y, appearPlanet(st.reveal), 1, away(pl), true);
       SKY.branches.forEach((br, b) => {
@@ -213,7 +215,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       const line = leader.current;
       if (line) {
         const from = st.picked ? P(SKY.branches[st.picked.b].stars[st.picked.s]) : st.lit === -1 ? pl : null;
-        if (from && box && st.dim > 0.05) {
+        if (from && box && st.dim > 0.05 && layout === "wide") {
           const x2 = st.side === "right" ? box.l : box.r;
           const y2 = Math.min(Math.max(from.y, box.t + 24), box.b - 24);
           line.setAttribute("x1", from.x.toFixed(1));
@@ -289,13 +291,15 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       el.dataset.view = focus === -1 ? "planet" : `branch-${focus}`;
       setCard({ view, open: true, side });
     };
-    const close = () => {
+    // back to the full map; focus goes back to the star that opened the card, unless the close wasn't
+    // the visitor's doing (the sky scrolled away, the arrangement changed)
+    const close = (returnFocus = true) => {
       if (st.focus === -2) return;
       st.focus = -2;
       fly(overviewPose(), 0);
       el.dataset.view = "overview";
       setCard((c) => ({ ...c, open: false }));
-      st.opener?.focus({ preventScroll: true });
+      if (returnFocus) st.opener?.focus({ preventScroll: true });
     };
     api.current = {
       open,
@@ -305,6 +309,26 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
         st.dirty = true;
       },
     };
+    // crossing 900px (a tablet turned, a window resized): close any card, lay the sky out afresh
+    const onLayout = () => {
+      const next: Layout = tallQuery.matches ? "tall" : "wide";
+      if (next === layout) return;
+      close(false);
+      gsap.killTweensOf(st.cam);
+      gsap.killTweensOf(st, "dim");
+      Object.assign(st.cam, overviewPose());
+      st.dim = 0;
+      st.lit = -2;
+      st.picked = null;
+      layout = next;
+      SKY = getSky(layout);
+      el.dataset.layout = layout;
+      sizeIcons();
+      size();
+    };
+    tallQuery.addEventListener("change", onLayout);
+    // (and on resize, which comes with it: a query's change is only reported with the next frame)
+    window.addEventListener("resize", onLayout);
 
     // the lock: the sky (this board's parent stage) pins, and the scroll draws it in
     let scrolled = false; // the entrance follows the scroll, not the clock
@@ -364,6 +388,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
     };
     const ro = new ResizeObserver(size);
     el.dataset.view = "overview";
+    el.dataset.layout = layout;
     el.dataset.running = "false";
     size();
     ro.observe(el);
@@ -380,6 +405,8 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
       ro.disconnect();
       io.disconnect();
       mm.revert();
+      tallQuery.removeEventListener("change", onLayout);
+      window.removeEventListener("resize", onLayout);
       gsap.ticker.remove(tick);
       gsap.killTweensOf(st.cam);
       gsap.killTweensOf(st);

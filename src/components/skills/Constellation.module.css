@@ -483,22 +483,24 @@
   white-space: nowrap;
 }
 
-/* ---------- the phones' mini sky ---------- */
-.mini {
-  position: relative;
-  height: 180px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: radial-gradient(ellipse at 50% 50%, rgba(28, 24, 41, 0.7), rgba(6, 6, 10, 0.85) 70%);
-}
-.mini canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
+/* phones: icons only (each name is in its star's aria-label and on its card), 44px tap targets, no
+   leader line (the card is a sheet), and a floor for a phone on its side: the smallest phone's board
+   (REF_TALL in constellation.ts), where no two tap targets meet */
 @media (max-width: 900px) {
   .map {
+    min-height: 514px;
+  }
+  .label,
+  .planetHint {
+    display: none;
+  }
+  .hit {
+    left: -22px;
+    top: -22px;
+    width: 44px;
+    height: 44px;
+  }
+  .leader {
     display: none;
   }
 }
