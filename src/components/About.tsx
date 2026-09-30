@@ -66,7 +66,6 @@ export default function About() {
   return (
     <section id="about" ref={root} className={styles.about}>
       <Crosshairs />
-      <div className={styles.beam} aria-hidden="true" />
       <div className={styles.glow} aria-hidden="true" />
       <div className={`${styles.grid} web-grid`} aria-hidden="true" />
 
@@ -78,7 +77,7 @@ export default function About() {
               alt={art.alt}
               mode={art.mode}
               sizes="(max-width: 900px) 100vw, 45vw"
-              // a cut-out stands in the bottom-left corner, against the page edge
+              // a cut-out stands in the bottom-left corner, inside the page margin
               position={art.mode === "alpha" ? "0% 100%" : undefined}
               className={styles.art}
             />

@@ -9,13 +9,6 @@
   background: radial-gradient(ellipse at 20% 50%, #1c1829 0%, #0f0e13 55%, var(--bg) 85%);
   border-top: 1px solid var(--line);
 }
-.beam {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(24% 100%, 6% 0%, 20% 0%);
-  background: linear-gradient(to top, #d8d4e4 0%, var(--accent) 45%, rgba(20, 18, 30, 0) 100%);
-  opacity: 0.3;
-}
 .glow {
   position: absolute;
   left: 60px;
@@ -60,10 +53,10 @@
   position: absolute;
   inset: -40px -12% 64px -4%;
 }
-/* a cut-out stands on the bottom of the figure and bleeds off the page's left edge (the side a
-   cropped photo is usually cut on); its cut bottom edge fades out under the signature */
+/* a cut-out stands on the bottom of the figure, inside the page margin (a cut edge in the picture
+   dissolves in its own dots); its cut bottom edge fades out under the signature */
 .stillAlpha .art {
-  inset: -40px 0 0 calc(var(--gutter) * -1);
+  inset: -40px 0 0;
   mask-image: linear-gradient(to top, transparent, #000 24%);
 }
 .stillFoot {
@@ -233,7 +226,7 @@
     inset: 0 0 48px;
   }
   .stillAlpha .art {
-    inset: 0 0 0 calc(var(--gutter) * -1);
+    inset: 0;
   }
   .seam {
     order: 2;
