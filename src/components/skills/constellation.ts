@@ -17,7 +17,7 @@ export type SkyBranch = {
   items: Vec3[]; // faint item dots
   name: Vec3; // where the constellation's name sits
 };
-export type Sky = { planet: Vec3; branches: SkyBranch[]; field: Vec3[][] };
+export type Sky = { planet: Vec3; branches: SkyBranch[]; field: Vec3[][]; layout: Layout; world: Viewport };
 // a line between two constellations' stars ([branch, skill] each), with its label
 export type Link = { from: readonly [number, number]; to: readonly [number, number]; label: string };
 export type Pose = { tx: number; ty: number; tz: number; yaw: number; pitch: number; zoom: number };
@@ -27,7 +27,8 @@ export type Side = "left" | "right";
 // the sky's arrangement: "wide" on desktop (names beside the stars), "tall" on phones (icons only)
 export type Layout = "wide" | "tall";
 
-export const WORLD = { w: 1240, h: 720 };
+export const WORLD = { w: 1240, h: 720 }; // the wide arrangement's world
+export const TALL_WORLD = { w: 600, h: 1000 }; // the tall arrangement's world
 export const FOCAL = 1400; // perspective distance, in world px
 export const CARD_W = 320; // the HUD card's width
 export const EDGE = 24; // the clear margin at the board's edges and beside the card
@@ -37,6 +38,8 @@ export const LABEL_GAP = 20; // a skill label's distance from its star, clear of
 // on desktop and ≈17–33px on phones
 export const ICON: Record<Layout, number> = { wide: 16, tall: 22 };
 export const iconPx = (layout: Layout, size: number) => ICON[layout] * size;
+// on phones the card is a sheet up from the board's bottom edge, at most this share of its height
+export const SHEET = 0.55;
 
 // The boards the layout is made on: the star map's board at 1440×900, 1100×800, 901×800, 1366×650
 // and 1920×1080 windows. On each, in the overview, every label and name is on the board and clear of
@@ -50,24 +53,39 @@ export const REF_BOARDS: Viewport[] = [
   { w: 1300, h: 719 },
   { w: 1780, h: 899 },
 ];
+// The boards the tall arrangement is made on: the sky's board at 375×667, 390×844, 430×932 and
+// 768×1024 windows (the tightest first). On each, every icon (its tap target), locked star and name
+// is on the board and clear of the others and of every line. (Measured in the browser in Task 3.)
+export const REF_TALL: Viewport[] = [
+  { w: 327, h: 518 },
+  { w: 342, h: 695 },
+  { w: 382, h: 783 },
+  { w: 720, h: 875 },
+];
 
 // Each branch's patch of sky, in data order: Frontend above the planet, Motion & 3D right, Data
 // below, Design left (world x0..x1 × y0..y1, and its depth). Its stars scatter inside, the first one
 // in `first`, on the side nearest the planet. The constellations stand on their own: told apart by
 // colour, grouping and the gaps between them, with no lines to the planet.
-const REGIONS = [
+type Region = { x0: number; x1: number; y0: number; y1: number; z: number; first: { x0: number; x1: number; y0: number; y1: number } };
+const REGIONS: Region[] = [
   { x0: -320, x1: 200, y0: 110, y1: 285, z: -50, first: { x0: -220, x1: 100, y0: 110, y1: 170 } },
   { x0: 170, x1: 430, y0: -200, y1: 180, z: 40, first: { x0: 170, x1: 280, y0: -90, y1: 90 } },
   { x0: -320, x1: 200, y0: -300, y1: -110, z: -10, first: { x0: -220, x1: 100, y0: -170, y1: -110 } },
   { x0: -575, x1: -370, y0: -190, y1: 170, z: 60, first: { x0: -470, x1: -370, y0: -90, y1: 90 } },
 ];
+// The tall arrangement's patches (world 600 × 1000), in data order: Frontend at the top, Motion & 3D
+// upper right, Data at the bottom, Design lower left; the planet in the middle.
+const TALL_REGIONS: Region[] = [
+  { x0: -215, x1: 215, y0: 250, y1: 405, z: -40, first: { x0: -120, x1: 120, y0: 250, y1: 300 } },
+  { x0: 20, x1: 215, y0: -30, y1: 200, z: 40, first: { x0: 20, x1: 120, y0: -30, y1: 90 } },
+  { x0: -215, x1: 215, y0: -405, y1: -270, z: -10, first: { x0: -120, x1: 120, y0: -320, y1: -270 } },
+  { x0: -215, x1: -20, y0: -230, y1: 30, z: 50, first: { x0: -120, x1: -20, y0: -110, y1: 30 } },
+];
 const OUT = 70; // how far past its patch the locked star may step
 const TURN = { min: 50, max: 150 }; // how far (degrees) each line turns from the one before
-const SPREAD = 90; // a constellation spans at least this both ways, and neither way over twice the other
 const TRIES = 250; // random spots tried for each star
 const ATTEMPTS = 80; // times a constellation may start over
-const STEP = { min: 60, max: 105 }; // a line's length, between neighbouring stars
-const GAP = 110; // the least distance between stars of different constellations
 // the background starfield: three layers, deeper ones drifting less as the camera moves, spread
 // wide enough to fill the whole full-screen sky around the board
 const FIELD = [
@@ -75,6 +93,52 @@ const FIELD = [
   { n: 155, z: -240 },
   { n: 100, z: -120 },
 ];
+// How each arrangement is laid out: its world; the boards it's checked on; the patches; a line's
+// length between neighbouring stars; the least distance between stars of different constellations
+// (gap) and of one constellation (own); how far a constellation must spread both ways (and neither
+// way under `ratio` of the other); whether stars have their names beside them; a star's clear
+// radius on a board (px, from its size and depth scale); how far the background stars spread.
+type LayoutPlan = {
+  world: Viewport;
+  boards: Viewport[];
+  regions: Region[];
+  step: { min: number; max: number };
+  gap: number;
+  own: number;
+  spread: { min: number; ratio: number };
+  labels: boolean;
+  starR: (size: number, ls: number) => number;
+  field: { x: number; y: number };
+};
+const PLANS: Record<Layout, LayoutPlan> = {
+  wide: {
+    world: WORLD,
+    boards: REF_BOARDS,
+    regions: REGIONS,
+    step: { min: 60, max: 105 },
+    gap: 110,
+    own: 50,
+    spread: { min: 90, ratio: 0.45 },
+    labels: true,
+    // the icon, scaled with depth, and 2px of air
+    starR: (size, ls) => (iconPx("wide", size) / 2) * ls + 2,
+    field: { x: 1300, y: 920 },
+  },
+  tall: {
+    world: TALL_WORLD,
+    boards: REF_TALL,
+    regions: TALL_REGIONS,
+    step: { min: 95, max: 125 },
+    gap: 135,
+    own: 90,
+    spread: { min: 70, ratio: 0.35 },
+    labels: false,
+    // the 44px tap target (or the icon, if bigger), scaled with depth
+    starR: (size, ls) => Math.max(22, iconPx("tall", size) / 2 + 2) * ls,
+    field: { x: 700, y: 1400 },
+  },
+};
+
 
 export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
@@ -125,32 +189,33 @@ const onBoard = (b: Box, vp: Viewport) => b.x >= EDGE && b.y >= EDGE && b.x + b.
 // label), dots (stars, the planet, items; `id` marks a line's own end), and lines.
 type Board = { vp: Viewport; px: number; text: Box[]; dots: { id: string; box: Box }[]; lines: [Pt, Pt][] };
 
-// The whole sky, seeded (the same every visit). Constellation by constellation, each star takes a
-// random step (STEP) from the one before, inside its branch's patch, until it lands somewhere that
-// keeps, on every reference board: its label on the board and clear of all text, dots and lines;
-// its line clear of all text and dots and crossing no other line; and GAP from other constellations.
-// The locked star steps outward from the last one; then the name (above), then the item dots.
-export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky {
+// The whole sky for an arrangement, seeded (the same every visit). Constellation by constellation,
+// each star takes a random step from the one before, inside its branch's patch, until it lands
+// somewhere that keeps, on every reference board: its icon (and, wide, its label) on the board and
+// clear of all text, dots and lines; its line clear of all text and dots and crossing no other line;
+// and a gap from the other constellations. The locked star steps outward from the last one; then
+// the name (above), then the item dots.
+export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link, layout: Layout = "wide"): Sky {
+  const L = PLANS[layout];
   const r = seeded(seed);
   const j = (a: number) => (r() * 2 - 1) * a;
   const cam = overviewPose();
+  const at = (v: Vec3, vp: Viewport) => project(v, cam, vp, L.world);
   const planet: Vec3 = { x: 0, y: 0, z: 0 };
-  const boards: Board[] = REF_BOARDS.map((vp) => {
-    const pl = project(planet, cam, vp);
+  const boards: Board[] = L.boards.map((vp) => {
+    const pl = at(planet, vp);
     return { vp, px: labelPx(vp), text: [], dots: [{ id: "planet", box: { x: pl.x - 28, y: pl.y - 18, w: 56, h: 36 } }], lines: [] };
   });
   const placed: { b: number; p: Vec3 }[] = []; // every star so far, for the gaps between constellations
   const dist = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
-
-  // a star's clear radius on a board: its icon at its size, scaled with depth, and 2px of air; a
-  // locked star's ring
-  const radius = (size: number | null, s: Screen) => (size === null ? 7 : (iconPx("wide", size) / 2) * labelScale(s.scale) + 2);
+  // a star's clear radius on a board (see PLANS); a locked star's ring
+  const radius = (size: number | null, s: Screen) => (size === null ? 7 : L.starR(size, labelScale(s.scale)));
 
   // can a star (with its label, if it has one) go at c, joined by a line from `from` (its id; a
   // constellation's first star has none)? `size` is null for a locked star.
   const fitsStar = (c: Vec3, label: string | null, size: number | null, from: Vec3 | null, fromId: string) =>
     boards.every((B) => {
-      const s = project(c, cam, B.vp);
+      const s = at(c, B.vp);
       const rad = radius(size, s);
       const lab = label ? labelBox(s, label, B.px) : null;
       const dot = dotBox(s, rad);
@@ -159,7 +224,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       if (B.dots.some((o) => overlaps(dot, o.box) || (lab && overlaps(lab, o.box)))) return false;
       if (B.lines.some(([a, b]) => through(a, b, dotBox(s, rad - 2)) || (lab && through(a, b, lab)))) return false;
       if (!from) return true;
-      const f = project(from, cam, B.vp);
+      const f = at(from, B.vp);
       // its line: clear of all text (this label too) and of every dot but the one it starts from
       if ([...B.text, ...(lab ? [lab] : [])].some((o) => through(f, s, o))) return false;
       if (B.dots.some((o) => o.id !== fromId && through(f, s, dotBox({ x: o.box.x + o.box.w / 2, y: o.box.y + o.box.h / 2 }, Math.min(o.box.w, o.box.h) / 2 - 1)))) return false;
@@ -169,10 +234,10 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
   const addStar = (c: Vec3, label: string | null, size: number | null, from: Vec3 | null, id: string) => {
     const before = boards.map((B) => [B.text.length, B.dots.length, B.lines.length]);
     boards.forEach((B) => {
-      const s = project(c, cam, B.vp);
+      const s = at(c, B.vp);
       if (label) B.text.push(labelBox(s, label, B.px));
       B.dots.push({ id, box: dotBox(s, radius(size, s)) });
-      if (from) B.lines.push([project(from, cam, B.vp), s]);
+      if (from) B.lines.push([at(from, B.vp), s]);
     });
     return () =>
       boards.forEach((B, i) => {
@@ -184,7 +249,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
   // can a tag (a name or the synergy label) go at c: on the board, clear of all text, dots and lines?
   const fitsTag = (c: Vec3, dx: number, text: string, lines = true) =>
     boards.every((B) => {
-      const t = tagBox(project(c, cam, B.vp), dx, text);
+      const t = tagBox(at(c, B.vp), dx, text);
       return (
         onBoard(t, B.vp) &&
         !B.text.some((o) => overlaps(t, o)) &&
@@ -192,7 +257,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
         !(lines && B.lines.some(([a, b]) => through(a, b, t)))
       );
     });
-  const addTag = (c: Vec3, dx: number, text: string) => boards.forEach((B) => B.text.push(tagBox(project(c, cam, B.vp), dx, text)));
+  const addTag = (c: Vec3, dx: number, text: string) => boards.forEach((B) => B.text.push(tagBox(at(c, B.vp), dx, text)));
 
   // the synergy line's later end (the label is placed with it) and the star at its other end
   const [synLate, synEarly] = synergy
@@ -214,18 +279,23 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
   };
 
   const branches = shapes.map((shape, b): SkyBranch => {
-    const R = REGIONS[b % REGIONS.length];
+    const R = L.regions[b % L.regions.length];
     const inR = (p: Pt, out = 0) => p.x >= R.x0 - out && p.x <= R.x1 + out && p.y >= R.y0 - out && p.y <= R.y1 + out;
     const own: Vec3[] = [];
     // world rules: its gap from the other constellations, and room from its own stars
-    const clear = (c: Vec3) => dist(c, planet) >= 90 && placed.every((q) => (q.b === b ? dist(c, q.p) >= 50 : dist(c, q.p) >= GAP));
+    const clear = (c: Vec3) => dist(c, planet) >= 90 && placed.every((q) => (q.b === b ? dist(c, q.p) >= L.own : dist(c, q.p) >= L.gap));
+    // each star's size: the first learned biggest (1.5), the newest smallest (0.75), a little wobble
+    const n = shape.skills.length;
+    const sizes = shape.skills.map((_, k) => (n > 1 ? 1.5 - (0.75 * k) / (n - 1) : 1.5) + j(0.05));
 
-    // the next star: the first of TRIES random spots that fits, or null (`force`: the last spot tried)
+    // the next star (`size` null: the locked one): the first of TRIES random spots that fits, or null
+    // (`force`: the last spot tried)
     const place = (label: string | null, size: number | null, outward: boolean, force: boolean): Vec3 | null => {
       const k = own.length;
       const prev = own[k - 1] ?? null;
       const fromId = `${b}.${k - 1}`;
-      const synHere = !!synLate && !!synEarly && synLate[0] === b && synLate[1] === k && label !== null;
+      const text = L.labels ? label : null; // wide: its name beside it
+      const synHere = !!synLate && !!synEarly && synLate[0] === b && synLate[1] === k && size !== null;
       let last: Vec3 | null = null;
       for (let t = 0; t < TRIES; t++) {
         let c: Vec3;
@@ -233,7 +303,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
           c = { x: R.first.x0 + r() * (R.first.x1 - R.first.x0), y: R.first.y0 + r() * (R.first.y1 - R.first.y0), z: R.z + j(55) };
         } else {
           const a = r() * Math.PI * 2;
-          const len = STEP.min + r() * (STEP.max - STEP.min);
+          const len = L.step.min + r() * (L.step.max - L.step.min);
           c = { x: prev.x + Math.cos(a) * len, y: prev.y + Math.sin(a) * len, z: R.z + j(55) };
         }
         if (!inR(c, outward ? OUT : 0) || !clear(c) || (outward && prev && dist(c, planet) <= dist(prev, planet))) continue;
@@ -246,8 +316,8 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
           if (deg < TURN.min || deg > TURN.max) continue;
         }
         last = c;
-        if (!fitsStar(c, label, size, prev, fromId)) continue;
-        const undo = addStar(c, label, size, prev, `${b}.${k}`);
+        if (!fitsStar(c, text, size, prev, fromId)) continue;
+        const undo = addStar(c, text, size, prev, `${b}.${k}`);
         if (synHere) {
           // the synergy label goes halfway along its line: it has to fit too
           const other = synEarly![0] === b ? own[synEarly![1]] : done[synEarly![0]]?.stars[synEarly![1]];
@@ -264,7 +334,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       }
       if (!force) return null;
       const c = last ?? { x: (R.x0 + R.x1) / 2, y: (R.y0 + R.y1) / 2, z: R.z };
-      addStar(c, label, size, prev, `${b}.${k}`);
+      addStar(c, text, size, prev, `${b}.${k}`);
       own.push(c);
       placed.push({ b, p: c });
       return c;
@@ -300,9 +370,6 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
 
     // the constellation, star by star, then the locked star and the name; stuck, or come out in
     // too thin a line, it starts over
-    // each star's size: the first learned biggest (1.5), the newest smallest (0.75), a little wobble
-    const n = shape.skills.length;
-    const sizes = shape.skills.map((_, k) => (n > 1 ? 1.5 - (0.75 * k) / (n - 1) : 1.5) + j(0.05));
     let stars: Vec3[] = [];
     let locked: Vec3 = planet;
     let name: Vec3 = planet;
@@ -319,8 +386,8 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       const spread = (v: number[]) => Math.max(...v) - Math.min(...v);
       const sx = spread(stars.map((p) => p.x));
       const sy = spread(stars.map((p) => p.y));
-      const wide = stars.length < 3 || (sx >= SPREAD && sy >= SPREAD && Math.min(sx, sy) / Math.max(sx, sy) >= 0.45);
-      const l = stars.length === shape.skills.length && (wide || force) ? place(null, null, true, force) : null;
+      const broad = stars.length < 3 || (sx >= L.spread.min && sy >= L.spread.min && Math.min(sx, sy) / Math.max(sx, sy) >= L.spread.ratio);
+      const l = stars.length === n && (broad || force) ? place(null, null, true, force) : null;
       const nm = l ? placeName(force) : null;
       if (l && nm) {
         locked = l;
@@ -335,15 +402,15 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       let spot: Vec3 | null = null;
       for (let t = 0; t < TRIES * 2 && !spot; t++) {
         const c = { x: R.x0 - 30 + r() * (R.x1 - R.x0 + 60), y: R.y0 - 30 + r() * (R.y1 - R.y0 + 60), z: R.z + j(40) };
-        if (placed.some((q) => q.b !== b && dist(c, q.p) < GAP * 0.6)) continue;
+        if (placed.some((q) => q.b !== b && dist(c, q.p) < L.gap * 0.6)) continue;
         const ok = boards.every((B) => {
-          const d = dotBox(project(c, cam, B.vp), 5);
+          const d = dotBox(at(c, B.vp), 5);
           return onBoard(d, B.vp) && !B.text.some((o) => overlaps(d, o)) && !B.dots.some((o) => overlaps(d, o.box));
         });
         if (ok) spot = c;
       }
       const c = spot ?? { x: (R.x0 + R.x1) / 2, y: R.y1, z: R.z };
-      boards.forEach((B) => B.dots.push({ id: `${b}.item${i}`, box: dotBox(project(c, cam, B.vp), 5) }));
+      boards.forEach((B) => B.dots.push({ id: `${b}.item${i}`, box: dotBox(at(c, B.vp), 5) }));
       return c;
     });
 
@@ -351,16 +418,16 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
     done.push(br);
     return br;
   });
-  const field = FIELD.map((l) => Array.from({ length: l.n }, () => ({ x: j(1300), y: j(920), z: l.z + j(30) })));
-  return { planet, branches, field };
+  const field = FIELD.map((l) => Array.from({ length: l.n }, () => ({ x: j(L.field.x), y: j(L.field.y), z: l.z + j(30) })));
+  return { planet, branches, field, layout, world: L.world };
 }
 
 // ---------- camera ----------
-export const fit = (vp: Viewport) => Math.min(vp.w / WORLD.w, vp.h / WORLD.h);
+export const fit = (vp: Viewport, world: Viewport = WORLD) => Math.min(vp.w / world.w, vp.h / world.h);
 
 // a world point → the board, for a camera pose: turned by yaw (about the vertical) and pitch (about
 // the horizontal) around the target, then in perspective (nearer = bigger)
-export function project(p: Vec3, cam: Pose, vp: Viewport): Screen {
+export function project(p: Vec3, cam: Pose, vp: Viewport, world: Viewport = WORLD): Screen {
   let x = p.x - cam.tx;
   let y = p.y - cam.ty;
   let z = p.z - cam.tz;
@@ -371,7 +438,7 @@ export function project(p: Vec3, cam: Pose, vp: Viewport): Screen {
   const sp = Math.sin(cam.pitch);
   [y, z] = [y * cp - z * sp, y * sp + z * cp];
   const persp = FOCAL / Math.max(FOCAL - z, 1);
-  const k = fit(vp) * cam.zoom * persp;
+  const k = fit(vp, world) * cam.zoom * persp;
   return { x: vp.w / 2 + x * k, y: vp.h / 2 - y * k, scale: cam.zoom * persp, depth: z };
 }
 
@@ -384,30 +451,35 @@ export const miniPose = (yaw: number): Pose => ({ ...overviewPose(), ty: -35, ya
 // the card goes on the side away from what it's about
 export const cardSide = (x: number, vp: Viewport): Side => (x < vp.w / 2 ? "right" : "left");
 
-// the pose that frames branch b in the space beside the card, and the card's side
+// the pose that frames branch b beside the card (wide) or above the sheet (tall), and the card's side
 export function branchPose(sky: Sky, b: number, vp: Viewport): { pose: Pose; side: Side } {
   const br = sky.branches[b];
+  const tall = sky.layout === "tall";
+  const W = sky.world;
   const px = labelPx(vp);
-  const centreX = br.stars.reduce((sum, p) => sum + project(p, overviewPose(), vp).x, 0) / Math.max(br.stars.length, 1);
-  const side = cardSide(centreX, vp);
-  const free = { w: vp.w - CARD_W - EDGE * 3, h: vp.h - EDGE * 2 };
-  const freeCx = side === "right" ? EDGE + free.w / 2 : vp.w - EDGE - free.w / 2;
-  // what reaches left and right of each point, in px: labels at their largest, else a star's glow
+  const centreX = br.stars.reduce((sum, p) => sum + project(p, overviewPose(), vp, W).x, 0) / Math.max(br.stars.length, 1);
+  const side: Side = tall ? "right" : cardSide(centreX, vp);
+  // the free space: beside the card (wide) or above the sheet (tall)
+  const free = tall
+    ? { x: EDGE, y: EDGE, w: vp.w - EDGE * 2, h: vp.h * (1 - SHEET) - EDGE * 2 }
+    : { x: side === "right" ? EDGE : CARD_W + EDGE * 2, y: EDGE, w: vp.w - CARD_W - EDGE * 3, h: vp.h - EDGE * 2 };
+  // how far each point reaches left, right and up/down, in px: a star's icon (wide, with its label to
+  // the right) or its tap target (tall), else a ring, a dot or a name
+  const reach = (size: number) => (tall ? Math.max(22, iconPx("tall", size) / 2 + 2) : iconPx("wide", size) / 2 + 2) * 1.1;
   const parts = [
-    ...br.stars.map((p, i) => ({ p, l: (iconPx("wide", br.sizes[i]) / 2) * 1.1 + 2, r: 1.1 * labelW(br.names[i], px) })),
-    { p: br.locked, l: 12, r: 12 },
-    ...br.items.map((p) => ({ p, l: 9, r: 9 })),
-    { p: br.name, l: 0, r: nameW(br.title) },
+    ...br.stars.map((p, i) => ({ p, l: reach(br.sizes[i]), r: tall ? reach(br.sizes[i]) : 1.1 * labelW(br.names[i], px), v: tall ? reach(br.sizes[i]) : LABEL_H })),
+    { p: br.locked, l: 12, r: 12, v: 12 },
+    ...br.items.map((p) => ({ p, l: 9, r: 9, v: 9 })),
+    { p: br.name, l: 0, r: nameW(br.title), v: 9 },
   ];
-  const ys = parts.map((q) => q.p.y);
-  const y0 = Math.min(...ys);
-  const y1 = Math.max(...ys);
   const left = (k: number) => Math.min(...parts.map((q) => q.p.x * k - q.l));
   const right = (k: number) => Math.max(...parts.map((q) => q.p.x * k + q.r));
-  const fits = (k: number) => right(k) - left(k) <= free.w && (y1 - y0) * k + LABEL_H * 2 <= free.h;
+  const top = (k: number) => Math.max(...parts.map((q) => q.p.y * k + q.v));
+  const bottom = (k: number) => Math.min(...parts.map((q) => q.p.y * k - q.v));
+  const fits = (k: number) => right(k) - left(k) <= free.w && top(k) - bottom(k) <= free.h;
   // the biggest scale (world px → board px) that fits, with a little air
   let lo = 0.1;
-  let hi = fit(vp) * 1.8;
+  let hi = fit(vp, W) * 2.2;
   for (let i = 0; i < 30; i++) {
     const m = (lo + hi) / 2;
     if (fits(m)) lo = m;
@@ -415,26 +487,33 @@ export function branchPose(sky: Sky, b: number, vp: Viewport): { pose: Pose; sid
   }
   const k = lo * 0.94;
   const tz = br.stars.reduce((sum, p) => sum + p.z, 0) / Math.max(br.stars.length, 1);
+  // aim so the framed box's middle lands in the middle of the free space
+  const cx = (left(k) + right(k)) / 2 / k;
+  const cy = (top(k) + bottom(k)) / 2 / k;
   return {
     side,
     pose: {
-      // aim so the framed box's middle lands in the middle of the free space
-      tx: ((left(k) + right(k)) / 2 + vp.w / 2 - freeCx) / k,
-      ty: (y0 + y1) / 2,
+      tx: cx + (vp.w / 2 - (free.x + free.w / 2)) / k,
+      ty: cy - (vp.h / 2 - (free.y + free.h / 2)) / k,
       tz,
-      yaw: side === "right" ? 0.06 : -0.06, // turned a touch toward the card
+      yaw: tall ? 0 : side === "right" ? 0.06 : -0.06, // turned a touch toward the card
       pitch: 0,
-      zoom: k / fit(vp),
+      zoom: k / fit(vp, W),
     },
   };
 }
 
-// the pose that brings the planet up close, left of the card
-export function planetPose(vp: Viewport): { pose: Pose; side: Side } {
+// the pose that brings the planet up close: left of the card (wide), or above the sheet (tall)
+export function planetPose(vp: Viewport, layout: Layout = "wide"): { pose: Pose; side: Side } {
+  const W = layout === "tall" ? TALL_WORLD : WORLD;
+  const zoom = 2.4;
+  const k = fit(vp, W) * zoom;
+  if (layout === "tall") {
+    const freeCy = EDGE + (vp.h * (1 - SHEET) - EDGE * 2) / 2;
+    return { side: "right", pose: { tx: 0, ty: -(vp.h / 2 - freeCy) / k, tz: 0, yaw: 0.08, pitch: -0.05, zoom } };
+  }
   const free = vp.w - CARD_W - EDGE * 3;
   const freeCx = EDGE + free / 2;
-  const zoom = 2.4;
-  const k = fit(vp) * zoom;
   return { side: "right", pose: { tx: -(freeCx - vp.w / 2) / k, ty: 0, tz: 0, yaw: 0.08, pitch: -0.05, zoom } };
 }
 
@@ -478,7 +557,7 @@ export const branchAlpha = (p: Pick<Paint, "dim" | "focus">, b: number) => (p.fo
 
 export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
   const { sky, vp } = p;
-  const P = (v: Vec3) => project(v, p.pose, vp);
+  const P = (v: Vec3) => project(v, p.pose, vp, sky.world);
   const nB = sky.branches.length;
   const line = (a: { x: number; y: number }, b: { x: number; y: number }) => {
     ctx.beginPath();
