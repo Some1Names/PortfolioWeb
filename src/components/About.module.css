@@ -51,13 +51,14 @@
   mix-blend-mode: screen;
 }
 /* the picture, in its own shape (--ratio, width ÷ height): as big as the portrait column allows
-   (the figure spans it, the 24px gap and the seam's 1fr column, so 5/6 of what's left; up to 40px
-   above the figure), standing just above the name block at the bottom-left, inside the page margin */
+   (the figure spans it, the 24px gap and the seam's 1fr column, so 5/6 of what's left, less its
+   32px inset; up to 40px above the figure), standing ~28px above the name block, 32px in from the
+   page margin */
 .pic {
   position: absolute;
-  left: 0;
-  bottom: 56px;
-  width: min(calc((100cqw - 24px) * 5 / 6), calc((100cqh - 16px) * var(--ratio)));
+  left: 32px;
+  bottom: 68px;
+  width: min(calc((100cqw - 24px) * 5 / 6 - 32px), calc((100cqh - 28px) * var(--ratio)));
   aspect-ratio: var(--ratio);
 }
 .art {
@@ -117,7 +118,7 @@
 }
 .stillFoot {
   position: absolute;
-  left: 0;
+  left: 32px; /* under the picture */
   bottom: 0;
   display: flex;
   align-items: baseline;
@@ -282,7 +283,8 @@
   }
   .stillFoot {
     position: relative;
-    margin-top: 14px;
+    left: 0;
+    margin-top: 28px;
   }
   /* no picture: just the name, a.k.a. and school */
   .stillBare {
