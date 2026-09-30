@@ -10,6 +10,7 @@ import {
   clamp01,
   branchPose,
   drawSky,
+  iconPx,
   labelPx,
   labelScale,
   makeGlow,
@@ -17,12 +18,14 @@ import {
   planetPose,
   project,
   type Paint,
+  type Layout,
   type Pose,
   type Side,
   type Vec3,
   type Viewport,
 } from "./constellation";
 import SkyCard, { type CardView } from "./SkyCard";
+import Logo from "../motifs/Logo";
 import { getSky } from "./sky";
 import styles from "./Constellation.module.css";
 
@@ -83,6 +86,13 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
     }
     const ctx: CanvasRenderingContext2D = maybe;
     const SKY = getSky();
+    const layout: Layout = "wide";
+    // each skill icon's size: its star's (learned earlier = bigger)
+    const sizeIcons = () =>
+      SKY.branches.forEach((br, b) =>
+        br.sizes.forEach((v, k) => starEls.current[b][k]?.style.setProperty("--icon", `${iconPx(layout, v).toFixed(1)}px`)),
+      );
+    sizeIcons();
     const still = prefersReducedMotion();
     const glow = makeGlow(document);
     const t0 = performance.now();
@@ -435,6 +445,7 @@ export default function ConstellationMap({ onUnavailable }: { onUnavailable?: ()
                   onPointerLeave={() => api.current?.hover(null)}
                 >
                   <span className={styles.hit} />
+                  <Logo name={sk.name} className={styles.icon} />
                   <span className={styles.label} data-part="label" aria-hidden="true">
                     {sk.name}
                     <small className={styles.used}>{sk.usedIn}</small>

@@ -24,12 +24,19 @@ export type Pose = { tx: number; ty: number; tz: number; yaw: number; pitch: num
 export type Viewport = { w: number; h: number };
 export type Screen = { x: number; y: number; scale: number; depth: number };
 export type Side = "left" | "right";
+// the sky's arrangement: "wide" on desktop (names beside the stars), "tall" on phones (icons only)
+export type Layout = "wide" | "tall";
 
 export const WORLD = { w: 1240, h: 720 };
 export const FOCAL = 1400; // perspective distance, in world px
 export const CARD_W = 320; // the HUD card's width
 export const EDGE = 24; // the clear margin at the board's edges and beside the card
 export const LABEL_H = 18; // a skill label's line height
+export const LABEL_GAP = 20; // a skill label's distance from its star, clear of the biggest icon
+// a skill star is its icon: this many px at scale 1, times the star's size (0.75–1.5), so ≈12–24px
+// on desktop and ≈17–33px on phones
+export const ICON: Record<Layout, number> = { wide: 16, tall: 22 };
+export const iconPx = (layout: Layout, size: number) => ICON[layout] * size;
 
 // The boards the layout is made on: the star map's board at 1440×900, 1100×800, 901×800, 1366×650
 // and 1920×1080 windows. On each, in the overview, every label and name is on the board and clear of
@@ -79,8 +86,8 @@ function seeded(seed: number) {
 // ---------- the HTML labels' sizes (the layout and the framing must leave room for them) ----------
 // skill labels are 13px, 12px on boards under 1000px wide
 export const labelPx = (vp: Viewport) => (vp.w < 1000 ? 12 : 13);
-// a skill label's reach from its star: a 14px gap, then ~0.57em a character
-export const labelW = (name: string, px = 13) => 14 + name.length * px * 0.57;
+// a skill label's reach from its star: the gap, then ~0.57em a character
+export const labelW = (name: string, px = 13) => LABEL_GAP + name.length * px * 0.57;
 // labels grow and shrink a little with depth
 export const labelScale = (scale: number) => Math.min(1.1, Math.max(0.9, scale));
 // a constellation name's width: 10px mono capitals with 1.5px tracking
@@ -109,7 +116,7 @@ const dotBox = (s: Pt, r: number): Box => ({ x: s.x - r, y: s.y - r, w: 2 * r, h
 // (boxes get a few px of air)
 function labelBox(s: Screen, name: string, px: number): Box {
   const ls = labelScale(s.scale);
-  return { x: s.x + 14 * ls - 3, y: s.y - (LABEL_H * ls) / 2 - 2, w: (labelW(name, px) - 14) * ls + 6, h: LABEL_H * ls + 4 };
+  return { x: s.x + LABEL_GAP * ls - 3, y: s.y - (LABEL_H * ls) / 2 - 2, w: (labelW(name, px) - LABEL_GAP) * ls + 6, h: LABEL_H * ls + 4 };
 }
 const tagBox = (s: Pt, dx: number, text: string): Box => ({ x: s.x + dx - 3, y: s.y - 9, w: nameW(text) + 6, h: 18 });
 const onBoard = (b: Box, vp: Viewport) => b.x >= EDGE && b.y >= EDGE && b.x + b.w <= vp.w - EDGE && b.y + b.h <= vp.h - EDGE;
@@ -135,17 +142,22 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
   const placed: { b: number; p: Vec3 }[] = []; // every star so far, for the gaps between constellations
   const dist = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
 
+  // a star's clear radius on a board: its icon at its size, scaled with depth, and 2px of air; a
+  // locked star's ring
+  const radius = (size: number | null, s: Screen) => (size === null ? 7 : (iconPx("wide", size) / 2) * labelScale(s.scale) + 2);
+
   // can a star (with its label, if it has one) go at c, joined by a line from `from` (its id; a
-  // constellation's first star has none)?
-  const fitsStar = (c: Vec3, label: string | null, from: Vec3 | null, fromId: string) =>
+  // constellation's first star has none)? `size` is null for a locked star.
+  const fitsStar = (c: Vec3, label: string | null, size: number | null, from: Vec3 | null, fromId: string) =>
     boards.every((B) => {
       const s = project(c, cam, B.vp);
+      const rad = radius(size, s);
       const lab = label ? labelBox(s, label, B.px) : null;
-      const dot = dotBox(s, 7);
-      if ((lab && !onBoard(lab, B.vp)) || !onBoard(dotBox(s, 6), B.vp)) return false;
+      const dot = dotBox(s, rad);
+      if ((lab && !onBoard(lab, B.vp)) || !onBoard(dotBox(s, rad - 1), B.vp)) return false;
       if (B.text.some((o) => overlaps(dot, o) || (lab && overlaps(lab, o)))) return false;
       if (B.dots.some((o) => overlaps(dot, o.box) || (lab && overlaps(lab, o.box)))) return false;
-      if (B.lines.some(([a, b]) => through(a, b, dotBox(s, 5)) || (lab && through(a, b, lab)))) return false;
+      if (B.lines.some(([a, b]) => through(a, b, dotBox(s, rad - 2)) || (lab && through(a, b, lab)))) return false;
       if (!from) return true;
       const f = project(from, cam, B.vp);
       // its line: clear of all text (this label too) and of every dot but the one it starts from
@@ -154,12 +166,12 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       return !B.lines.some(([a, b]) => crosses(a, b, f, s));
     });
   // puts a star in; returns how to take it out again
-  const addStar = (c: Vec3, label: string | null, from: Vec3 | null, id: string) => {
+  const addStar = (c: Vec3, label: string | null, size: number | null, from: Vec3 | null, id: string) => {
     const before = boards.map((B) => [B.text.length, B.dots.length, B.lines.length]);
     boards.forEach((B) => {
       const s = project(c, cam, B.vp);
       if (label) B.text.push(labelBox(s, label, B.px));
-      B.dots.push({ id, box: dotBox(s, 7) });
+      B.dots.push({ id, box: dotBox(s, radius(size, s)) });
       if (from) B.lines.push([project(from, cam, B.vp), s]);
     });
     return () =>
@@ -209,7 +221,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
     const clear = (c: Vec3) => dist(c, planet) >= 90 && placed.every((q) => (q.b === b ? dist(c, q.p) >= 50 : dist(c, q.p) >= GAP));
 
     // the next star: the first of TRIES random spots that fits, or null (`force`: the last spot tried)
-    const place = (label: string | null, outward: boolean, force: boolean): Vec3 | null => {
+    const place = (label: string | null, size: number | null, outward: boolean, force: boolean): Vec3 | null => {
       const k = own.length;
       const prev = own[k - 1] ?? null;
       const fromId = `${b}.${k - 1}`;
@@ -234,8 +246,8 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
           if (deg < TURN.min || deg > TURN.max) continue;
         }
         last = c;
-        if (!fitsStar(c, label, prev, fromId)) continue;
-        const undo = addStar(c, label, prev, `${b}.${k}`);
+        if (!fitsStar(c, label, size, prev, fromId)) continue;
+        const undo = addStar(c, label, size, prev, `${b}.${k}`);
         if (synHere) {
           // the synergy label goes halfway along its line: it has to fit too
           const other = synEarly![0] === b ? own[synEarly![1]] : done[synEarly![0]]?.stars[synEarly![1]];
@@ -252,7 +264,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       }
       if (!force) return null;
       const c = last ?? { x: (R.x0 + R.x1) / 2, y: (R.y0 + R.y1) / 2, z: R.z };
-      addStar(c, label, prev, `${b}.${k}`);
+      addStar(c, label, size, prev, `${b}.${k}`);
       own.push(c);
       placed.push({ b, p: c });
       return c;
@@ -288,6 +300,9 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
 
     // the constellation, star by star, then the locked star and the name; stuck, or come out in
     // too thin a line, it starts over
+    // each star's size: the first learned biggest (1.5), the newest smallest (0.75), a little wobble
+    const n = shape.skills.length;
+    const sizes = shape.skills.map((_, k) => (n > 1 ? 1.5 - (0.75 * k) / (n - 1) : 1.5) + j(0.05));
     let stars: Vec3[] = [];
     let locked: Vec3 = planet;
     let name: Vec3 = planet;
@@ -296,8 +311,8 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       const sn = snapshot();
       own.length = 0;
       stars = [];
-      for (const label of shape.skills) {
-        const c = place(label, false, force);
+      for (let k = 0; k < n; k++) {
+        const c = place(shape.skills[k], sizes[k], false, force);
         if (!c) break;
         stars.push(c);
       }
@@ -305,7 +320,7 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       const sx = spread(stars.map((p) => p.x));
       const sy = spread(stars.map((p) => p.y));
       const wide = stars.length < 3 || (sx >= SPREAD && sy >= SPREAD && Math.min(sx, sy) / Math.max(sx, sy) >= 0.45);
-      const l = stars.length === shape.skills.length && (wide || force) ? place(null, true, force) : null;
+      const l = stars.length === shape.skills.length && (wide || force) ? place(null, null, true, force) : null;
       const nm = l ? placeName(force) : null;
       if (l && nm) {
         locked = l;
@@ -314,8 +329,6 @@ export function layoutSky(shapes: BranchShape[], seed = 11, synergy?: Link): Sky
       }
       restore(sn);
     }
-    const n = stars.length;
-    const sizes = stars.map((_, k) => (n > 1 ? 1.5 - (0.75 * k) / (n - 1) : 1.5) + j(0.05));
 
     // the item dots: faint, around the constellation, off every label and star
     const items = Array.from({ length: shape.items }, (_, i) => {
@@ -381,7 +394,7 @@ export function branchPose(sky: Sky, b: number, vp: Viewport): { pose: Pose; sid
   const freeCx = side === "right" ? EDGE + free.w / 2 : vp.w - EDGE - free.w / 2;
   // what reaches left and right of each point, in px: labels at their largest, else a star's glow
   const parts = [
-    ...br.stars.map((p, i) => ({ p, l: 12, r: 1.1 * labelW(br.names[i], px) })),
+    ...br.stars.map((p, i) => ({ p, l: (iconPx("wide", br.sizes[i]) / 2) * 1.1 + 2, r: 1.1 * labelW(br.names[i], px) })),
     { p: br.locked, l: 12, r: 12 },
     ...br.items.map((p) => ({ p, l: 9, r: 9 })),
     { p: br.name, l: 0, r: nameW(br.title) },
@@ -545,8 +558,8 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
     }
   }
 
-  // the stars: a soft glow, then a crisp core, at the star's size (bigger when hovered or open); the
-  // locked star hollow
+  // the stars: a soft glow at the star's size (brighter and bigger when hovered or open; the star
+  // itself is its icon, in the HTML layer over the canvas); the locked star hollow
   sky.branches.forEach((br, b) => {
     const n = br.stars.length + 1;
     const ba = branchAlpha(p, b);
@@ -564,10 +577,6 @@ export function drawSky(ctx: CanvasRenderingContext2D, p: Paint) {
         ctx.globalAlpha = a * twinkle * depth * (0.75 + 0.25 * on);
         ctx.drawImage(glow, s.x - g / 2, s.y - g / 2, g, g);
       }
-      ctx.globalAlpha = a * twinkle * depth;
-      ctx.fillStyle = INK;
-      disc(s.x, s.y, 2.6 * r);
-      ctx.fill();
     });
     const la = 0.5 * appear(p.reveal, b, n - 1, nB, n) * ba;
     if (la > 0) {

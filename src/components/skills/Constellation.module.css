@@ -78,11 +78,29 @@
 }
 .hit {
   position: absolute;
-  left: -13px;
-  top: -13px;
-  width: 26px;
-  height: 26px;
+  left: -15px;
+  top: -15px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
+}
+/* a skill star is its icon: near-white, centred on the star, sized by the star (--icon, set per star
+   from its size); it grows a little when hovered or open (the glow under it is on the canvas) */
+.icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: var(--icon, 16px);
+  color: var(--text-strong);
+  filter: drop-shadow(0 0 3px rgba(6, 6, 10, 0.9));
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s;
+  pointer-events: none;
+}
+.star:hover .icon,
+.star:focus-visible .icon,
+.starOn .icon {
+  transform: translate(-50%, -50%) scale(1.25);
 }
 .planet .hit {
   left: -20px;
@@ -126,7 +144,7 @@
 }
 .label {
   position: absolute;
-  left: 14px;
+  left: 20px; /* LABEL_GAP in constellation.ts */
   top: 0;
   transform: translateY(-50%);
   white-space: nowrap;
@@ -496,5 +514,8 @@
   }
   .planet:hover .hit {
     animation: none;
+  }
+  .icon {
+    transition: none;
   }
 }
