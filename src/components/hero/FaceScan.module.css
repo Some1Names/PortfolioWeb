@@ -1,0 +1,130 @@
+/* the face box, in fractions of the picture (the portrait layer is the picture's box) */
+.scan {
+  position: absolute;
+  left: calc(var(--x0) * 100%);
+  top: calc(var(--y0) * 100%);
+  width: calc((var(--x1) - var(--x0)) * 100%);
+  height: calc((var(--y1) - var(--y0)) * 100%);
+  pointer-events: none;
+}
+/* corner brackets */
+.corner {
+  position: absolute;
+  width: 16%;
+  aspect-ratio: 1;
+  border: 0 solid var(--text-strong);
+  opacity: 0.9;
+}
+.tl {
+  left: 0;
+  top: 0;
+  border-width: 1.5px 0 0 1.5px;
+}
+.tr {
+  right: 0;
+  top: 0;
+  border-width: 1.5px 1.5px 0 0;
+}
+.bl {
+  left: 0;
+  bottom: 0;
+  border-width: 0 0 1.5px 1.5px;
+}
+.br {
+  right: 0;
+  bottom: 0;
+  border-width: 0 1.5px 1.5px 0;
+}
+/* a scan line drifting down the box and back */
+.sweep {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 6%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lav), transparent);
+  opacity: 0.55;
+  animation: scan 3.6s ease-in-out infinite alternate;
+}
+@keyframes scan {
+  to {
+    top: 94%;
+  }
+}
+/* the subject's name under the box */
+.readout {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 10px);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--lav);
+}
+.readout::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 8px;
+  vertical-align: 1px;
+  background: var(--art);
+}
+/* a tag hanging off a side of the box: a chip, a short level line and a tick on the box's edge */
+.tag {
+  position: absolute;
+  top: var(--row);
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+}
+.left {
+  right: 100%;
+}
+.right {
+  left: 100%;
+  flex-direction: row-reverse;
+}
+.line {
+  position: relative;
+  width: 26px;
+  height: 1px;
+  background: var(--side);
+}
+.line::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: var(--side);
+}
+.left .line::after {
+  right: 0;
+}
+.right .line::after {
+  left: 0;
+}
+.chip {
+  padding: 5px 12px 5px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #0a0a0c;
+  background: var(--side);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+@media (max-width: 900px) {
+  .scan {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    animation: none;
+  }
+}

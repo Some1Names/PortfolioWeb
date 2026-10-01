@@ -122,7 +122,8 @@ export const heroFrames = {
 // `focus` under it), your newest project (bottom left, from projects.ts) and a card whose arrow
 // goes to Contact (bottom right). In intro and focus, words between *stars* are set bold.
 export const cover: {
-  portrait: { src: string; alt: string };
+  // face: the face's box in the picture, as fractions of its width and height (the face scan)
+  portrait: { src: string; alt: string; face?: { x0: number; y0: number; x1: number; y1: number } };
   tags: TagSpec[];
   coords: string;
   intro: string;
@@ -130,7 +131,11 @@ export const cover: {
   focus: string;
   card: { label: string; value: string; foot: string };
 } = {
-  portrait: { src: "/art/hero-portrait-v2.webp", alt: "Uefa in silhouette, lit from behind, in an open blue flower-print shirt over a black t-shirt" },
+  portrait: {
+    src: "/art/hero-portrait-v2.webp",
+    alt: "Uefa in silhouette, lit from behind, in an open blue flower-print shirt over a black t-shirt",
+    face: { x0: 640 / 1792, y0: 560 / 2389, x1: 1150 / 1792, y1: 1020 / 2389 }, // fringe to chin, cheek to cheek
+  },
   tags: [
     { label: "ACS · KMUTT", x: 106, y: 46, to: { x: 60, y: 14 }, side: "web", phone: { x: 56, y: 4 } },
     { label: "Manga artist", x: -4, y: 48, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },

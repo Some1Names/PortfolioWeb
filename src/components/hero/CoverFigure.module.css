@@ -34,6 +34,12 @@
 .tags {
   z-index: 3;
 }
+/* with the face scan, the tags show on phones only (the scan carries them on desktop) */
+@media (min-width: 901px) {
+  .tagsPhone {
+    display: none;
+  }
+}
 .photo {
   object-fit: contain;
   object-position: 50% 100%;

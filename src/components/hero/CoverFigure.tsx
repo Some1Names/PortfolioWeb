@@ -1,15 +1,18 @@
 import Image from "next/image";
-import { cover } from "@/data/site";
+import { cover, site } from "@/data/site";
 import Glitch from "../hud/Glitch";
 import Tag from "../hud/Tag";
+import FaceScan from "./FaceScan";
 import styles from "./CoverFigure.module.css";
 
 // The centre of the cover: the portrait cut out (or a placeholder outline until the photo
 // arrives, or the hero video when given as children), standing in front of the name, unframed,
-// with glitch pixels and tags pointing at it.
+// with glitch pixels and tags pointing at it. With the photo's face box given, desktop shows a
+// face scan instead (brackets around the face, the tags hanging off it); phones keep the tags.
 // data-layer attributes are the hooks Hero's GSAP timelines animate.
 export default function CoverFigure({ children }: { children?: React.ReactNode }) {
   const { portrait, tags } = cover;
+  const scan = !children && !!portrait.src && !!portrait.face;
   return (
     <div className={styles.figure}>
       <div className={styles.portrait} data-layer="portrait">
@@ -35,9 +38,10 @@ export default function CoverFigure({ children }: { children?: React.ReactNode }
               <span>[ your portrait ]</span>
             </div>
           ))}
+        {scan && portrait.face ? <FaceScan face={portrait.face} tags={tags} subject={site.name} /> : null}
         <Glitch />
       </div>
-      <div className={styles.tags} data-layer="tags">
+      <div className={`${styles.tags} ${scan ? styles.tagsPhone : ""}`} data-layer="tags">
         {tags.map((t) => (
           <Tag key={t.label} {...t} />
         ))}
