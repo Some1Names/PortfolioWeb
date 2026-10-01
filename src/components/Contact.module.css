@@ -214,6 +214,15 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
+/* Back to top: a 44px tap area around the small link */
+.footer a {
+  position: relative;
+}
+.footer a::after {
+  content: "";
+  position: absolute;
+  inset: -15px -8px;
+}
 
 @media (max-width: 900px) {
   .contact {

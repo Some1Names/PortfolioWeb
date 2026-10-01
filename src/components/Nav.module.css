@@ -14,7 +14,7 @@
   gap: 12px;
   background: var(--bg);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -193,6 +193,16 @@ a.tab[aria-current]:hover {
   }
   .menuBtn {
     display: flex;
+  }
+  /* the tabs' tap area runs 20px below the strip (44px in all); not while the menu is open, so it
+     doesn't cover the menu's first row */
+  .tab::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 -20px;
+  }
+  .nav:has(.menuBtn[aria-expanded="true"]) .tab::after {
+    display: none;
   }
   .track {
     width: 40px;

@@ -85,3 +85,11 @@
     --lift: 10.6%;
   }
 }
+/* short phones: the hero is the screen's height, so the figure starts under the intro (whose
+   button ends about 250px down) instead of rising behind it */
+@media (max-width: 900px) and (max-height: 759px) {
+  .figure {
+    top: 262px;
+    height: auto;
+  }
+}

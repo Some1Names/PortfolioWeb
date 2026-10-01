@@ -439,3 +439,14 @@
     align-items: center;
   }
 }
+
+/* short phones (under 760px tall): the hero fits the screen, so the status card shows on arrival
+   (CoverFigure starts the figure under the intro). After the phone rules, which it overrides */
+@media (max-width: 900px) and (max-height: 759px) {
+  .hero {
+    min-height: 600px;
+  }
+  .name {
+    --hero-h: max(100svh, 600px);
+  }
+}
