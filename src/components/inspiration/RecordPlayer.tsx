@@ -184,7 +184,7 @@ export default function RecordPlayer({
       <div className={styles.library}>
         <div className={styles.libraryHead}>
           <p>Record library</p>
-          <span>Tracks ({String(tracks.length).padStart(2, "0")})</span>
+          <span>Records ({String(tracks.length).padStart(2, "0")})</span>
         </div>
         <ol className={styles.list}>
           {tracks.map((t, i) => {

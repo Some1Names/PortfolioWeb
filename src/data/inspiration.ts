@@ -21,6 +21,8 @@ export type Favourite = {
 // A song on the record player. `preview` is Apple Music's official 30-second clip and `href`
 // the full song on Apple Music; both come from Apple's catalogue lookup
 // (https://itunes.apple.com/lookup?id=<track id>: previewUrl and trackViewUrl).
+// a record: a song, or an album (then title is the album, href the album, and preview and length
+// are the song from it that plays, named in tag)
 export type Track = {
   title: string;
   artist: string;
@@ -28,7 +30,7 @@ export type Track = {
   href: string;
   preview: string;
   length: number; // the full song, in seconds
-  tag?: string; // e.g. the anime it opens
+  tag?: string; // e.g. "Album · plays Lazy Cat"
 };
 
 export const inspiration: {
@@ -131,27 +133,28 @@ export const inspiration: {
           "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/67/d5/18/67d5185e-37e4-3e36-d345-0e8075de0407/mzaf_12338821043527808523.plus.aac.p.m4a",
         length: 250,
       },
+      // favourite artists, as their latest albums (each plays its first full-length song)
       {
-        title: "Kaikai Kitan",
+        title: "Under Blue",
         artist: "Eve",
         cover:
-          "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/00/f7/77/00f77709-2f23-8698-f35b-a3e7685b3d17/4988061912820.jpg/600x600bb.jpg",
-        href: "https://music.apple.com/us/album/kaikai-kitan/1542180059?i=1542180247",
+          "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/4d/d0/cb/4dd0cb75-28d1-f109-5c73-9263190c1b20/4988061930770.jpg/600x600bb.jpg",
+        href: "https://music.apple.com/us/album/under-blue/1779475579",
         preview:
-          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c7/4b/36/c74b3683-4214-1047-27be-23663e9ed170/mzaf_15298360588835377886.plus.aac.p.m4a",
-        length: 219,
-        tag: "Jujutsu Kaisen OP",
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4c/d1/1a/4cd11a95-a8af-32de-b877-ace579c9f7e4/mzaf_14438854170948763444.plus.aac.p.m4a",
+        length: 156,
+        tag: "Album · plays Lazy Cat",
       },
       {
-        title: "CHAINSAW BLOOD",
+        title: "replica",
         artist: "Vaundy",
         cover:
-          "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/c9/de/16/c9de1632-3d12-19c3-2699-22090b4bfcc1/4547366588620.jpg/600x600bb.jpg",
-        href: "https://music.apple.com/us/album/chainsaw-blood/1647132937?i=1647132944",
+          "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/8a/eb/75/8aeb7526-6fe4-a81a-5dce-c5d026e7f036/4547366655728.jpg/600x600bb.jpg",
+        href: "https://music.apple.com/us/album/replica/1714599649",
         preview:
-          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e1/13/8b/e1138b12-ad1b-45e6-3545-8c4f8765ce8b/mzaf_16193442776413626505.plus.aac.p.m4a",
-        length: 201,
-        tag: "Chainsaw Man ED",
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/43/99/60/43996059-cd24-db7b-24cc-437727997fd2/mzaf_3662584062574999114.plus.aac.p.m4a",
+        length: 232,
+        tag: "Album · plays ZERO",
       },
     ],
   },
