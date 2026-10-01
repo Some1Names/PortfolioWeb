@@ -8,8 +8,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
 // The page's header, cyber-brutalist: a hard grid of bordered cells like a spec sheet. System
 // readouts along the top (the volume, the file, the index, a live Bangkok clock); the title huge
 // in mono capitals with pink and blue ghosts and a scan line; the intro with a blinking cursor;
-// two index cells that jump to the sections (their counts come from the data); a barcode, the
-// cover's coordinates and a status light along the bottom.
+// two index cells that jump to the sections (their counts, in brackets, come from the data); a
+// barcode, the cover's coordinates and a status light along the bottom.
 export default function Masthead() {
   const [kind, volume] = inspiration.label.split(" · ");
   const tapes = inspiration.shelf.items.length;
@@ -29,7 +29,7 @@ export default function Masthead() {
         </div>
         <div className={styles.cell}>
           Index
-          <b>02 sections</b>
+          <b>Sections ({pad(2)})</b>
         </div>
         <div className={styles.cell}>
           SYS_TIME
@@ -58,11 +58,11 @@ export default function Masthead() {
         </div>
         <a href="#shelf" className={`${styles.cell} ${styles.index}`}>
           01 — {inspiration.shelf.label}
-          <b>{pad(tapes)} tapes →</b>
+          <b>Tapes ({pad(tapes)}) →</b>
         </a>
         <a href="#music" className={`${styles.cell} ${styles.index}`}>
           02 — {inspiration.music.label}
-          <b>{pad(records)} records →</b>
+          <b>Records ({pad(records)}) →</b>
         </a>
 
         <div className={`${styles.cell} ${styles.barcodeCell}`} aria-hidden="true">

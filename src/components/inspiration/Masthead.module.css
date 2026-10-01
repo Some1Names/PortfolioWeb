@@ -232,9 +232,10 @@
     font-size: 16px;
   }
   /* small enough that "04 records →" stays on one line in half the width */
+  /* (14px: the counts carry brackets, "Records (04) →") */
   .index b {
-    font-size: 15px;
-    letter-spacing: 1px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
     white-space: nowrap;
   }
   .barcode {
