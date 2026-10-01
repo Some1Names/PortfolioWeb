@@ -222,7 +222,7 @@ export default function Shelf({ items, onShow }: { items: Favourite[]; onShow?: 
               >
                 <p className={styles.sideTitle}>{it.title}</p>
                 {it.note ? (
-                  <p className={styles.sideText}>{it.note}</p>
+                  <p className={styles.sideText}>“{it.note}”</p>
                 ) : (
                   <p className={styles.sideSlot}>[ your note on {it.title} ]</p>
                 )}
