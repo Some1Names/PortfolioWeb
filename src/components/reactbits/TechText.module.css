@@ -6,14 +6,16 @@
   user-select: none;
 }
 
-/* (local: the canvas can reach past the box by --tech-bleed-x/top/bottom, so a dragged letter has
-   room; the pointer is still read on the box) */
+/* (local: the canvas can reach past the box by --tech-bleed-left/right (or -x for both), -top and
+   -bottom, so a dragged letter has room; the pointer is still read on the box) */
 .canvas {
+  --bleed-left: var(--tech-bleed-left, var(--tech-bleed-x, 0px));
+  --bleed-right: var(--tech-bleed-right, var(--tech-bleed-x, 0px));
   position: absolute;
-  left: calc(-1 * var(--tech-bleed-x, 0px));
+  left: calc(-1 * var(--bleed-left));
   top: calc(-1 * var(--tech-bleed-top, 0px));
   display: block;
-  width: calc(100% + 2 * var(--tech-bleed-x, 0px));
+  width: calc(100% + var(--bleed-left) + var(--bleed-right));
   height: calc(100% + var(--tech-bleed-top, 0px) + var(--tech-bleed-bottom, 0px));
   pointer-events: none;
 }

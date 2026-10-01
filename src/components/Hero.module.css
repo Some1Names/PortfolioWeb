@@ -279,8 +279,8 @@
 }
 
 /* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
-   than the type. Centred a little below the middle; in front of the portrait (in outline, see
-   Hero.tsx), behind it on phones */
+   than the type. On phones centred a little below the middle, behind the portrait; on desktop top
+   right in the roles title's place (below), in front of the portrait in outline (Hero.tsx) */
 .name {
   --name-size: clamp(150px, 25vw, 380px);
   --hero-h: max(100vh, 900px); /* the hero's height, as .hero sets it */
@@ -305,6 +305,40 @@
   inset: 0;
   display: block;
   filter: drop-shadow(0 0 40px rgba(110, 90, 168, 0.45));
+}
+/* desktop: the name takes the roles title's place, top right, its letters as tall as the thesis
+   headline on the left (three lines), flush with the right margin. TechText fits the word into 66%
+   of the box's height (the box is wide enough that height decides), centred up and down: so the
+   box is the ink's height / 0.66, raised so the ink's top lines up with the headline's. The roles
+   title stays for screen readers and the focus line sits under the name */
+@media (min-width: 901px) {
+  .hero {
+    --name-ink: calc(3.06 * clamp(36px, 3.8vw, 60px));
+    --name-w: min(680px, calc(50vw - var(--gutter) - 24px));
+  }
+  .name {
+    --name-top: calc(168px - var(--name-ink) * 0.2576);
+    left: auto;
+    right: var(--gutter);
+    width: var(--name-w);
+    height: calc(var(--name-ink) / 0.66);
+  }
+  .nameArt {
+    --tech-bleed-left: calc(100vw - var(--gutter) - var(--name-w));
+    --tech-bleed-right: var(--gutter);
+    --tech-bleed-bottom: calc(var(--hero-h) - var(--name-top) - var(--name-ink) / 0.66);
+  }
+  .roles {
+    padding-top: var(--name-ink);
+  }
+  .rolesTitle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 .srOnly {
   position: absolute;

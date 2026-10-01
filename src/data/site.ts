@@ -113,8 +113,8 @@ export const heroFrames = {
 };
 
 // ---------- cover (hero) ----------
-// The centre of the cover: you, cut out, as a big close-up; on desktop the name stands in front of
-// you in outline, on phones behind you. Put a transparent PNG/WebP of yourself in public/art/ and
+// The centre of the cover: you, cut out, as a big close-up; on desktop the name stands top right
+// in outline (in the roles title's place), on phones behind you. Put a transparent PNG/WebP of yourself in public/art/ and
 // set portrait.src (give a new picture a new file name, so no cached copy lingers); "" shows a
 // placeholder outline. Tags point at the portrait box (see TagSpec). "wide" tags show only at 1400px+.
 // Around it: the thesis headline (top left, with `intro` under it), your roles (top right, with
@@ -131,8 +131,8 @@ export const cover: {
 } = {
   portrait: { src: "/art/hero-portrait-v2.webp", alt: "Uefa in silhouette, lit from behind, in an open blue flower-print shirt over a black t-shirt" },
   tags: [
-    { label: "ACS · KMUTT", x: 106, y: 32, to: { x: 60, y: 14 }, side: "web", phone: { x: 56, y: 4 } },
-    { label: "Manga artist", x: -4, y: 70, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },
+    { label: "ACS · KMUTT", x: 106, y: 46, to: { x: 60, y: 14 }, side: "web", phone: { x: 56, y: 4 } },
+    { label: "Manga artist", x: -4, y: 48, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },
   ],
   coords: "X_13.65 N / Y_100.49 E",
   intro: "Applied Computer Science (*ACS*) student at *KMUTT*.",

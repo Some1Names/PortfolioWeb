@@ -180,8 +180,8 @@ export default function Hero() {
 
       {/* the name is drawn by React Bits TechText (a scanning lens outlines and measures each
           letter; letters can be dragged). The real text stays in the heading for screen readers.
-          On desktop it stands in front of you as outlines (the lens fills a letter at a time),
-          since your head would hide the middle of it; on phones it stays behind you, filled. */}
+          On desktop it takes the roles title's place, top right, in outline (the lens fills a
+          letter at a time); on phones it stays behind you, filled. */}
       <h1 className={styles.name}>
         <span className={styles.srOnly}>{site.name}</span>
         <span className={styles.nameArt} aria-hidden="true">
@@ -200,6 +200,7 @@ export default function Hero() {
             speed={0.9}
             outlined={wide}
             lineStyle={wide ? "solid" : "dashed"}
+            align={wide ? "end" : "center"}
           />
         </span>
       </h1>
@@ -237,6 +238,7 @@ export default function Hero() {
           See my work →
         </a>
       </div>
+      {/* on desktop the name stands where the roles title was (the title stays for screen readers) */}
       <div className={`${styles.roles} ${styles.fadeIn} ${styles.driftFast}`} data-hero="roles">
         <p className={styles.rolesTitle}>
           {cover.roles.map((r) => (
