@@ -59,6 +59,7 @@ export const inspiration: {
         by: "Christopher Nolan",
         cover: "https://media.themoviedb.org/t/p/w500/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
         alt: "Poster for Tenet",
+        note: "One of Nolan's most mind-bending films. I've watched it multiple times.",
         href: "https://www.themoviedb.org/movie/577922-tenet",
       },
       {
@@ -68,6 +69,7 @@ export const inspiration: {
         by: "Christopher Nolan",
         cover: "https://media.themoviedb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
         alt: "Poster for The Dark Knight",
+        note: "I'm actually a Marvel person, but this will always be the best superhero movie I've ever watched.",
         href: "https://www.themoviedb.org/movie/155-the-dark-knight",
       },
       {
@@ -78,6 +80,7 @@ export const inspiration: {
         original: "東京喰種トーキョーグール",
         cover: "https://media.themoviedb.org/t/p/w500/1m4RlC9BTCbyY549TOdVQ5NRPcR.jpg",
         alt: "Poster for Tokyo Ghoul",
+        note: "The first anime I ever watched, and the first manga I ever owned.",
         href: "https://www.themoviedb.org/tv/61374",
       },
       {
@@ -88,6 +91,7 @@ export const inspiration: {
         original: "呪術廻戦",
         cover: "https://media.themoviedb.org/t/p/w500/6qQzMJG27XOJsyAEEIisoJB45j2.jpg",
         alt: "Poster for Jujutsu Kaisen",
+        note: "I love the visuals and the cinematography, though.",
         href: "https://www.themoviedb.org/tv/95479",
       },
       {
@@ -98,6 +102,7 @@ export const inspiration: {
         original: "チェンソーマン",
         cover: "https://media.themoviedb.org/t/p/w500/npdB6eFzizki0WaZ1OvKcJrWe97.jpg",
         alt: "Poster for Chainsaw Man",
+        note: "Loved the storytelling and the plot twists, but Part 2… eh.",
         href: "https://www.themoviedb.org/tv/114410",
       },
     ],
