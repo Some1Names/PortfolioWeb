@@ -186,7 +186,8 @@ export default function RecordPlayer({
           <p>Record library</p>
           <span>Records ({String(tracks.length).padStart(2, "0")})</span>
         </div>
-        <ol className={styles.list}>
+        {/* data-lenis-prevent: the wheel scrolls the list itself when it scrolls */}
+        <ol className={styles.list} data-lenis-prevent>
           {tracks.map((t, i) => {
             const current = i === s.index && s.seq > 0;
             return (
@@ -215,6 +216,7 @@ export default function RecordPlayer({
                       {t.artist}
                       {t.tag && <span className={styles.tag}> · {t.tag}</span>}
                     </span>
+                    {t.note && <span className={styles.rowNote}>“{t.note}”</span>}
                   </span>
                   <span className={styles.len}>{formatTime(t.length)}</span>
                 </button>

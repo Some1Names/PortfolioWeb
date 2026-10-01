@@ -281,6 +281,8 @@
   bottom: 0;
   left: 58%;
   right: 0;
+  display: flex;
+  flex-direction: column;
   padding: 48px var(--gutter) 32px 36px;
   isolation: isolate;
   /* the glass: a heavy blur that lifts the colour of whatever is behind, a faint violet tint */
@@ -334,10 +336,16 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+/* the list scrolls inside the pane when the records outgrow it (the pane is as tall as the deck) */
 .list {
+  min-height: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 }
 .row {
   display: grid;
@@ -345,7 +353,7 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  padding: 16px 14px;
+  padding: 12px 14px;
   border: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   background: transparent;
@@ -388,6 +396,13 @@
 }
 .row[aria-current] .rowTitle {
   color: #c9b3ff;
+}
+/* your words about a record, under it */
+.rowNote {
+  font-size: 13px;
+  line-height: 1.35;
+  font-style: italic;
+  color: var(--soft);
 }
 .rowArtist {
   font-family: var(--mono);

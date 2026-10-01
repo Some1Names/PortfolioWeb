@@ -31,6 +31,7 @@ export type Track = {
   preview: string;
   length: number; // the full song, in seconds
   tag?: string; // e.g. "Album · plays Lazy Cat"
+  note?: string; // your words about it, under it in the library
 };
 
 export const inspiration: {
@@ -122,6 +123,7 @@ export const inspiration: {
         preview:
           "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/31/46/56/31465680-fb96-75f3-2bd5-96a45bf1cc4e/mzaf_2399171045580320161.plus.aac.p.m4a",
         length: 234,
+        note: "I really loved this song from Death Stranding 2",
       },
       {
         title: "Blonde",
@@ -178,6 +180,27 @@ export const inspiration: {
           "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/36/66/153666f9-ff83-a220-caae-d2af2245314b/mzaf_15359120974379622577.plus.aac.p.m4a",
         length: 224,
         tag: "Album · plays กรุงเทพมหานคร",
+      },
+      {
+        title: "CHAOS CONSTRUCT",
+        artist: "AZALI",
+        cover:
+          "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/8c/0d/ff/8c0dff28-4e57-50f2-1305-273c38695466/859743166012_cover.jpg/600x600bb.jpg",
+        href: "https://music.apple.com/us/album/chaos-construct/6795797555?i=6795797557",
+        preview:
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/be/67/97/be6797f4-455b-2f2c-293b-e49ffd826562/mzaf_510436351974302523.plus.aac.p.m4a",
+        length: 109,
+        note: "Certified UnstableSMP fans",
+      },
+      {
+        title: "Ditto",
+        artist: "NewJeans",
+        cover:
+          "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/f6/29/42/f629426e-92fe-535c-cbe4-76e70850819b/196922287107_Cover.jpg/600x600bb.jpg",
+        href: "https://music.apple.com/us/album/ditto/1657231957?i=1657231962",
+        preview:
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/85/72/66/8572665a-d35f-ce5d-43c5-9ae4b69b4b46/mzaf_2317272666428796662.plus.aac.p.m4a",
+        length: 186,
       },
     ],
   },
