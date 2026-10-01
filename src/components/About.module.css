@@ -272,6 +272,16 @@
 .fact dd {
   margin: 0;
 }
+/* a fact that links out (Find me), underlined in the collide colour like the supplement link */
+.factLink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--collide);
+  text-underline-offset: 4px;
+}
+.factLink:hover {
+  color: var(--text-strong);
+}
 /* to the /inspiration supplement */
 .inspire {
   align-self: flex-start;

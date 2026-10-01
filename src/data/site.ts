@@ -99,8 +99,9 @@ export const about = {
     { label: "Studying", value: "Applied Computer Science (ACS), KMUTT" },
     { label: "Building", value: "Web apps in Next.js + TypeScript" },
     { label: "Into", value: "Game dev, UI/UX, creative coding, pixel art" },
-    { label: "Find me", value: "Twitch / yafuuyufaa" },
-  ],
+    // a fact with an href links out (a new tab)
+    { label: "Find me", value: "Instagram / @yafuuyufaa", href: "https://instagram.com/yafuuyufaa" },
+  ] as { label: string; value: string; href?: string }[],
 };
 
 // Hero video: export your clip as an image sequence into public/frames/
