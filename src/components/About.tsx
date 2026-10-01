@@ -90,12 +90,12 @@ export default function About() {
                   src={art.veil}
                   label={art.alt}
                   className={styles.veil}
-                  pixelSize={3}
+                  pixelSize={2}
                   inkColor="#0a0a0c"
                   paperColor="#f2f0f7"
                   contrast={1.4}
                   brightness={0.2}
-                  revealRadius={140}
+                  revealRadius={220}
                   onUnavailable={() => setVeilOn(false)}
                 />
               ) : (
