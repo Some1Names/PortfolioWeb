@@ -6,8 +6,14 @@
   user-select: none;
 }
 
+/* (local: the canvas can reach past the box by --tech-bleed-x/top/bottom, so a dragged letter has
+   room; the pointer is still read on the box) */
 .canvas {
+  position: absolute;
+  left: calc(-1 * var(--tech-bleed-x, 0px));
+  top: calc(-1 * var(--tech-bleed-top, 0px));
   display: block;
-  width: 100%;
-  height: 100%;
+  width: calc(100% + 2 * var(--tech-bleed-x, 0px));
+  height: calc(100% + var(--tech-bleed-top, 0px) + var(--tech-bleed-bottom, 0px));
+  pointer-events: none;
 }

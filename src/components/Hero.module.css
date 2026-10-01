@@ -282,10 +282,12 @@
    than the type. Centred a little below the middle, behind the portrait */
 .name {
   --name-size: clamp(150px, 25vw, 380px);
+  --hero-h: max(100vh, 900px); /* the hero's height, as .hero sets it */
+  --name-top: calc(var(--hero-h) * 0.58 - var(--name-size) * 0.575);
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(58% - var(--name-size) * 0.575);
+  top: var(--name-top);
   z-index: 2;
   height: calc(var(--name-size) * 1.15);
   margin: 0;
@@ -294,7 +296,10 @@
   color: var(--text-strong);
   will-change: transform, opacity, filter;
 }
+/* the name's canvas reaches the hero's top and bottom, so a dragged letter isn't cut off */
 .nameArt {
+  --tech-bleed-top: var(--name-top);
+  --tech-bleed-bottom: calc(var(--hero-h) - var(--name-top) - var(--name-size) * 1.15);
   position: absolute;
   inset: 0;
   display: block;
@@ -383,7 +388,8 @@
   }
   .name {
     --name-size: clamp(120px, 40vw, 180px);
-    top: 244px;
+    --hero-h: max(100svh, 760px);
+    --name-top: 244px;
   }
   /* the status card floats inside the page margins */
   .hero .card {

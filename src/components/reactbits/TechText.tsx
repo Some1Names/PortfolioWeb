@@ -2,7 +2,10 @@
 
 /*
  * TechText — from React Bits by David Haz (https://reactbits.dev), MIT + Commons Clause.
- * Local change: CSS module instead of a global stylesheet. Everything else is as published.
+ * Local changes: CSS module instead of a global stylesheet; the canvas can bleed past the box
+ * (the --tech-bleed-x/top/bottom custom properties) while the word is still laid out in the box,
+ * and a dragged letter is kept inside the canvas, so it is never cut off. Everything else is as
+ * published.
  */
 import { useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
@@ -56,6 +59,12 @@ const DAMPING = 22;
 
 const approach = (current: number, target: number, dt: number, seconds: number) =>
   current + (target - current) * (1 - Math.exp(-dt / seconds));
+
+// (local) between lo and hi; the middle when there is no room
+const clampTo = (value: number, lo: number, hi: number) => (lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, value)));
+// (local) room a dragged letter keeps from the canvas edge: its selection frame, and the label above it
+const EDGE = 8;
+const EDGE_TOP = 26;
 
 const hexToRgb = (hex: string): [number, number, number] => {
   let h = String(hex || '').replace('#', '');
@@ -148,6 +157,11 @@ const TechText = ({
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     let width = 1;
     let height = 1;
+    // (local) the canvas's size, and how far it reaches past the box's left and top edges
+    let canvasWidth = 1;
+    let canvasHeight = 1;
+    let bleedX = 0;
+    let bleedY = 0;
     let dpr = 1;
     let raf = 0;
     let last = performance.now();
@@ -348,15 +362,15 @@ const TechText = ({
     ) => {
       target.drawImage(
         art.image,
-        Math.round((art.left + dx) * dpr - originX),
-        Math.round((art.top + dy) * dpr - originY)
+        Math.round((art.left + dx + bleedX) * dpr - originX),
+        Math.round((art.top + dy + bleedY) * dpr - originY)
       );
     };
 
     const drawReveal = (s: Settings) => {
       const radius = s.reach * dpr;
-      const cx = lens.x * dpr;
-      const cy = lens.y * dpr;
+      const cx = (lens.x + bleedX) * dpr;
+      const cy = (lens.y + bleedY) * dpr;
       ctx.globalCompositeOperation = 'destination-out';
       ctx.fillStyle = falloff(ctx, cx, cy, radius, presence, s.softness);
       ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
@@ -457,7 +471,7 @@ const TechText = ({
       const y1 = crisp(frame.y1);
       const x2 = crisp(frame.x2);
       const y2 = crisp(frame.y2);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, Math.round(bleedX * dpr), Math.round(bleedY * dpr));
 
       const moved = Math.hypot(glyph.offset.x, glyph.offset.y);
       if (moved > 1) {
@@ -545,8 +559,19 @@ const TechText = ({
       let moving = false;
       glyphs.forEach((glyph, i) => {
         if (i === dragging) {
-          glyph.offset.x = approach(glyph.offset.x, pointer.x - grab.x, dt, 0.03);
-          glyph.offset.y = approach(glyph.offset.y, pointer.y - grab.y, dt, 0.03);
+          // (local: the letter, its frame and label stay inside the canvas)
+          const toX = clampTo(
+            pointer.x - grab.x,
+            EDGE - bleedX - glyph.box.x1,
+            canvasWidth - bleedX - EDGE - glyph.box.x2
+          );
+          const toY = clampTo(
+            pointer.y - grab.y,
+            EDGE_TOP - bleedY - glyph.box.y1,
+            canvasHeight - bleedY - EDGE - glyph.box.y2
+          );
+          glyph.offset.x = approach(glyph.offset.x, toX, dt, 0.03);
+          glyph.offset.y = approach(glyph.offset.y, toY, dt, 0.03);
           glyph.velocity.x = 0;
           glyph.velocity.y = 0;
           moving = true;
@@ -641,8 +666,12 @@ const TechText = ({
       width = Math.max(1, container.clientWidth);
       height = Math.max(1, container.clientHeight);
       dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
+      canvasWidth = Math.max(1, canvas.clientWidth);
+      canvasHeight = Math.max(1, canvas.clientHeight);
+      bleedX = -canvas.offsetLeft;
+      bleedY = -canvas.offsetTop;
+      canvas.width = Math.round(canvasWidth * dpr);
+      canvas.height = Math.round(canvasHeight * dpr);
       layoutKey = '';
       wake();
     };
@@ -697,6 +726,7 @@ const TechText = ({
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
+    resizeObserver.observe(canvas); // (local: its bleed can change on its own)
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       wake();
