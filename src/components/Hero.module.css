@@ -3,7 +3,8 @@
   height: 100vh;
   min-height: 900px;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 115%, #1e1a2e 0%, #111016 45%, var(--bg) 75%);
+  /* (darker: the purple stays low, behind your shoulders) */
+  background: radial-gradient(ellipse at 50% 115%, #15121f 0%, #0d0c12 45%, var(--bg) 70%);
 }
 
 /* GSAP hooks (intro fade, scroll parallax). They need a declaration, or the
@@ -64,7 +65,7 @@
   border-radius: 50%;
   background: var(--accent);
   filter: blur(160px);
-  opacity: 0.35;
+  opacity: 0.18;
 }
 /* React Bits LightRays: light falls from above onto the name */
 .rays {
@@ -73,6 +74,7 @@
   width: auto;
   height: auto;
   mix-blend-mode: screen;
+  opacity: 0.6;
 }
 /* the seam (Seam component supplies width and gradient); inset so its registration
    marks clear the fixed nav (24px) and the hero's bottom edge */

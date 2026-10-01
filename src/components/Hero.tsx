@@ -17,7 +17,7 @@ import styles from "./Hero.module.css";
 
 const stars = starField(60, 100, 72, 7);
 
-// wider than the phone layout: the name stands in front of you there, drawn in outline
+// wider than the phone layout: the name stands top right there (see the TechText below)
 const WIDE = "(min-width: 901px)";
 const subscribeWide = (onChange: () => void) => {
   const query = window.matchMedia(WIDE);
