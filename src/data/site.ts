@@ -114,9 +114,10 @@ export const heroFrames = {
 
 // ---------- cover (hero) ----------
 // The centre of the cover: you, cut out, as a big close-up; on desktop the name stands top right
-// in outline (in the roles title's place), on phones behind you. Put a transparent PNG/WebP of yourself in public/art/ and
-// set portrait.src (give a new picture a new file name, so no cached copy lingers); "" shows a
-// placeholder outline. Tags point at the portrait box (see TagSpec). "wide" tags show only at 1400px+.
+// (in the roles title's place), on phones behind you. Put a transparent PNG/WebP of yourself in
+// public/art/ and set portrait.src (give a new picture a new file name, so no cached copy lingers);
+// "" shows a placeholder outline. Tags point at the portrait box (see TagSpec). "wide" tags show
+// only at 1400px+.
 // Around it: the thesis headline (top left, with `intro` under it), your roles (top right, with
 // `focus` under it), your newest project (bottom left, from projects.ts) and a card whose arrow
 // goes to Contact (bottom right). In intro and focus, words between *stars* are set bold.

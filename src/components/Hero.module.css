@@ -280,7 +280,7 @@
 
 /* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
    than the type. On phones centred a little below the middle, behind the portrait; on desktop top
-   right in the roles title's place (below), in front of the portrait in outline (Hero.tsx) */
+   right in the roles title's place (below), in front of the portrait */
 .name {
   --name-size: clamp(150px, 25vw, 380px);
   --hero-h: max(100vh, 900px); /* the hero's height, as .hero sets it */

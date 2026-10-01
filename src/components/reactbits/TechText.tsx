@@ -4,10 +4,9 @@
  * TechText — from React Bits by David Haz (https://reactbits.dev), MIT + Commons Clause.
  * Local changes: CSS module instead of a global stylesheet; the canvas can bleed past the box (the
  * --tech-bleed-left/right/x/top/bottom custom properties) while the word is still laid out in the
- * box, and a dragged letter is kept inside the canvas, so it is never cut off; an `outlined` mode
- * draws the letters as outlines and fills the one in focus (the inverse of the default);
- * `align="end"` sets the word flush with the box's right edge instead of centred. Everything else
- * is as published.
+ * box, and a dragged letter is kept inside the canvas, so it is never cut off; `holdOutline` draws
+ * a letter as its outline while it is held (dragged); `align="end"` sets the word flush with the
+ * box's right edge instead of centred. Everything else is as published.
  */
 import { useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
@@ -48,8 +47,8 @@ export interface TechTextProps {
   draggable?: boolean;
   sweep?: boolean;
   speed?: number;
-  // (local) outlines by default, the letter in focus filled
-  outlined?: boolean;
+  // (local) a held (dragged) letter shows as its outline
+  holdOutline?: boolean;
   // (local) the word centred in the box, or flush with its right edge
   align?: 'center' | 'end';
   className?: string;
@@ -118,7 +117,7 @@ const TechText = ({
   draggable = true,
   sweep = true,
   speed = 1,
-  outlined = false,
+  holdOutline = false,
   align = 'center',
   className = '',
   style
@@ -150,7 +149,7 @@ const TechText = ({
       draggable,
       sweep,
       speed,
-      outlined,
+      holdOutline,
       align
     };
     wakeRef.current();
@@ -626,7 +625,9 @@ const TechText = ({
       frame.alpha = approach(frame.alpha, focus >= 0 && s.selection ? 1 : 0, dt, 0.1);
 
       glyphs.forEach((glyph, i) => {
-        const target = s.reveal === 'letter' && i === focus && i !== dragging ? 1 : 0;
+        // (local: holdOutline outlines the letter being held)
+        const held = s.holdOutline && i === dragging;
+        const target = held || (s.reveal === 'letter' && i === focus && i !== dragging) ? 1 : 0;
         glyph.outline = approach(glyph.outline, target, dt, 0.09);
         if (Math.abs(glyph.outline - target) > 0.002) moving = true;
         else glyph.outline = target;
@@ -646,16 +647,13 @@ const TechText = ({
         }
       }
       for (const glyph of glyphs) {
-        // (local: outlined swaps the resting and focused looks)
-        const rest = s.outlined ? glyph.dashes : glyph.fill;
-        const focused = s.outlined ? glyph.fill : glyph.dashes;
         if (glyph.outline < 0.999) {
           ctx.globalAlpha = 1 - glyph.outline;
-          blit(ctx, rest, glyph.offset.x, glyph.offset.y, 0, 0);
+          blit(ctx, glyph.fill, glyph.offset.x, glyph.offset.y, 0, 0);
         }
         if (glyph.outline > 0.001) {
           ctx.globalAlpha = glyph.outline;
-          blit(ctx, focused, glyph.offset.x, glyph.offset.y, 0, 0);
+          blit(ctx, glyph.dashes, glyph.offset.x, glyph.offset.y, 0, 0);
         }
         ctx.globalAlpha = 1;
       }
