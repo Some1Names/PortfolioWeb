@@ -23,7 +23,7 @@ export default function CoverFigure({ children }: { children?: React.ReactNode }
               fetchPriority="high"
               // the box is 3:4 and ~78% of the hero's height (64% on phones), and the picture is
               // drawn --zoom times it (CoverFigure.module.css), so size it by height
-              sizes="(max-width: 900px) calc(60vh + 60px), max(911px, 102vh)"
+              sizes="(max-width: 900px) calc(75vh + 75px), max(1134px, 126vh)"
               className={styles.photo}
             />
           ) : (
