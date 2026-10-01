@@ -76,7 +76,15 @@
   margin: 32px 0 0 var(--px);
   width: var(--pw);
   aspect-ratio: var(--ratio);
-  background: #050506; /* the selection filled near-black: white dots on black, like a print */
+}
+/* the glass pane fills the picture, the veil (or the still fallback) fills the glass */
+.glass {
+  position: absolute;
+  inset: 0;
+}
+.veil {
+  position: absolute;
+  inset: 0;
 }
 .stillPic .stillFoot {
   position: relative;

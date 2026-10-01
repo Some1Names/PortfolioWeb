@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { about, site, manifesto } from "@/data/site";
 import Cutout from "./motifs/Cutout";
@@ -9,10 +9,14 @@ import Folio from "./motifs/Folio";
 import ModuleLabel from "./motifs/ModuleLabel";
 import Crosshairs from "./hud/Crosshairs";
 import DecryptedText from "./reactbits/DecryptedText";
+import DitherVeil from "./reactbits/DitherVeil";
+import GlassSurface from "./reactbits/GlassSurface";
 import styles from "./About.module.css";
 
 export default function About() {
   const root = useRef<HTMLElement>(null);
+  // the live dither veil runs (false: no WebGL 2 here, so the still white-dot picture instead)
+  const [veilOn, setVeilOn] = useState(true);
 
   useGSAP(
     () => {
@@ -76,9 +80,28 @@ export default function About() {
       >
         {hasArt && (
           // the picture in its own shape, with a Photoshop selection being transformed around it:
-          // marching ants, square handles, and the figure's name over its corner like a layer's
+          // marching ants, square handles, and the figure's name over its corner like a layer's. The
+          // picture is a pane of liquid glass with you on it in white dots (React Bits' Dither Veil:
+          // the pointer reveals the grayscale photo underneath)
           <span className={styles.pic}>
-            <Cutout src={art.src} alt={art.alt} mode={art.mode} sizes="(max-width: 900px) 100vw, 45vw" className={styles.art} />
+            <GlassSurface className={styles.glass} borderRadius={14} backgroundOpacity={0.12} saturation={1.2}>
+              {art.veil && veilOn ? (
+                <DitherVeil
+                  src={art.veil}
+                  label={art.alt}
+                  className={styles.veil}
+                  pixelSize={3}
+                  inkColor="#0a0a0c"
+                  paperColor="#f2f0f7"
+                  contrast={1.4}
+                  brightness={0.2}
+                  revealRadius={140}
+                  onUnavailable={() => setVeilOn(false)}
+                />
+              ) : (
+                <Cutout src={art.src} alt={art.alt} mode={art.mode} sizes="(max-width: 900px) 100vw, 45vw" className={styles.art} />
+              )}
+            </GlassSurface>
             <span className={styles.frame} data-part="frame" aria-hidden="true">
               {handles.map(([x, y]) => (
                 <i key={`${x}-${y}`} className={styles.handle} style={{ left: `${x}%`, top: `${y}%` }} data-part="handle" />
