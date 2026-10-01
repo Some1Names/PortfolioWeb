@@ -128,7 +128,7 @@ export const cover: {
   focus: string;
   card: { label: string; value: string; foot: string };
 } = {
-  portrait: { src: "", alt: "Portrait of Uefa" },
+  portrait: { src: "/art/hero-portrait.webp", alt: "Uefa in silhouette, lit from behind, in an open blue flower-print shirt over a black t-shirt" },
   tags: [
     { label: "ACS · KMUTT", x: 106, y: 32, to: { x: 60, y: 14 }, side: "web", phone: { x: 56, y: 4 } },
     { label: "Manga artist", x: -4, y: 48, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },
