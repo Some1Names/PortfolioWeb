@@ -27,6 +27,7 @@ export default function RecordPlayer({
     initialPlayer,
   );
   const audio = useRef<HTMLAudioElement>(null);
+  const list = useRef<HTMLOListElement>(null);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(30);
   const [failed, setFailed] = useState<number[]>([]);
@@ -50,6 +51,26 @@ export default function RecordPlayer({
 
   useEffect(() => {
     if (audio.current) audio.current.volume = VOLUME;
+  }, []);
+
+  // where the record list scrolls, its edges blur while there's more that way (data-more-above /
+  // data-more-below on its wrapper; set straight on the element, no re-render)
+  useEffect(() => {
+    const el = list.current;
+    const wrap = el?.parentElement;
+    if (!el || !wrap) return undefined;
+    const mark = () => {
+      wrap.toggleAttribute("data-more-above", el.scrollTop > 2);
+      wrap.toggleAttribute("data-more-below", el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+    };
+    mark();
+    el.addEventListener("scroll", mark, { passive: true });
+    const resize = new ResizeObserver(mark);
+    resize.observe(el);
+    return () => {
+      el.removeEventListener("scroll", mark);
+      resize.disconnect();
+    };
   }, []);
 
   // a clip (re)starts: from the top
@@ -187,43 +208,45 @@ export default function RecordPlayer({
           <span>Records ({String(tracks.length).padStart(2, "0")})</span>
         </div>
         {/* data-lenis-prevent: the wheel scrolls the list itself when it scrolls */}
-        <ol className={styles.list} data-lenis-prevent>
-          {tracks.map((t, i) => {
-            const current = i === s.index && s.seq > 0;
-            return (
-              <li key={t.title}>
-                <button
-                  type="button"
-                  className={styles.row}
-                  onClick={() => dispatch({ type: "select", index: i })}
-                  aria-current={current ? "true" : undefined}
-                  aria-label={`${current && s.playing ? "Pause" : "Play"} ${t.title} by ${t.artist}`}
-                >
-                  <span className={styles.num}>
-                    {current && s.playing ? (
-                      <span className={styles.eq} aria-hidden="true">
-                        <i />
-                        <i />
-                        <i />
-                      </span>
-                    ) : (
-                      String(i + 1).padStart(2, "0")
-                    )}
-                  </span>
-                  <span className={styles.rowText}>
-                    <span className={styles.rowTitle}>{t.title}</span>
-                    <span className={styles.rowArtist}>
-                      {t.artist}
-                      {t.tag && <span className={styles.tag}> · {t.tag}</span>}
+        <div className={styles.listWrap}>
+          <ol ref={list} className={styles.list} data-lenis-prevent>
+            {tracks.map((t, i) => {
+              const current = i === s.index && s.seq > 0;
+              return (
+                <li key={t.title}>
+                  <button
+                    type="button"
+                    className={styles.row}
+                    onClick={() => dispatch({ type: "select", index: i })}
+                    aria-current={current ? "true" : undefined}
+                    aria-label={`${current && s.playing ? "Pause" : "Play"} ${t.title} by ${t.artist}`}
+                  >
+                    <span className={styles.num}>
+                      {current && s.playing ? (
+                        <span className={styles.eq} aria-hidden="true">
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                      ) : (
+                        String(i + 1).padStart(2, "0")
+                      )}
                     </span>
-                    {t.note && <span className={styles.rowNote}>“{t.note}”</span>}
-                  </span>
-                  <span className={styles.len}>{formatTime(t.length)}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
+                    <span className={styles.rowText}>
+                      <span className={styles.rowTitle}>{t.title}</span>
+                      <span className={styles.rowArtist}>
+                        {t.artist}
+                        {t.tag && <span className={styles.tag}> · {t.tag}</span>}
+                      </span>
+                      {t.note && <span className={styles.rowNote}>“{t.note}”</span>}
+                    </span>
+                    <span className={styles.len}>{formatTime(t.length)}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
 
       <audio
