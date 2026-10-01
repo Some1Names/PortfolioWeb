@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { onIntroDone } from "@/lib/intro";
 import { starField } from "@/lib/stars";
@@ -17,12 +17,22 @@ import styles from "./Hero.module.css";
 
 const stars = starField(60, 100, 72, 7);
 
+// wider than the phone layout: the name stands in front of you there, drawn in outline
+const WIDE = "(min-width: 901px)";
+const subscribeWide = (onChange: () => void) => {
+  const query = window.matchMedia(WIDE);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+const isWide = () => window.matchMedia(WIDE).matches;
+
 // words between *stars* in the cover copy are set bold
 const Bold = ({ text }: { text: string }) => <>{text.split("*").map((s, i) => (i % 2 ? <b key={i}>{s}</b> : s))}</>;
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const wide = useSyncExternalStore(subscribeWide, isWide, () => false);
 
   useGSAP(
     (_context, contextSafe) => {
@@ -169,7 +179,9 @@ export default function Hero() {
       </div>
 
       {/* the name is drawn by React Bits TechText (a scanning lens outlines and measures each
-          letter; letters can be dragged). The real text stays in the heading for screen readers. */}
+          letter; letters can be dragged). The real text stays in the heading for screen readers.
+          On desktop it stands in front of you as outlines (the lens fills a letter at a time),
+          since your head would hide the middle of it; on phones it stays behind you, filled. */}
       <h1 className={styles.name}>
         <span className={styles.srOnly}>{site.name}</span>
         <span className={styles.nameArt} aria-hidden="true">
@@ -186,6 +198,8 @@ export default function Hero() {
             strokeWidth={1.4}
             specks={12}
             speed={0.9}
+            outlined={wide}
+            lineStyle={wide ? "solid" : "dashed"}
           />
         </span>
       </h1>

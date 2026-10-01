@@ -21,8 +21,8 @@
    (the hero clips it). The picture is the whole cut-out, so the sleeves end in their own shape at
    the sides. The tags stay placed on the box, so they now point at the face */
 .figure {
-  --zoom: 2.153;
-  --lift: 35.2%;
+  --zoom: 1.9;
+  --lift: 27%;
 }
 .portrait {
   inset: auto;

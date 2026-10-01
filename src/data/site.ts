@@ -113,9 +113,10 @@ export const heroFrames = {
 };
 
 // ---------- cover (hero) ----------
-// The centre of the cover: you, cut out, standing in front of the name. Put a transparent
-// PNG/WebP of yourself in public/art/ and set portrait.src; "" shows a placeholder outline.
-// Tags point at the portrait box (see TagSpec). "wide" tags show only at 1400px+.
+// The centre of the cover: you, cut out, as a big close-up; on desktop the name stands in front of
+// you in outline, on phones behind you. Put a transparent PNG/WebP of yourself in public/art/ and
+// set portrait.src (give a new picture a new file name, so no cached copy lingers); "" shows a
+// placeholder outline. Tags point at the portrait box (see TagSpec). "wide" tags show only at 1400px+.
 // Around it: the thesis headline (top left, with `intro` under it), your roles (top right, with
 // `focus` under it), your newest project (bottom left, from projects.ts) and a card whose arrow
 // goes to Contact (bottom right). In intro and focus, words between *stars* are set bold.
@@ -128,12 +129,10 @@ export const cover: {
   focus: string;
   card: { label: string; value: string; foot: string };
 } = {
-  portrait: { src: "/art/hero-portrait.webp", alt: "Uefa in silhouette, lit from behind, in an open blue flower-print shirt over a black t-shirt" },
+  portrait: { src: "/art/hero-portrait-v2.webp", alt: "Uefa in silhouette, lit from behind, in an open blue flower-print shirt over a black t-shirt" },
   tags: [
     { label: "ACS · KMUTT", x: 106, y: 32, to: { x: 60, y: 14 }, side: "web", phone: { x: 56, y: 4 } },
-    { label: "Manga artist", x: -4, y: 48, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },
-    { label: "Motion / WebGL", x: 106, y: 52, to: { x: 66, y: 40 }, side: "collide", wide: true },
-    { label: "Next.js · TS", x: -2, y: 58, to: { x: 32, y: 46 }, side: "web", wide: true },
+    { label: "Manga artist", x: -4, y: 70, to: { x: 38, y: 22 }, side: "art", phone: { x: 16, y: 26 } },
   ],
   coords: "X_13.65 N / Y_100.49 E",
   intro: "Applied Computer Science (*ACS*) student at *KMUTT*.",

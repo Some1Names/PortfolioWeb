@@ -4,8 +4,9 @@
  * TechText — from React Bits by David Haz (https://reactbits.dev), MIT + Commons Clause.
  * Local changes: CSS module instead of a global stylesheet; the canvas can bleed past the box
  * (the --tech-bleed-x/top/bottom custom properties) while the word is still laid out in the box,
- * and a dragged letter is kept inside the canvas, so it is never cut off. Everything else is as
- * published.
+ * and a dragged letter is kept inside the canvas, so it is never cut off; an `outlined` mode draws
+ * the letters as outlines and fills the one in focus (the inverse of the default). Everything
+ * else is as published.
  */
 import { useEffect, useRef } from 'react';
 import type { CSSProperties } from 'react';
@@ -46,6 +47,8 @@ export interface TechTextProps {
   draggable?: boolean;
   sweep?: boolean;
   speed?: number;
+  // (local) outlines by default, the letter in focus filled
+  outlined?: boolean;
   className?: string;
   style?: CSSProperties;
 }
@@ -112,6 +115,7 @@ const TechText = ({
   draggable = true,
   sweep = true,
   speed = 1,
+  outlined = false,
   className = '',
   style
 }: TechTextProps) => {
@@ -141,7 +145,8 @@ const TechText = ({
       labels,
       draggable,
       sweep,
-      speed
+      speed,
+      outlined
     };
     wakeRef.current();
   });
@@ -635,13 +640,16 @@ const TechText = ({
         }
       }
       for (const glyph of glyphs) {
+        // (local: outlined swaps the resting and focused looks)
+        const rest = s.outlined ? glyph.dashes : glyph.fill;
+        const focused = s.outlined ? glyph.fill : glyph.dashes;
         if (glyph.outline < 0.999) {
           ctx.globalAlpha = 1 - glyph.outline;
-          blit(ctx, glyph.fill, glyph.offset.x, glyph.offset.y, 0, 0);
+          blit(ctx, rest, glyph.offset.x, glyph.offset.y, 0, 0);
         }
         if (glyph.outline > 0.001) {
           ctx.globalAlpha = glyph.outline;
-          blit(ctx, glyph.dashes, glyph.offset.x, glyph.offset.y, 0, 0);
+          blit(ctx, focused, glyph.offset.x, glyph.offset.y, 0, 0);
         }
         ctx.globalAlpha = 1;
       }

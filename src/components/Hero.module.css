@@ -279,7 +279,8 @@
 }
 
 /* box for the TechText canvas: it fits the word into ~66% of the height, so the box is taller
-   than the type. Centred a little below the middle, behind the portrait */
+   than the type. Centred a little below the middle; in front of the portrait (in outline, see
+   Hero.tsx), behind it on phones */
 .name {
   --name-size: clamp(150px, 25vw, 380px);
   --hero-h: max(100vh, 900px); /* the hero's height, as .hero sets it */
@@ -288,7 +289,7 @@
   left: 0;
   right: 0;
   top: var(--name-top);
-  z-index: 2;
+  z-index: 4;
   height: calc(var(--name-size) * 1.15);
   margin: 0;
   font-family: var(--display);
@@ -390,6 +391,7 @@
     --name-size: clamp(120px, 40vw, 180px);
     --hero-h: max(100svh, 760px);
     --name-top: 244px;
+    z-index: 2;
   }
   /* the status card floats inside the page margins */
   .hero .card {
