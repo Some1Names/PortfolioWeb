@@ -182,20 +182,6 @@ html {
   color: var(--bg);
 }
 
-.code-deco {
-  font-family: var(--mono);
-  font-size: 11px;
-  line-height: 1.7;
-  color: var(--soft);
-  white-space: pre;
-  margin: 0;
-}
-.code-deco .c { color: var(--muted); }
-.code-deco .k { color: var(--lav); }
-.code-deco .f { color: #d8d4e4; }
-.code-deco .s { color: #c9c3dc; }
-.code-deco .n { color: #c9b8ff; }
-
 /* ---------- art / web motifs ---------- */
 
 /* art side: fine ink hatching */

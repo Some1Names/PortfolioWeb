@@ -91,13 +91,6 @@ export const latestProject = projects.reduce((a, b) => (Number(b.year) > Number(
 // each project's anchor in the Work section
 export const projectAnchor = (p: Project) => `project-${p.id}`;
 
-export const writeup = {
-  id: "03",
-  kicker: "Write-up · [READ TIME]",
-  title: "How my chapter reader flips between scroll and paged mode",
-  href: "#",
-};
-
 // the projects a skill's "used in" names (matched on the start of each project's title)
 export const projectsUsing = (usedIn: string) =>
   projects.filter((p) => usedIn.toLowerCase().includes(p.title.split(" ")[0].toLowerCase().slice(0, 5)));

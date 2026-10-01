@@ -328,41 +328,6 @@
   flex: 1;
 }
 
-.writeup {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  min-height: 180px;
-  padding: 32px 40px;
-  background: var(--card);
-  text-decoration: none;
-  transition: background 0.3s;
-}
-.writeup:hover {
-  background: #16161b;
-  color: inherit;
-}
-.writeupText {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.writeupTitle {
-  font-family: var(--display);
-  font-size: 38px;
-  line-height: 1.08;
-}
-.writeupCode {
-  width: 300px;
-  flex-shrink: 0;
-  font-size: 10px;
-}
-.writeupArrow {
-  font-family: var(--mono);
-  font-size: 20px;
-}
-
 @media (max-width: 900px) {
   .work {
     padding: 72px var(--gutter) 56px;
@@ -397,18 +362,5 @@
   }
   .num {
     font-size: 44px;
-  }
-  .writeup {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 20px;
-  }
-  .writeupCode,
-  .writeupArrow {
-    display: none;
-  }
-  .writeupTitle {
-    font-size: 28px;
   }
 }

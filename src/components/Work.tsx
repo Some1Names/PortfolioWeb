@@ -3,7 +3,7 @@
 import { Fragment, useRef } from "react";
 import Image from "next/image";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { projects, writeup, projectAnchor, type Member, type Project } from "@/data/projects";
+import { projects, projectAnchor, type Member, type Project } from "@/data/projects";
 import Seam from "./motifs/Seam";
 import ArtSlot from "./motifs/ArtSlot";
 import Folio from "./motifs/Folio";
@@ -194,27 +194,6 @@ export default function Work({ parties }: { parties: Record<string, Member[]> })
             </div>
           </article>
         ))}
-
-        <a href={writeup.href} className={styles.writeup}>
-          <span className={`outline-num ${styles.num}`}>{writeup.id}</span>
-          <div className={styles.writeupText}>
-            <span className="section-label">{writeup.kicker}</span>
-            <span className={styles.writeupTitle}>{writeup.title}</span>
-          </div>
-          <pre className={`code-deco ${styles.writeupCode}`} aria-hidden="true">
-            <span className="c">{"// reader.tsx"}</span>
-            {"\n"}
-            <span className="k">type</span> Mode = <span className="s">&quot;scroll&quot;</span> |{" "}
-            <span className="s">&quot;paged&quot;</span>;{"\n"}
-            <span className="k">return</span> mode === <span className="s">&quot;scroll&quot;</span>
-            {"\n  ? <"}
-            <span className="f">VerticalReader</span>
-            {" />\n  : <"}
-            <span className="f">PagedReader</span>
-            {" />;"}
-          </pre>
-          <span className={styles.writeupArrow}>↗</span>
-        </a>
       </div>
       <Folio page={2} />
     </section>
