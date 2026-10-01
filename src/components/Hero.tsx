@@ -180,8 +180,9 @@ export default function Hero() {
 
       {/* the name is drawn by React Bits TechText (a scanning lens outlines and measures each
           letter; letters can be dragged). The real text stays in the heading for screen readers.
-          On desktop it takes the roles title's place, top right, solid; a letter you hold turns
-          into its outline (the lens only measures there). On phones it stays behind you. */}
+          On desktop it takes the roles title's place, top right, solid: the letter under the
+          selection box (the lens, or one you hold) shows as its outline. On phones it stays
+          behind you. */}
       <h1 className={styles.name}>
         <span className={styles.srOnly}>{site.name}</span>
         <span className={styles.nameArt} aria-hidden="true">
@@ -198,7 +199,6 @@ export default function Hero() {
             strokeWidth={1.4}
             specks={12}
             speed={0.9}
-            reveal={wide ? "off" : "letter"}
             holdOutline
             lineStyle={wide ? "solid" : "dashed"}
             align={wide ? "end" : "center"}
