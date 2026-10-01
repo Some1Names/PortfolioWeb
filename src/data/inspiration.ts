@@ -124,16 +124,17 @@ export const inspiration: {
         length: 234,
       },
       {
-        title: "Self Control",
+        title: "Blonde",
         artist: "Frank Ocean",
         cover:
           "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bb/45/68/bb4568f3-68cd-619d-fbcb-4e179916545d/BlondCover-Final.jpg/600x600bb.jpg",
-        href: "https://music.apple.com/us/album/self-control/1146195596?i=1146195718",
+        href: "https://music.apple.com/us/album/blonde/1146195596",
         preview:
           "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/67/d5/18/67d5185e-37e4-3e36-d345-0e8075de0407/mzaf_12338821043527808523.plus.aac.p.m4a",
         length: 250,
+        tag: "Album · plays Self Control",
       },
-      // favourite artists, as their latest albums (each plays its first full-length song)
+      // favourite artists, as albums, each playing the owner's pick from it
       {
         title: "Under Blue",
         artist: "Eve",
@@ -141,9 +142,9 @@ export const inspiration: {
           "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/4d/d0/cb/4dd0cb75-28d1-f109-5c73-9263190c1b20/4988061930770.jpg/600x600bb.jpg",
         href: "https://music.apple.com/us/album/under-blue/1779475579",
         preview:
-          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4c/d1/1a/4cd11a95-a8af-32de-b877-ace579c9f7e4/mzaf_14438854170948763444.plus.aac.p.m4a",
-        length: 156,
-        tag: "Album · plays Lazy Cat",
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e9/e1/fc/e9e1fc53-d7c9-7028-7ea7-dd4b52b32f23/mzaf_3967821028305191574.plus.aac.p.m4a",
+        length: 234,
+        tag: "Album · plays Hanaboshi",
       },
       {
         title: "replica",
@@ -152,9 +153,31 @@ export const inspiration: {
           "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/8a/eb/75/8aeb7526-6fe4-a81a-5dce-c5d026e7f036/4547366655728.jpg/600x600bb.jpg",
         href: "https://music.apple.com/us/album/replica/1714599649",
         preview:
-          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/43/99/60/43996059-cd24-db7b-24cc-437727997fd2/mzaf_3662584062574999114.plus.aac.p.m4a",
-        length: 232,
-        tag: "Album · plays ZERO",
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/01/e4/84/01e48493-8954-07af-db1a-6254835032f4/mzaf_11396985854117334259.plus.aac.p.m4a",
+        length: 204,
+        tag: "Album · plays Carnival",
+      },
+      {
+        title: "Piss In The Wind",
+        artist: "Joji",
+        cover:
+          "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/4e/0a/94/4e0a946e-e2b9-d014-fa94-258e41624468/00198704944055_Cover.jpg/600x600bb.jpg",
+        href: "https://music.apple.com/us/album/piss-in-the-wind/1868663438",
+        preview:
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5a/e0/12/5ae012e4-3d57-655c-7aa0-a5401951768c/mzaf_7181886502770211438.plus.aac.p.m4a",
+        length: 176,
+        tag: "Album · plays Sojourn",
+      },
+      {
+        title: "ไฟกลางคืน",
+        artist: "YOUNGOHM",
+        cover:
+          "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/b8/ce/a5/b8cea5de-4bb6-fc81-22aa-6c8deebf543b/cover.jpg/600x600bb.jpg",
+        href: "https://music.apple.com/us/album/1844797312",
+        preview:
+          "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/15/36/66/153666f9-ff83-a220-caae-d2af2245314b/mzaf_15359120974379622577.plus.aac.p.m4a",
+        length: 224,
+        tag: "Album · plays กรุงเทพมหานคร",
       },
     ],
   },
