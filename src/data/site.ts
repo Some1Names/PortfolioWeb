@@ -38,8 +38,7 @@ export const site = {
   volume: "Vol. 01",
   year: 2026,
   emails: [
-    { label: "Work email", address: "uefapeerawit@gmail.com" },
-    { label: "Personal email", address: "himarukoishiwa@gmail.com" },
+    { label: "Email", address: "uefapeerawit@gmail.com" },
   ],
   links: [
     { label: "GitHub", handle: "@Some1Names", href: "https://github.com/Some1Names" },
