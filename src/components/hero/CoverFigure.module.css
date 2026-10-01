@@ -16,6 +16,20 @@
   position: absolute;
   inset: 0;
 }
+/* the portrait is drawn bigger than its box, a close-up like a magazine cover: --zoom times the
+   box, its top --lift above the box's top (toward the top of the hero), running off the bottom
+   (the hero clips it). The tags stay placed on the box, so they now point at the face */
+.figure {
+  --zoom: 1.73;
+  --lift: 26%;
+}
+.portrait {
+  inset: auto;
+  top: calc(-1 * var(--lift));
+  left: calc((100% - 100% * var(--zoom)) / 2);
+  width: calc(100% * var(--zoom));
+  height: calc(100% * var(--zoom));
+}
 .tags {
   z-index: 3;
 }
@@ -59,5 +73,8 @@
   .figure {
     bottom: 0;
     height: calc(64% + 64px);
+    /* a gentler close-up: the hair starts under the intro's button */
+    --zoom: 1.25;
+    --lift: 4%;
   }
 }
