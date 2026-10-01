@@ -91,7 +91,7 @@ export const inspiration: {
         original: "呪術廻戦",
         cover: "https://media.themoviedb.org/t/p/w500/6qQzMJG27XOJsyAEEIisoJB45j2.jpg",
         alt: "Poster for Jujutsu Kaisen",
-        note: "I love the visuals and the cinematography, though.",
+        note: "I love the visuals and the cinematography tho...",
         href: "https://www.themoviedb.org/tv/95479",
       },
       {
@@ -102,7 +102,7 @@ export const inspiration: {
         original: "チェンソーマン",
         cover: "https://media.themoviedb.org/t/p/w500/npdB6eFzizki0WaZ1OvKcJrWe97.jpg",
         alt: "Poster for Chainsaw Man",
-        note: "Loved the storytelling and the plot twists, but Part 2… eh.",
+        note: "Loved the storytelling and the plot twists, but Part 2 eh...",
         href: "https://www.themoviedb.org/tv/114410",
       },
     ],
